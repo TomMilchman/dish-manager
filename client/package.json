@@ -1,5 +1,5 @@
 {
-    "name": "dish-manager",
+    "name": "dish-manager-client",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
@@ -8,8 +8,6 @@
         "@testing-library/react": "^16.3.0",
         "@testing-library/user-event": "^13.5.0",
         "axios": "^1.9.0",
-        "express": "^5.1.0",
-        "mongoose": "^8.15.1",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
         "react-router": "^7.6.2",
