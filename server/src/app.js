@@ -1,6 +1,6 @@
-import express, { json } from "express";
+const express = require("express");
 const app = express();
 
-app.use(json());
+app.use(express.json());
 
-export default app;
+module.exports = app;
