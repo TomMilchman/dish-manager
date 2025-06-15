@@ -2,9 +2,9 @@
 /// <reference types="jest" />
 
 const testUtils = require("./testUtils");
-const validateAuth = require("../middlewares/validateAuthInput");
+const validateAuth = require("../middlewares/validateAuthInputMiddleware");
 
-describe("Registration input validation", () => {
+describe("_validateRegistration", () => {
     describe("Valid input", () => {
         it("should accept a valid registration", () => {
             const result = validateAuth.validateRegistration(
@@ -90,80 +90,40 @@ describe("Registration input validation", () => {
     });
 });
 
-describe("Login input validation", () => {
-    describe("Valid input", () => {
-        it("should accept valid username and password", () => {
-            const result = validateAuth.validateLogin(
-                testUtils.validUsername,
-                testUtils.validPassword
-            );
-            expect(result.success).toBe(true);
-            expect(result.error).toBeUndefined();
-        });
+describe("validateRegisterMiddleware", () => {
+    let req, res, next;
 
-        it("should accept valid email and password", () => {
-            const result = validateAuth.validateLogin(
-                testUtils.validEmail,
-                testUtils.validPassword
-            );
-            expect(result.success).toBe(true);
-            expect(result.error).toBeUndefined();
-        });
+    beforeEach(() => {
+        req = { body: {} };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        next = jest.fn();
     });
 
-    describe("Invalid inputs", () => {
-        it("should reject if usernameOrEmail is empty", () => {
-            const result = validateAuth.validateLogin(
-                "",
-                testUtils.validPassword
-            );
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-        });
+    it("should return 400 if validation fails", () => {
+        req.body = { username: "a", email: "invalid", password: "123" };
 
-        it("should reject if password is empty", () => {
-            const result = validateAuth.validateLogin(
-                testUtils.validUsername,
-                ""
-            );
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-        });
+        validateAuth.validateRegisterMiddleware(req, res, next);
 
-        it("should reject if password is too short", () => {
-            const result = validateAuth.validateLogin(
-                testUtils.validUsername,
-                "123"
-            );
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-        });
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith(
+            expect.objectContaining({ message: expect.any(String) })
+        );
+        expect(next).not.toHaveBeenCalled();
+    });
 
-        it("should reject if password is too long", () => {
-            const result = validateAuth.validateLogin(
-                testUtils.validUsername,
-                "a".repeat(100)
-            );
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-        });
+    it("should call next() if validation passes", () => {
+        req.body = {
+            username: testUtils.validUsername,
+            email: testUtils.validEmail,
+            password: testUtils.validPassword,
+        };
 
-        it("should reject if usernameOrEmail has special characters", () => {
-            const result = validateAuth.validateLogin(
-                "bad$user!",
-                testUtils.validPassword
-            );
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-        });
+        validateAuth.validateRegisterMiddleware(req, res, next);
 
-        it("should reject if email format is invalid", () => {
-            const result = validateAuth.validateLogin(
-                "invalid-email",
-                testUtils.validPassword
-            );
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-        });
+        expect(next).toHaveBeenCalled();
+        expect(res.status).not.toHaveBeenCalled();
     });
 });

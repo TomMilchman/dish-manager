@@ -2,11 +2,13 @@
 /// <reference types="jest" />
 
 const jwt = require("jsonwebtoken");
-const { authenticateToken } = require("../middlewares/authMiddleware");
+const {
+    authenticateTokenMiddleware,
+} = require("../middlewares/authMiddleware");
 
 jest.mock("jsonwebtoken");
 
-describe("authenticateToken middleware", () => {
+describe("authenticateTokenMiddleware", () => {
     let req, res, next;
 
     beforeEach(() => {
@@ -23,7 +25,7 @@ describe("authenticateToken middleware", () => {
     it("should return 401 if no token is provided", () => {
         req.headers.authorization = "";
 
-        authenticateToken(req, res, next);
+        authenticateTokenMiddleware(req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(401);
         expect(res.json).toHaveBeenCalledWith({
@@ -40,7 +42,7 @@ describe("authenticateToken middleware", () => {
             throw new Error("Invalid token");
         });
 
-        authenticateToken(req, res, next);
+        authenticateTokenMiddleware(req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(403);
         expect(res.json).toHaveBeenCalledWith({
@@ -54,7 +56,7 @@ describe("authenticateToken middleware", () => {
         req.headers.authorization = "Bearer validtoken";
         jwt.verify = jest.fn().mockReturnValue(fakePayload);
 
-        authenticateToken(req, res, next);
+        authenticateTokenMiddleware(req, res, next);
 
         expect(req.user).toEqual(fakePayload);
         expect(next).toHaveBeenCalled();

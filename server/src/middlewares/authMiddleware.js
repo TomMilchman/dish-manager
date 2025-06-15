@@ -1,14 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 /**
- * @typedef {Object} JwtPayload
- * @property {string} userId
- * @property {string} [role]
- * @property {number} iat
- * @property {number} exp
- */
-
-/**
  * Express middleware to authenticate JWT tokens in the Authorization header.
  *
  * @param {import("express").Request} req - Express request object
@@ -16,7 +8,7 @@ const jwt = require("jsonwebtoken");
  * @param {import("express").NextFunction} next - Express next middleware function
  * @returns {void}
  */
-const authenticateToken = (req, res, next) => {
+const authenticateTokenMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -37,4 +29,4 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
-module.exports = { authenticateToken };
+module.exports = { authenticateTokenMiddleware };
