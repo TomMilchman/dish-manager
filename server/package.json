@@ -17,6 +17,7 @@
         "test": "jest"
     },
     "devDependencies": {
+        "@types/jest": "^29.5.14",
         "jest": "^30.0.0",
         "mongodb-memory-server": "^10.1.4",
         "nodemon": "^3.1.10",

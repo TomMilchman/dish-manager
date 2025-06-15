@@ -16,11 +16,13 @@ const jwt = require("jsonwebtoken");
  * @param {import("express").NextFunction} next - Express next middleware function
  * @returns {void}
  */
-const authticateToken = (req, res, next) => {
+const authenticateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        res.status(401).json({ message: "Access denied. No token provided." });
+        return res
+            .status(401)
+            .json({ message: "Access denied. No token provided." });
     }
 
     const token = authHeader.split(" ")[1];
@@ -35,4 +37,4 @@ const authticateToken = (req, res, next) => {
     }
 };
 
-module.exports = { authticateToken };
+module.exports = { authenticateToken };

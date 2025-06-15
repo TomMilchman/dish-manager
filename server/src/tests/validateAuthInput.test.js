@@ -1,17 +1,16 @@
-const { expect, test, it, describe } = require("@jest/globals");
-const validateAuth = require("../middlewares/validateAuthInput");
+// @ts-check
+/// <reference types="jest" />
 
-const validUsername = "User123";
-const validEmail = "test@gmail.com";
-const validPassword = "Password123";
+const testUtils = require("./testUtils");
+const validateAuth = require("../middlewares/validateAuthInput");
 
 describe("Registration input validation", () => {
     describe("Valid input", () => {
         it("should accept a valid registration", () => {
             const result = validateAuth.validateRegistration(
-                validUsername,
-                validEmail,
-                validPassword
+                testUtils.validUsername,
+                testUtils.validEmail,
+                testUtils.validPassword
             );
             expect(result.success).toBe(true);
             expect(result.error).toBeUndefined();
@@ -21,8 +20,8 @@ describe("Registration input validation", () => {
     describe("Invalid inputs", () => {
         it("should reject a short password", () => {
             const result = validateAuth.validateRegistration(
-                validUsername,
-                validEmail,
+                testUtils.validUsername,
+                testUtils.validEmail,
                 "abc"
             );
             expect(result.success).toBe(false);
@@ -31,8 +30,8 @@ describe("Registration input validation", () => {
 
         it("should reject an overly long password", () => {
             const result = validateAuth.validateRegistration(
-                validUsername,
-                validEmail,
+                testUtils.validUsername,
+                testUtils.validEmail,
                 "a".repeat(100)
             );
             expect(result.success).toBe(false);
@@ -42,8 +41,8 @@ describe("Registration input validation", () => {
         it("should reject a username with invalid characters", () => {
             const result = validateAuth.validateRegistration(
                 "user@123",
-                validEmail,
-                validPassword
+                testUtils.validEmail,
+                testUtils.validPassword
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -52,8 +51,8 @@ describe("Registration input validation", () => {
         it("should reject a username that is too short", () => {
             const result = validateAuth.validateRegistration(
                 "ab",
-                validEmail,
-                validPassword
+                testUtils.validEmail,
+                testUtils.validPassword
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -62,8 +61,8 @@ describe("Registration input validation", () => {
         it("should reject a username that is too long", () => {
             const result = validateAuth.validateRegistration(
                 "a".repeat(50),
-                validEmail,
-                validPassword
+                testUtils.validEmail,
+                testUtils.validPassword
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -71,9 +70,9 @@ describe("Registration input validation", () => {
 
         it("should reject an invalid email format", () => {
             const result = validateAuth.validateRegistration(
-                validUsername,
+                testUtils.validUsername,
                 "not-an-email",
-                validPassword
+                testUtils.validPassword
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -81,8 +80,8 @@ describe("Registration input validation", () => {
 
         it("should reject if any field is missing", () => {
             const result = validateAuth.validateRegistration(
-                validUsername,
-                validEmail,
+                testUtils.validUsername,
+                testUtils.validEmail,
                 undefined
             );
             expect(result.success).toBe(false);
@@ -95,8 +94,8 @@ describe("Login input validation", () => {
     describe("Valid input", () => {
         it("should accept valid username and password", () => {
             const result = validateAuth.validateLogin(
-                validUsername,
-                validPassword
+                testUtils.validUsername,
+                testUtils.validPassword
             );
             expect(result.success).toBe(true);
             expect(result.error).toBeUndefined();
@@ -104,8 +103,8 @@ describe("Login input validation", () => {
 
         it("should accept valid email and password", () => {
             const result = validateAuth.validateLogin(
-                validEmail,
-                validPassword
+                testUtils.validEmail,
+                testUtils.validPassword
             );
             expect(result.success).toBe(true);
             expect(result.error).toBeUndefined();
@@ -114,26 +113,35 @@ describe("Login input validation", () => {
 
     describe("Invalid inputs", () => {
         it("should reject if usernameOrEmail is empty", () => {
-            const result = validateAuth.validateLogin("", validPassword);
+            const result = validateAuth.validateLogin(
+                "",
+                testUtils.validPassword
+            );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });
 
         it("should reject if password is empty", () => {
-            const result = validateAuth.validateLogin(validUsername, "");
+            const result = validateAuth.validateLogin(
+                testUtils.validUsername,
+                ""
+            );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });
 
         it("should reject if password is too short", () => {
-            const result = validateAuth.validateLogin(validUsername, "123");
+            const result = validateAuth.validateLogin(
+                testUtils.validUsername,
+                "123"
+            );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });
 
         it("should reject if password is too long", () => {
             const result = validateAuth.validateLogin(
-                validUsername,
+                testUtils.validUsername,
                 "a".repeat(100)
             );
             expect(result.success).toBe(false);
@@ -143,7 +151,7 @@ describe("Login input validation", () => {
         it("should reject if usernameOrEmail has special characters", () => {
             const result = validateAuth.validateLogin(
                 "bad$user!",
-                validPassword
+                testUtils.validPassword
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -152,7 +160,7 @@ describe("Login input validation", () => {
         it("should reject if email format is invalid", () => {
             const result = validateAuth.validateLogin(
                 "invalid-email",
-                validPassword
+                testUtils.validPassword
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
