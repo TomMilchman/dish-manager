@@ -1,8 +1,8 @@
 // @ts-check
 /// <reference types="jest" />
 
-const testUtils = require("./testUtils");
-const validateAuth = require("../middlewares/validateAuthInputMiddleware");
+const testUtils = require("../testUtils");
+const validateAuth = require("../../middlewares/validateAuthInputMiddleware");
 
 describe("_validateRegistration", () => {
     describe("Valid input", () => {
