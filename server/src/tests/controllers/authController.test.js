@@ -1,7 +1,11 @@
 // @ts-check
 /// <reference types="jest" />
 
-const { login, refresh } = require("../../controllers/authController");
+const {
+    login,
+    register,
+    refresh,
+} = require("../../controllers/authController");
 const authService = require("../../services/authService");
 const User = require("../../models/User");
 const jwt = require("jsonwebtoken");
@@ -79,24 +83,134 @@ describe("Auth Controller", () => {
             expect(res.cookie).toHaveBeenCalledWith(
                 "refreshToken",
                 "refresh123",
-                expect.objectContaining({
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: "Strict",
-                    maxAge: 30 * 24 * 60 * 60 * 1000,
-                })
+                authService.getRefreshCookieOptions(true)
             );
             expect(res.json).toHaveBeenCalledWith({ accessToken: "access123" });
         });
 
         it("should return 400 if something throws", async () => {
-            req.body = {};
+            req.body = {
+                usernameOrEmail: "test",
+                password: "test",
+                rememberMe: true,
+            };
             User.findOne = jest.fn().mockRejectedValue(new Error("DB error"));
 
             await login(req, res);
 
             expect(res.status).toHaveBeenCalledWith(400);
             expect(res.json).toHaveBeenCalledWith({ message: "DB error" });
+        });
+    });
+
+    // ------------------ REGISTER -----------------
+
+    describe("register", () => {
+        let req, res;
+
+        beforeEach(() => {
+            req = {
+                body: {
+                    username: "testuser",
+                    email: "test@example.com",
+                    password: "password123",
+                    rememberMe: true,
+                },
+            };
+
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+                cookie: jest.fn(),
+            };
+
+            jest.clearAllMocks();
+        });
+
+        it("should register a new user and return access token with refresh token cookie", async () => {
+            User.findOne = jest.fn().mockResolvedValue(null);
+            bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
+            User.create = jest.fn().mockResolvedValue({
+                _id: "userId",
+                username: "testuser",
+            });
+            authService.generateTokens = jest.fn().mockReturnValue({
+                accessToken: "access123",
+                refreshToken: "refresh123",
+            });
+            authService.getRefreshCookieOptions = jest.fn().mockReturnValue({
+                httpOnly: true,
+                secure: true,
+                sameSite: "Strict",
+                maxAge: 1000 * 60 * 60 * 24,
+            });
+
+            await register(req, res);
+
+            expect(User.findOne).toHaveBeenCalledWith({
+                $or: [{ username: "testuser" }, { email: "test@example.com" }],
+            });
+            expect(bcrypt.hash).toHaveBeenCalledWith("password123", 10);
+            expect(User.create).toHaveBeenCalledWith({
+                username: "testuser",
+                email: "test@example.com",
+                password: "hashedPassword",
+            });
+            expect(authService.generateTokens).toHaveBeenCalledWith(
+                "userId",
+                true
+            );
+            expect(res.cookie).toHaveBeenCalledWith(
+                "refreshToken",
+                "refresh123",
+                expect.objectContaining({
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "Strict",
+                })
+            );
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith({ accessToken: "access123" });
+        });
+
+        it("should return 409 if user already exists", async () => {
+            User.findOne = jest.fn().mockResolvedValue({ _id: "existingUser" });
+
+            await register(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(409);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Username or email already in use.",
+            });
+        });
+
+        it("should return 500 on bcrypt error", async () => {
+            User.findOne = jest.fn().mockResolvedValue(null);
+            bcrypt.hash = jest
+                .fn()
+                .mockRejectedValue(new Error("bcrypt error"));
+
+            await register(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Internal server error.",
+            });
+        });
+
+        it("should return 500 on User.create error", async () => {
+            User.findOne = jest.fn().mockResolvedValue(null);
+            bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
+            User.create = jest
+                .fn()
+                .mockRejectedValue(new Error("create error"));
+
+            await register(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Internal server error.",
+            });
         });
     });
 

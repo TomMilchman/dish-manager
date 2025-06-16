@@ -33,4 +33,23 @@ const generateTokens = (userId, rememberMe) => {
     return { accessToken, refreshToken };
 };
 
-module.exports = { generateTokens };
+/**
+ * Returns cookie configuration options for setting the HTTP-only refresh token.
+ *
+ * - Ensures security by setting `httpOnly`, `secure`, and `sameSite` flags.
+ * - Dynamically sets the cookie's lifetime (`maxAge`) based on the `rememberMe` value.
+ *
+ * @param {boolean} rememberMe - Indicates whether the user opted to be remembered.
+ *                               If true, sets a longer cookie duration (30 days); otherwise, 1 day.
+ * @returns {import("express").CookieOptions} - Configuration object to be passed to `res.cookie()`.
+ */
+function getRefreshCookieOptions(rememberMe) {
+    return {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+        maxAge: (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000,
+    };
+}
+
+module.exports = { generateTokens, getRefreshCookieOptions };

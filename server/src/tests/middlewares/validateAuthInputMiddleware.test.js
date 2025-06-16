@@ -10,7 +10,8 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
-                testUtils.validPassword
+                testUtils.validPassword,
+                true
             );
             expect(result.success).toBe(true);
             expect(result.error).toBeUndefined();
@@ -22,7 +23,8 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
-                "abc"
+                "abc",
+                true
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -32,7 +34,8 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
-                "a".repeat(100)
+                "a".repeat(100),
+                true
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -42,7 +45,8 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 "user@123",
                 testUtils.validEmail,
-                testUtils.validPassword
+                testUtils.validPassword,
+                true
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -52,7 +56,8 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 "ab",
                 testUtils.validEmail,
-                testUtils.validPassword
+                testUtils.validPassword,
+                true
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -62,7 +67,8 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 "a".repeat(50),
                 testUtils.validEmail,
-                testUtils.validPassword
+                testUtils.validPassword,
+                true
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -72,7 +78,8 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 testUtils.validUsername,
                 "not-an-email",
-                testUtils.validPassword
+                testUtils.validPassword,
+                true
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -82,7 +89,19 @@ describe("_validateRegistration", () => {
             const result = validateAuth.validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
+                testUtils.validPassword,
                 undefined
+            );
+            expect(result.success).toBe(false);
+            expect(result.error).toBeDefined();
+        });
+
+        it("should reject if ", () => {
+            const result = validateAuth.validateRegistration(
+                testUtils.validUsername,
+                testUtils.validEmail,
+                undefined,
+                true
             );
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
@@ -119,6 +138,7 @@ describe("validateRegisterMiddleware", () => {
             username: testUtils.validUsername,
             email: testUtils.validEmail,
             password: testUtils.validPassword,
+            rememberMe: true,
         };
 
         validateAuth.validateRegisterMiddleware(req, res, next);

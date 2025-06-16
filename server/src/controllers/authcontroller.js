@@ -6,25 +6,42 @@ const User = require("../models/User");
 /**
  * Handles user login by verifying credentials and issuing access and refresh tokens.
  *
- * - Looks up the user by username or email.
- * - Compares the provided password with the hashed one in the database.
- * - If valid, generates JWT access and refresh tokens.
- * - Stores the refresh token in an HTTP-only cookie.
- * - Sends the access token in the response body.
+ * Workflow:
+ * 1. Finds user by username or email.
+ * 2. Verifies the provided password against the hashed one in the database.
+ * 3. On success:
+ *    - Generates JWT access and refresh tokens.
+ *    - Sets the refresh token in an HTTP-only cookie.
+ *    - Sends the access token in the response body.
  *
- * @param {import("express").Request} req - Express request object. Expects `usernameOrEmail`, `password`, and optional `rememberMe` in `req.body`.
- * @param {import("express").Response} res - Express response object. Responds with access token or an error message.
+ * Errors:
+ * - 401 Unauthorized for invalid credentials.
+ * - 400 Bad Request for internal failures.
+ *
+ * @param {import("express").Request} req - Express request object. Requires `usernameOrEmail`, `password`, and optionally `rememberMe` in `req.body`.
+ * @param {import("express").Response} res - Express response object. Sends access token in JSON or error message.
  * @returns {Promise<void>}
  */
 async function login(req, res) {
+    const { usernameOrEmail, password, rememberMe } = req.body;
+
     try {
-        const { usernameOrEmail, password, rememberMe } = req.body;
+        console.info(`[LOGIN] Attempting login for: ${usernameOrEmail}`);
 
         const user = await User.findOne({
             $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
         });
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
+        if (!user) {
+            console.warn(`[LOGIN] User ${usernameOrEmail} not found.`);
+            return res
+                .status(401)
+                .json({ message: "Invalid login credentials." });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            console.warn(`[LOGIN] Incorrect password for ${usernameOrEmail}.`);
             return res
                 .status(401)
                 .json({ message: "Invalid login credentials." });
@@ -35,16 +52,90 @@ async function login(req, res) {
             rememberMe
         );
 
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "Strict",
-            maxAge: (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000,
-        });
+        res.cookie(
+            "refreshToken",
+            refreshToken,
+            authService.getRefreshCookieOptions(rememberMe)
+        );
 
+        console.info(
+            `[LOGIN] Login successful for ${usernameOrEmail}, tokens issued.`
+        );
         res.json({ accessToken });
     } catch (err) {
+        console.error(`[LOGIN] Unexpected error for ${usernameOrEmail}:`, err);
         res.status(400).json({ message: err.message });
+    }
+}
+
+/**
+ * Handles user registration.
+ *
+ * - Validates input data (should be done via middleware).
+ * - Checks for existing username or email in the database.
+ * - Hashes the password.
+ * - Creates a new user record.
+ * - Issues access and refresh tokens.
+ * - Sends access token in response, sets refresh token in HTTP-only cookie.
+ *
+ * Errors:
+ * - 401 Unauthorized for invalid credentials.
+ * - 500 Internal server error.
+ *
+ * @param {import("express").Request} req - Express request object. Expects `username`, `email`, `password`, `rememberMe` in `req.body`.
+ * @param {import("express").Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+async function register(req, res) {
+    const { username, email, password, rememberMe } = req.body;
+
+    try {
+        // Check if user exists by username or email
+        const existingUser = await User.findOne({
+            $or: [{ username }, { email }],
+        });
+
+        if (existingUser) {
+            console.warn(
+                `[REGISTER] Attempt to register with existing username/email: ${username}, ${email}`
+            );
+            return res
+                .status(409)
+                .json({ message: "Username or email already in use." });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create the user
+        const user = await User.create({
+            username,
+            email,
+            password: hashedPassword,
+        });
+
+        console.info(
+            `[REGISTER] New user registered: ${user._id} (${username})`
+        );
+
+        // Generate tokens
+        const { accessToken, refreshToken } = authService.generateTokens(
+            user._id,
+            rememberMe
+        );
+
+        // Set refresh token cookie
+        res.cookie(
+            "refreshToken",
+            refreshToken,
+            authService.getRefreshCookieOptions(rememberMe)
+        );
+
+        // Respond with access token
+        res.status(201).json({ accessToken });
+    } catch (err) {
+        console.error(`[REGISTER] Error occurred for ${username}:`, err);
+        res.status(500).json({ message: "Internal server error." });
     }
 }
 
@@ -79,4 +170,4 @@ function refresh(req, res) {
     }
 }
 
-module.exports = { login, refresh };
+module.exports = { login, register, refresh };
