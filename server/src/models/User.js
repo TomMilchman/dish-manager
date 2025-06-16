@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// TODO: Add password reset functionality for user
 const userSchema = new mongoose.Schema(
     {
         username: {
@@ -21,6 +22,8 @@ const userSchema = new mongoose.Schema(
             minlength: 6,
             maxlength: 1024, // hashed passwords can be long
         },
+        passwordResetToken: String,
+        passwordResetExpires: Date,
     },
     {
         timestamps: true, // adds createdAt and updatedAt fields

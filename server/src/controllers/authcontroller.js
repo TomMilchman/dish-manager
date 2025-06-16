@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authService = require("../services/authService");
 const User = require("../models/User");
+const { sendEmail } = require("../services/emailService");
 
 /**
  * Handles user login by verifying credentials and issuing access and refresh tokens.
@@ -108,19 +109,19 @@ async function register(req, res) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create the user
-        const user = await User.create({
+        const createdUser = await User.create({
             username,
             email,
             password: hashedPassword,
         });
 
         console.info(
-            `[REGISTER] New user registered: ${user._id} (${username})`
+            `[REGISTER] New user registered: ${createdUser._id} (${username})`
         );
 
         // Generate tokens
         const { accessToken, refreshToken } = authService.generateTokens(
-            user._id,
+            createdUser._id,
             rememberMe
         );
 
@@ -130,6 +131,14 @@ async function register(req, res) {
             refreshToken,
             authService.getRefreshCookieOptions(rememberMe)
         );
+
+        // TODO: Write a better welcome message
+        // Send confirmation email
+        await sendEmail({
+            to: createdUser.email,
+            subject: "Welcome to Dish Manager!",
+            text: `Hey there ${createdUser.username}! Thank you for registering to Dish Manager!`,
+        });
 
         // Respond with access token
         res.status(201).json({ accessToken });

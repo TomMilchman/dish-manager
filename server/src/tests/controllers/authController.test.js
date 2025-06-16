@@ -13,6 +13,9 @@ const bcrypt = require("bcrypt");
 
 jest.mock("../../models/User");
 jest.mock("../../services/authService");
+jest.mock("../../services/emailService", () => ({
+    sendEmail: jest.fn().mockResolvedValue(undefined),
+}));
 jest.mock("jsonwebtoken");
 jest.mock("bcrypt");
 
