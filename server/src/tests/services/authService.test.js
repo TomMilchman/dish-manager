@@ -14,8 +14,7 @@ describe("generateTokens", () => {
     beforeEach(() => {
         // Reset environment variables
         process.env = { ...OLD_ENV };
-        /** @type {jest.Mock} */
-        (jwt.sign).mockClear();
+        jwt.sign = jest.fn().mockClear();
     });
 
     afterAll(() => {
@@ -26,8 +25,8 @@ describe("generateTokens", () => {
         process.env.JWT_SECRET = "jwtsecret";
         process.env.REFRESH_SECRET = "refreshsecret";
 
-        /** @type {jest.Mock} */
-        (jwt.sign)
+        jwt.sign = jest
+            .fn()
             .mockReturnValueOnce("mockAccessToken")
             .mockReturnValueOnce("mockRefreshToken");
 
@@ -55,7 +54,8 @@ describe("generateTokens", () => {
         process.env.JWT_SECRET = "jwtsecret";
         process.env.REFRESH_SECRET = "refreshsecret";
 
-        /** @type {jest.Mock} */ (jwt.sign)
+        jwt.sign = jest
+            .fn()
             .mockReturnValueOnce("mockAccessToken7d")
             .mockReturnValueOnce("mockRefreshToken30d");
 

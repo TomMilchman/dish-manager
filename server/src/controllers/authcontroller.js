@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const authService = require("../services/authService");
 const User = require("../models/User");
 
@@ -23,7 +25,9 @@ async function login(req, res) {
         });
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            res.staus(401).json({ message: "Invalid login credentials." });
+            return res
+                .status(401)
+                .json({ message: "Invalid login credentials." });
         }
 
         const { accessToken, refreshToken } = authService.generateTokens(
@@ -66,7 +70,7 @@ function refresh(req, res) {
         const newAccessToken = jwt.sign(
             { userId: payload.userId },
             process.env.JWT_SECRET,
-            { expiresIn: rememberMe ? "7d" : "15m" }
+            { expiresIn: payload.rememberMe ? "7d" : "15m" }
         );
 
         res.json({ accessToken: newAccessToken });
