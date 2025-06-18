@@ -26,18 +26,23 @@ const registerSchema = Joi.object({
 });
 
 const _validateRegistration = (username, email, password, rememberMe) => {
-    const { error } = registerSchema.validate({
-        username,
-        email,
-        password,
-        rememberMe,
-    });
-    return error
-        ? { success: false, error: error.details[0].message }
-        : { success: true };
+    const inputData = { username, email, password, rememberMe };
+    console.log("[Validation] Received data:", inputData);
+
+    const { error } = registerSchema.validate(inputData);
+
+    if (error) {
+        console.log("[Validation] Error:", error.details[0].message);
+        return { success: false, error: error.details[0].message };
+    }
+
+    console.log("[Validation] Passed");
+    return { success: true };
 };
 
 const validateRegisterMiddleware = (req, res, next) => {
+    console.log("[Middleware] Incoming request body:", req.body);
+
     const result = _validateRegistration(
         req.body.username,
         req.body.email,
@@ -46,9 +51,11 @@ const validateRegisterMiddleware = (req, res, next) => {
     );
 
     if (!result.success) {
+        console.log("[Middleware] Validation failed:", result.error);
         return res.status(400).json({ message: result.error });
     }
 
+    console.log("[Middleware] Validation succeeded");
     next();
 };
 

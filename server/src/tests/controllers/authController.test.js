@@ -5,11 +5,15 @@ const {
     login,
     register,
     refresh,
+    forgotPassword,
+    resetPassword,
 } = require("../../controllers/authController");
 const authService = require("../../services/authService");
+const { sendEmail } = require("../../services/emailService");
 const User = require("../../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 jest.mock("../../models/User");
 jest.mock("../../services/authService");
@@ -76,7 +80,7 @@ describe("Auth Controller", () => {
             const fakeUser = { _id: "user123", password: "hashed" };
             User.findOne = jest.fn().mockResolvedValue(fakeUser);
             bcrypt.compare = jest.fn().mockResolvedValue(true);
-            authService.generateTokens = jest.fn().mockReturnValue({
+            authService.generateJWTTokens = jest.fn().mockReturnValue({
                 accessToken: "access123",
                 refreshToken: "refresh123",
             });
@@ -137,7 +141,7 @@ describe("Auth Controller", () => {
                 _id: "userId",
                 username: "testuser",
             });
-            authService.generateTokens = jest.fn().mockReturnValue({
+            authService.generateJWTTokens = jest.fn().mockReturnValue({
                 accessToken: "access123",
                 refreshToken: "refresh123",
             });
@@ -159,7 +163,7 @@ describe("Auth Controller", () => {
                 email: "test@example.com",
                 password: "hashedPassword",
             });
-            expect(authService.generateTokens).toHaveBeenCalledWith(
+            expect(authService.generateJWTTokens).toHaveBeenCalledWith(
                 "userId",
                 true
             );
@@ -252,6 +256,163 @@ describe("Auth Controller", () => {
             expect(res.status).toHaveBeenCalledWith(403);
             expect(res.json).toHaveBeenCalledWith({
                 message: "Invalid refresh token",
+            });
+        });
+    });
+
+    // ------------------ FORGOT-PASSWORD -----------------
+    describe("forgot password", () => {
+        let req, res;
+
+        beforeEach(() => {
+            req = { body: { email: "test@example.com" } };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+            jest.clearAllMocks();
+        });
+
+        it("should respond with success message even if user not found", async () => {
+            User.findOne = jest.fn().mockResolvedValue(null);
+            await forgotPassword(req, res);
+
+            expect(User.findOne).toHaveBeenCalledWith({
+                email: "test@example.com",
+            });
+            expect(sendEmail).not.toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "If user exists, email sent.",
+            });
+        });
+
+        it("should generate token, save user, send email and respond", async () => {
+            const userMock = {
+                email: "test@example.com",
+                save: jest.fn().mockResolvedValue(true),
+            };
+
+            User.findOne = jest.fn().mockResolvedValue(userMock);
+
+            crypto.randomBytes = jest
+                .fn()
+                .mockReturnValue(Buffer.from("a".repeat(32)));
+            crypto.createHash = jest.fn().mockReturnValue({
+                update: jest.fn().mockReturnThis(),
+                digest: jest.fn().mockReturnValue("hashedtoken"),
+            });
+
+            await forgotPassword(req, res);
+
+            expect(userMock.passwordResetToken).toBe("hashedtoken");
+            expect(userMock.passwordResetExpires).toBeGreaterThan(Date.now());
+
+            expect(userMock.save).toHaveBeenCalled();
+            expect(sendEmail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    to: userMock.email,
+                    subject: "Password Reset Request",
+                    text: expect.any(String),
+                })
+            );
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "If user exists, email sent.",
+            });
+        });
+
+        it("should handle errors and respond with 500", async () => {
+            User.findOne = jest.fn().mockRejectedValue(new Error("DB failure"));
+            await forgotPassword(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Internal server error.",
+            });
+        });
+    });
+
+    // ------------------ RESET-PASSWORD -----------------
+    describe("reset password", () => {
+        let req, res;
+
+        beforeEach(() => {
+            req = {
+                body: {
+                    email: "test@example.com",
+                    token: "validtoken",
+                    newPassword: "newStrongPass123",
+                },
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+            jest.clearAllMocks();
+        });
+
+        it("should respond 400 if no matching user found", async () => {
+            User.findOne = jest.fn().mockResolvedValue(null);
+
+            const originalCreateHash = crypto.createHash;
+            crypto.createHash = jest.fn().mockReturnValue({
+                update: jest.fn().mockReturnThis(),
+                digest: jest.fn().mockReturnValue("hashedtoken"),
+            });
+
+            await resetPassword(req, res);
+
+            expect(User.findOne).toHaveBeenCalledWith({
+                email: "test@example.com",
+                passwordResetToken: "hashedtoken",
+                passwordResetExpires: { $gt: expect.any(Number) },
+            });
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Invalid or expired reset token.",
+            });
+
+            // Restore original createHash after test
+            crypto.createHash = originalCreateHash;
+        });
+
+        it("should hash password, update user, send notification email, and respond 200", async () => {
+            const userMock = {
+                email: "test@example.com",
+                username: "testuser",
+                save: jest.fn().mockResolvedValue(true),
+            };
+            User.findOne = jest.fn().mockResolvedValue(userMock);
+            bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
+
+            await resetPassword(req, res);
+
+            expect(bcrypt.hash).toHaveBeenCalledWith("newStrongPass123", 10);
+            expect(userMock.password).toBe("hashedPassword");
+            expect(userMock.passwordResetToken).toBeUndefined();
+            expect(userMock.passwordResetExpires).toBeUndefined();
+            expect(userMock.save).toHaveBeenCalled();
+            expect(sendEmail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    to: userMock.email,
+                    subject: "Password Has Been Reset",
+                    text: expect.stringContaining(userMock.username),
+                })
+            );
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Password successfully reset.",
+            });
+        });
+
+        it("should handle errors and respond with 500", async () => {
+            User.findOne = jest.fn().mockRejectedValue(new Error("DB failure"));
+            await resetPassword(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Internal server error.",
             });
         });
     });

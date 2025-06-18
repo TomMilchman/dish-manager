@@ -13,7 +13,7 @@ const jwt = require("jsonwebtoken");
  * @param {boolean} rememberMe - Whether the user chose "remember me" (affects token lifespan)
  * @returns {Tokens} An object containing the access and refresh tokens
  */
-const generateTokens = (userId, rememberMe) => {
+const generateJWTTokens = (userId, rememberMe) => {
     if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
         throw new Error("Missing JWT secret(s).");
     }
@@ -52,4 +52,4 @@ function getRefreshCookieOptions(rememberMe) {
     };
 }
 
-module.exports = { generateTokens, getRefreshCookieOptions };
+module.exports = { generateJWTTokens, getRefreshCookieOptions };

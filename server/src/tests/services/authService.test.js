@@ -6,9 +6,9 @@ const jwt = require("jsonwebtoken");
 // Mock jwt.sign
 jest.mock("jsonwebtoken");
 
-const { generateTokens } = require("../../services/authService"); // adjust path
+const { generateJWTTokens } = require("../../services/authService"); // adjust path
 
-describe("generateTokens", () => {
+describe("generateJWTTokens", () => {
     const OLD_ENV = process.env;
 
     beforeEach(() => {
@@ -30,7 +30,7 @@ describe("generateTokens", () => {
             .mockReturnValueOnce("mockAccessToken")
             .mockReturnValueOnce("mockRefreshToken");
 
-        const tokens = generateTokens("user123", false);
+        const tokens = generateJWTTokens("user123", false);
 
         expect(jwt.sign).toHaveBeenCalledWith(
             { userId: "user123" },
@@ -59,7 +59,7 @@ describe("generateTokens", () => {
             .mockReturnValueOnce("mockAccessToken7d")
             .mockReturnValueOnce("mockRefreshToken30d");
 
-        const tokens = generateTokens("user123", true);
+        const tokens = generateJWTTokens("user123", true);
 
         expect(jwt.sign).toHaveBeenCalledWith(
             { userId: "user123" },
@@ -83,7 +83,7 @@ describe("generateTokens", () => {
         delete process.env.JWT_SECRET;
         delete process.env.REFRESH_SECRET;
 
-        expect(() => generateTokens("user123", false)).toThrow(
+        expect(() => generateJWTTokens("user123", false)).toThrow(
             "Missing JWT secret(s)."
         );
     });
@@ -92,6 +92,8 @@ describe("generateTokens", () => {
         process.env.JWT_SECRET = "jwtsecret";
         process.env.REFRESH_SECRET = "refreshsecret";
 
-        expect(() => generateTokens("", false)).toThrow("No user id provided.");
+        expect(() => generateJWTTokens("", false)).toThrow(
+            "No user id provided."
+        );
     });
 });
