@@ -13,7 +13,7 @@ const jwt = require("jsonwebtoken");
  * @param {boolean} rememberMe - Whether the user chose "remember me" (affects token lifespan)
  * @returns {Tokens} An object containing the access and refresh tokens
  */
-const generateJWTTokens = (userId, rememberMe) => {
+const generateJWTTokens = (userId, rememberMe, role = "user") => {
     if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
         throw new Error("Missing JWT secret(s).");
     }
@@ -22,7 +22,7 @@ const generateJWTTokens = (userId, rememberMe) => {
         throw new Error("No user id provided.");
     }
 
-    const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET, {
+    const accessToken = jwt.sign({ userId, role }, process.env.JWT_SECRET, {
         expiresIn: rememberMe ? "7d" : "15m",
     });
 

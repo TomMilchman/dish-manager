@@ -33,7 +33,7 @@ describe("generateJWTTokens", () => {
         const tokens = generateJWTTokens("user123", false);
 
         expect(jwt.sign).toHaveBeenCalledWith(
-            { userId: "user123" },
+            { userId: "user123", role: "user" },
             "jwtsecret",
             { expiresIn: "15m" }
         );
@@ -62,7 +62,7 @@ describe("generateJWTTokens", () => {
         const tokens = generateJWTTokens("user123", true);
 
         expect(jwt.sign).toHaveBeenCalledWith(
-            { userId: "user123" },
+            { userId: "user123", role: "user" },
             "jwtsecret",
             { expiresIn: "7d" }
         );

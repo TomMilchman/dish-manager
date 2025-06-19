@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// TODO: Add password reset functionality for user
 const userSchema = new mongoose.Schema(
     {
         username: {
@@ -21,6 +20,11 @@ const userSchema = new mongoose.Schema(
             required: true,
             minlength: 6,
             maxlength: 1024, // hashed passwords can be long
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user",
         },
         passwordResetToken: String,
         passwordResetExpires: Date,

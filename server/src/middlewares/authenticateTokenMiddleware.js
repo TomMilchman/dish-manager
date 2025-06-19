@@ -17,12 +17,12 @@ const authenticateTokenMiddleware = (req, res, next) => {
             .json({ message: "Access denied. No token provided." });
     }
 
-    const token = authHeader.split(" ")[1];
+    const accessToken = authHeader.split(" ")[1];
 
     try {
         /** @type {JwtPayload} */
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        const payload = jwt.verify(accessToken, process.env.JWT_SECRET);
+        req.user = { userId: payload.userId, role: payload.role };
         next();
     } catch (err) {
         return res.status(403).json({ message: "Invalid or expired token." });

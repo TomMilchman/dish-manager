@@ -172,7 +172,7 @@ function refresh(req, res) {
         const payload = jwt.verify(token, process.env.REFRESH_SECRET);
 
         const newAccessToken = jwt.sign(
-            { userId: payload.userId },
+            { userId: payload.userId, role: payload.role },
             process.env.JWT_SECRET,
             { expiresIn: payload.rememberMe ? "7d" : "15m" }
         );
