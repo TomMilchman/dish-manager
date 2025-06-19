@@ -9,12 +9,13 @@ const dishSchema = new mongoose.Schema({
     ingredients: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: Ingredient,
+            ref: "Ingredient",
         },
     ],
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: User,
+        ref: "User",
+        required: true,
     },
 });
 

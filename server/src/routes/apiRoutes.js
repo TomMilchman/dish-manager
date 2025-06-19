@@ -9,44 +9,40 @@ const {
 } = require("../middlewares/authorizeAdminMiddleware");
 const router = express.Router();
 
-//---------------------------- DISHES ROUTES ----------------------------------
-// NON ADMIN ROUTES
-router.get("/dishes", authenticateTokenMiddleware, dishesController.dishesList);
+// Apply token authentication to all routes below
+router.use(authenticateTokenMiddleware);
 
-//----------------------- INGREDIENTS ROUTES ----------------------------------
-// NON ADMIN ROUTES
-router.get(
-    "/ingredients",
-    authenticateTokenMiddleware,
-    ingredientsController.getAllIngredients
-);
+// ---------------------------- DISHES ROUTES ----------------------------
+// Accessible by all authenticated users
+router
+    .route("/dishes")
+    .post(dishesController.createUserDish)
+    .get(dishesController.getAllUserDishes);
 
-router.get(
-    "/ingredients:id",
-    authenticateTokenMiddleware,
-    ingredientsController.getIngredientById
-);
+router
+    .route("/dishes/:id")
+    .get(dishesController.getUserDishById)
+    .put(dishesController.updateDish)
+    .delete(dishesController.deleteDish);
 
-// ADMIN ROUTES
+// Admin-only routes for modifying ingredients
+router.get("/admin/dishes", dishesController.getAllDishes);
+
+// ------------------------- INGREDIENTS ROUTES --------------------------
+// Accessible by all authenticated users
+router.get("/ingredients", ingredientsController.getAllIngredients);
+router.get("/ingredients/:id", ingredientsController.getIngredientById);
+
+// Admin-only routes for modifying ingredients
 router.post(
     "/ingredients",
-    authenticateTokenMiddleware,
     authorizeAdminMiddleware,
     ingredientsController.createIngredient
 );
 
-router.put(
-    "/ingredients:id",
-    authenticateTokenMiddleware,
-    authorizeAdminMiddleware,
-    ingredientsController.updateIngredient
-);
-
-router.delete(
-    "/ingredients:id",
-    authenticateTokenMiddleware,
-    authorizeAdminMiddleware,
-    ingredientsController.deleteIngredient
-);
+router
+    .route("/ingredients/:id")
+    .put(authorizeAdminMiddleware, ingredientsController.updateIngredient)
+    .delete(authorizeAdminMiddleware, ingredientsController.deleteIngredient);
 
 module.exports = router;
