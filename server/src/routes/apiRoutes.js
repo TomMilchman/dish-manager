@@ -25,6 +25,8 @@ router
     .put(dishesController.updateDish)
     .delete(dishesController.deleteDish);
 
+router.get("dishes/aggregate", dishesController.aggregateIngredientsFromDishes);
+
 // Admin-only routes for modifying ingredients
 router.get("/admin/dishes", dishesController.getAllDishes);
 

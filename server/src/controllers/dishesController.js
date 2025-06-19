@@ -3,6 +3,22 @@ const Dish = require("../models/Dish");
 /**
  * Creates a new dish for the authenticated user and saves it to the database.
  *
+ * Request Body:
+ * - name: string (required) – The name of the dish.
+ * - ingredients: ObjectId[] (required) – Array of ingredient IDs to associate with the dish.
+ *
+ * Response on success (201 Created):
+ * {
+ *   message: "Successfully created user dish.",
+ *   dish: {
+ *     _id: string,
+ *     name: string,
+ *     ingredients: ObjectId[],
+ *     owner: ObjectId,
+ *     __v: number
+ *   }
+ * }
+ *
  * @param {import("express").Request} req - Express request object. Assumes `req.user.userId` is set by authentication middleware.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
@@ -34,6 +50,20 @@ async function createUserDish(req, res) {
 /**
  * Retrieves all dishes owned by the authenticated user.
  *
+ * Response on success (200 OK):
+ * {
+ *   dishes: [
+ *     {
+ *       _id: string,
+ *       name: string,
+ *       ingredients: Array<Object>,
+ *       owner: ObjectId,
+ *       __v: number
+ *     },
+ *     ...
+ *   ]
+ * }
+ *
  * @param {import("express").Request} req - Express request object. Assumes `req.user.userId` is set by authentication middleware.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
@@ -42,7 +72,9 @@ async function getAllUserDishes(req, res) {
     const userId = req.user.userId;
 
     try {
-        const dishes = await Dish.find({ owner: userId });
+        const dishes = await Dish.find({ owner: userId }).populate(
+            "ingredients"
+        );
 
         if (dishes.length === 0) {
             console.info(
@@ -68,9 +100,20 @@ async function getAllUserDishes(req, res) {
 
 /**
  * Retrieves a single dish by ID for the authenticated user.
- * Admins can access any dish, while normal users can only access their own dishes.
+ * Admins can access any dish, normal users can only access their own.
  *
- * @param {import("express").Request} req - Express request object. Assumes `req.user.userId` and `req.user.role` are set by authentication middleware.
+ * Response on success (200 OK):
+ * {
+ *   dish: {
+ *     _id: string,
+ *     name: string,
+ *     ingredients: Array<Object>,
+ *     owner: ObjectId,
+ *     __v: number
+ *   }
+ * }
+ *
+ * @param {import("express").Request} req - Express request object. Assumes `req.user.userId` and `req.user.role` are set.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
  */
@@ -82,9 +125,12 @@ async function getUserDishById(req, res) {
         let dish;
 
         if (req.user.role === "admin") {
-            dish = await Dish.findById(dishId);
+            dish = await Dish.findById(dishId).populate("ingredients");
         } else {
-            dish = await Dish.findById(dishId).where("owner").equals(userId);
+            dish = await Dish.findById(dishId)
+                .where("owner")
+                .equals(userId)
+                .populate("ingredients");
         }
 
         if (!dish) {
@@ -108,7 +154,25 @@ async function getUserDishById(req, res) {
 }
 
 /**
- * Retrieves all dishes in the system. Accessible only to admins.
+ * Retrieves all dishes in the system. Admin-only access.
+ *
+ * Response on success (200 OK):
+ * {
+ *   dishes: [
+ *     {
+ *       _id: string,
+ *       name: string,
+ *       ingredients: Array<Object>, // Populated ingredient objects
+ *       owner: {
+ *         _id: string,
+ *         username: string,
+ *         email: string
+ *       },
+ *       __v: number
+ *     },
+ *     ...
+ *   ]
+ * }
  *
  * @param {import("express").Request} req - Express request object. Assumes `req.user.role` is set.
  * @param {import("express").Response} res - Express response object.
@@ -120,7 +184,10 @@ async function getAllDishes(req, res) {
     }
 
     try {
-        const dishes = await Dish.find().populate("owner", "username");
+        const dishes = await Dish.find()
+            .populate("ingredients")
+            .populate("owner", "username email");
+
         console.info(`[GET ALL DISHES] Admin retrieved all dishes.`);
         res.status(200).json({ dishes });
     } catch (err) {
@@ -130,10 +197,24 @@ async function getAllDishes(req, res) {
 }
 
 /**
- * Updates a dish if it belongs to the authenticated user,
+ * Updates a dish by ID if it belongs to the authenticated user,
  * or allows update if the user is an admin.
  *
- * @param {import("express").Request} req - Express request object. Expects `id` in params and fields to update in body.
+ * Request Body: Fields to update (e.g., name, ingredients).
+ *
+ * Response on success (200 OK):
+ * {
+ *   message: "Dish updated successfully.",
+ *   dish: {
+ *     _id: string,
+ *     name: string,
+ *     ingredients: ObjectId[],
+ *     owner: ObjectId,
+ *     __v: number
+ *   }
+ * }
+ *
+ * @param {import("express").Request} req - Express request object. Expects `id` in params.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
  */
@@ -168,8 +249,13 @@ async function updateDish(req, res) {
 }
 
 /**
- * Deletes a dish if it belongs to the authenticated user,
+ * Deletes a dish by ID if it belongs to the authenticated user,
  * or allows deletion if the user is an admin.
+ *
+ * Response on success (200 OK):
+ * {
+ *   message: "Dish successfully deleted."
+ * }
  *
  * @param {import("express").Request} req - Express request object. Expects `id` in route params.
  * @param {import("express").Response} res - Express response object.
@@ -204,11 +290,92 @@ async function deleteDish(req, res) {
     }
 }
 
+/**
+ * Aggregates ingredients from multiple dishes and returns a combined list,
+ * including total quantity and cost per ingredient.
+ *
+ * Only includes user-owned dishes if the user is not an admin.
+ *
+ * Request Body:
+ * - dishIds: Array of dish IDs to aggregate ingredients from.
+ *
+ * Response on success (200 OK):
+ * {
+ *   totalIngredientsPrice: number,
+ *   ingredients: [
+ *     {
+ *       name: string,
+ *       pricePerUnit: number,
+ *       count: number,
+ *       totalPrice: number
+ *     },
+ *     ...
+ *   ]
+ * }
+ *
+ * @param {import("express").Request} req - Express request object. Expects `dishIds` array in `req.body`.
+ * @param {import("express").Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+async function aggregateIngredientsFromDishes(req, res) {
+    const { userId, role } = req.user;
+    const dishIds = req.body.dishIds;
+
+    if (!Array.isArray(dishIds) || dishIds.length === 0) {
+        return res.status(400).json({ message: "No dish IDs provided." });
+    }
+
+    try {
+        const query =
+            role === "admin"
+                ? { _id: { $in: dishIds } }
+                : { _id: { $in: dishIds }, owner: userId };
+
+        const dishes = await Dish.find(query).populate("ingredients");
+
+        const ingredientMap = {};
+        let totalIngredientsPrice = 0;
+
+        for (const dish of dishes) {
+            for (const ingredient of dish.ingredients) {
+                const id = ingredient._id.toString();
+
+                if (!ingredientMap[id]) {
+                    ingredientMap[id] = {
+                        name: ingredient.name,
+                        pricePerUnit: ingredient.price,
+                        count: 1,
+                        totalPrice: ingredient.price,
+                    };
+                } else {
+                    ingredientMap[id].count += 1;
+                    ingredientMap[id].totalPrice += ingredient.price;
+                }
+
+                totalIngredientsPrice += ingredient.price;
+            }
+        }
+
+        const aggregatedIngredients = Object.values(ingredientMap);
+        res.status(200).json({
+            totalIngredientsPrice,
+            ingredients: aggregatedIngredients,
+        });
+    } catch (err) {
+        console.error(
+            `[AGGREGATE INGREDIENTS] Error aggregating ingredients for user ${userId}:`,
+            err
+        );
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
 module.exports = {
     createUserDish,
-    getAllDishes,
     getAllUserDishes,
+    getUserDishById,
+    getAllDishes,
     updateDish,
     deleteDish,
-    getUserDishById,
+    aggregateIngredientsFromDishes,
 };
