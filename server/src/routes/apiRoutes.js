@@ -1,6 +1,6 @@
 const express = require("express");
-import * as dishesController from "../controllers/dishesController";
-import * as ingredientsController from "../controllers/ingredientsController";
+const dishesController = require("../controllers/dishesController");
+const ingredientsController = require("../controllers/ingredientsController");
 const {
     authenticateTokenMiddleware,
 } = require("../middlewares/authenticateTokenMiddleware");
@@ -27,7 +27,7 @@ router
 
 router.get("dishes/aggregate", dishesController.aggregateIngredientsFromDishes);
 
-// Admin-only routes for modifying ingredients
+// Admin-only route for viewing all user dishes
 router.get("/admin/dishes", dishesController.getAllDishes);
 
 // ------------------------- INGREDIENTS ROUTES --------------------------

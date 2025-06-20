@@ -1,0 +1,92 @@
+import { useState } from "react";
+import axios from "../api/axios";
+import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+
+function Register() {
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        password: "",
+        rememberMe: false,
+    });
+
+    const mutation = useMutation({
+        mutationFn: async () => {
+            const res = await axios.post("/auth/register", formData);
+            return res.data;
+        },
+        onSuccess: (data) => {
+            localStorage.setItem("token", data.accessToken);
+            toast.success("Registration successful!");
+            console.log("User registration successful!");
+            navigate("/dashboard");
+        },
+        onError: (error) => {
+            toast.error(
+                "Registration failed: " + error.response?.data?.message ||
+                    error.message
+            );
+        },
+    });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        mutation.mutate();
+    };
+
+    return (
+        <div className="register-container">
+            <h2>Register</h2>
+            <form onSubmit={handleSubmit} className="register-form">
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                />
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                />
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                />
+
+                <input
+                    type="checkbox"
+                    name="rememberMe"
+                    id="rememberMe"
+                    value={formData.rememberMe}
+                />
+                <label htmlFor="rememberMe">Remember Me</label>
+
+                <button type="submit" disabled={mutation.isLoading}>
+                    {mutation.isLoading ? "Registering..." : "Register"}
+                </button>
+            </form>
+        </div>
+    );
+}
+
+export default Register;
