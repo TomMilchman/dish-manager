@@ -2,12 +2,16 @@
 /// <reference types="jest" />
 
 const testUtils = require("../testUtils");
-const validateAuth = require("../../middlewares/validateAuthInputMiddleware");
+const {
+    validateRegistration,
+    validateRegisterMiddleware,
+    validateNoEmptyBodyParamsMiddleware,
+} = require("../../middlewares/inputValidationMiddlewares");
 
 describe("_validateRegistration", () => {
     describe("Valid input", () => {
         it("should accept a valid registration", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
                 testUtils.validPassword,
@@ -20,7 +24,7 @@ describe("_validateRegistration", () => {
 
     describe("Invalid inputs", () => {
         it("should reject a short password", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
                 "abc",
@@ -31,7 +35,7 @@ describe("_validateRegistration", () => {
         });
 
         it("should reject an overly long password", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
                 "a".repeat(100),
@@ -42,7 +46,7 @@ describe("_validateRegistration", () => {
         });
 
         it("should reject a username with invalid characters", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 "user@123",
                 testUtils.validEmail,
                 testUtils.validPassword,
@@ -53,7 +57,7 @@ describe("_validateRegistration", () => {
         });
 
         it("should reject a username that is too short", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 "ab",
                 testUtils.validEmail,
                 testUtils.validPassword,
@@ -64,7 +68,7 @@ describe("_validateRegistration", () => {
         });
 
         it("should reject a username that is too long", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 "a".repeat(50),
                 testUtils.validEmail,
                 testUtils.validPassword,
@@ -75,7 +79,7 @@ describe("_validateRegistration", () => {
         });
 
         it("should reject an invalid email format", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 testUtils.validUsername,
                 "not-an-email",
                 testUtils.validPassword,
@@ -86,7 +90,7 @@ describe("_validateRegistration", () => {
         });
 
         it("should reject if any field is missing", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
                 testUtils.validPassword,
@@ -97,7 +101,7 @@ describe("_validateRegistration", () => {
         });
 
         it("should reject if ", () => {
-            const result = validateAuth.validateRegistration(
+            const result = validateRegistration(
                 testUtils.validUsername,
                 testUtils.validEmail,
                 undefined,
@@ -124,7 +128,7 @@ describe("validateRegisterMiddleware", () => {
     it("should return 400 if validation fails", () => {
         req.body = { username: "a", email: "invalid", password: "123" };
 
-        validateAuth.validateRegisterMiddleware(req, res, next);
+        validateRegisterMiddleware(req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith(
@@ -141,9 +145,75 @@ describe("validateRegisterMiddleware", () => {
             rememberMe: true,
         };
 
-        validateAuth.validateRegisterMiddleware(req, res, next);
+        validateRegisterMiddleware(req, res, next);
 
         expect(next).toHaveBeenCalled();
         expect(res.status).not.toHaveBeenCalled();
+    });
+});
+
+describe("validateNoEmptyBodyParamsMiddleware", () => {
+    let req, res, next;
+
+    beforeEach(() => {
+        req = { body: {} };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        next = jest.fn();
+    });
+
+    it("should call next() if all body parameters are present", () => {
+        req.body = {
+            username: "user1",
+            email: "user@example.com",
+            password: "secret",
+        };
+
+        validateNoEmptyBodyParamsMiddleware(req, res, next);
+
+        expect(next).toHaveBeenCalled();
+        expect(res.status).not.toHaveBeenCalled();
+        expect(res.json).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 if any body parameter is missing", () => {
+        req.body = {
+            username: "user1",
+            email: "", // missing
+            password: "secret",
+        };
+
+        validateNoEmptyBodyParamsMiddleware(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "Missing input: email",
+        });
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it("should detect first missing key only", () => {
+        req.body = {
+            username: "", // this is the first missing one
+            email: "", // second
+        };
+
+        validateNoEmptyBodyParamsMiddleware(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "Missing input: username",
+        });
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it("should handle empty body gracefully", () => {
+        req.body = {};
+
+        validateNoEmptyBodyParamsMiddleware(req, res, next);
+
+        expect(next).toHaveBeenCalled();
     });
 });

@@ -220,7 +220,7 @@ async function forgotPassword(req, res) {
         user.passwordResetExpires = Date.now() + 1000 * 60 * 15; // 15 minutes
         await user.save();
 
-        const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}&email=${user.email}`;
+        const resetLink = `${process.env.CLIENT_URL}/reset-password?resetToken=${resetToken}&email=${user.email}`;
 
         // Send password reset email
         await sendEmail({
@@ -252,13 +252,14 @@ async function forgotPassword(req, res) {
  * @returns {Promise<void>}
  */
 async function resetPassword(req, res) {
-    const { email, token, newPassword } = req.body;
+    const { email, resetToken, newPassword } = req.body;
+
     console.info(`[RESET PASSWORD] Password reset attempt for email: ${email}`);
 
     try {
         const hashedToken = crypto
             .createHash("sha256")
-            .update(token)
+            .update(resetToken)
             .digest("hex");
 
         // Find user with matching email and valid reset token

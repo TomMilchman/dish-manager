@@ -54,7 +54,27 @@ const validateRegisterMiddleware = (req, res, next) => {
     next();
 };
 
+const validateNoEmptyBodyParamsMiddleware = (req, res, next) => {
+    const keys = Object.keys(req.body);
+
+    const missingKey = keys.find(
+        (key) =>
+            req.body[key] === undefined ||
+            req.body[key] === null ||
+            req.body[key] === ""
+    );
+
+    if (missingKey) {
+        return res
+            .status(400)
+            .json({ message: `Missing input: ${missingKey}` });
+    }
+
+    next();
+};
+
 module.exports = {
     validateRegistration: _validateRegistration,
     validateRegisterMiddleware,
+    validateNoEmptyBodyParamsMiddleware,
 };

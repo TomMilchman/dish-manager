@@ -42,9 +42,9 @@ export default function Login() {
     };
 
     return (
-        <div className="login-container">
+        <div className="login__container">
             <h2>Login</h2>
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={handleSubmit} className="login__form">
                 <input
                     type="text"
                     name="usernameOrEmail"
@@ -75,9 +75,12 @@ export default function Login() {
                     {mutation.isLoading ? "Logging in..." : "Login"}
                 </button>
             </form>
+            <Link to="/forgot-password" className="hover-link">
+                Forgot password?
+            </Link>
             <p>Or register if you have no account: </p>
             <Link to="/register">
-                <button className="other-option-btn">Register</button>
+                <button className="other-option__btn">Register</button>
             </Link>
         </div>
     );

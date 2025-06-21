@@ -10,6 +10,7 @@ export default function Register() {
     const [formData, setFormData] = useState({
         username: "",
         email: "",
+        confirmPassword: "",
         password: "",
         rememberMe: false,
     });
@@ -39,13 +40,18 @@ export default function Register() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutation.mutate();
+
+        if (formData.password !== formData.confirmPassword) {
+            toast.error("Passwords don't match.");
+        } else {
+            mutation.mutate();
+        }
     };
 
     return (
-        <div className="register-container">
+        <div className="register__container">
             <h2>Register</h2>
-            <form onSubmit={handleSubmit} className="register-form">
+            <form onSubmit={handleSubmit} className="register__form">
                 <input
                     type="text"
                     name="username"
@@ -74,6 +80,15 @@ export default function Register() {
                 />
 
                 <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                />
+
+                <input
                     type="checkbox"
                     name="rememberMe"
                     id="rememberMe"
@@ -87,7 +102,7 @@ export default function Register() {
             </form>
             <p>Or log in instead: </p>
             <Link to="/login">
-                <button className="other-option-btn">Login</button>
+                <button className="other-option__btn">Login</button>
             </Link>
         </div>
     );

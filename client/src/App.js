@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import Dashboard from "./pages/Dashboard";
+import ForgotPassword from "./pages/ForgotPasswordPage";
+import ResetPassword from "./pages/ResetPasswordPage";
+import Dashboard from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+//TODO: Fix dashboard not being displayed
 function App() {
     return (
         <BrowserRouter>
@@ -16,6 +19,14 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                     <Route path="/" element={<Dashboard />} />
                 </Route>
+                <Route
+                    path="/forgot-password"
+                    element={<ForgotPassword />}
+                ></Route>
+                <Route
+                    path="/reset-password"
+                    element={<ResetPassword />}
+                ></Route>
                 <Route
                     path="*"
                     element={(() => (
