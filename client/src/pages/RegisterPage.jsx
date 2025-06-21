@@ -2,9 +2,9 @@ import { useState } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function Register() {
+export default function Register() {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -20,10 +20,10 @@ function Register() {
             return res.data;
         },
         onSuccess: (data) => {
-            localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("accessToken", data.accessToken);
             toast.success("Registration successful!");
             console.log("User registration successful!");
-            navigate("/dashboard");
+            navigate("/");
         },
         onError: (error) => {
             toast.error(
@@ -85,8 +85,10 @@ function Register() {
                     {mutation.isLoading ? "Registering..." : "Register"}
                 </button>
             </form>
+            <p>Or log in instead: </p>
+            <Link to="/login">
+                <button className="other-option-btn">Login</button>
+            </Link>
         </div>
     );
 }
-
-export default Register;
