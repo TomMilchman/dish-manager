@@ -25,29 +25,18 @@ const registerSchema = Joi.object({
     rememberMe: Joi.bool().required(),
 });
 
-const _validateRegistration = (username, email, password, rememberMe) => {
-    const inputData = { username, email, password, rememberMe };
-
-    const { error } = registerSchema.validate(inputData);
+const validateRegisterMiddleware = (req, res, next) => {
+    const { error } = registerSchema.validate(req.body, { abortEarly: false });
 
     if (error) {
-        return { success: false, error: error.details[0].message };
-    }
-
-    return { success: true };
-};
-
-const validateRegisterMiddleware = (req, res, next) => {
-    const result = _validateRegistration(
-        req.body.username,
-        req.body.email,
-        req.body.password,
-        req.body.rememberMe
-    );
-
-    if (!result.success) {
-        console.log("[VALIDATION MIDDLEWARE] Validation failed:", result.error);
-        return res.status(400).json({ message: result.error });
+        console.log(
+            "[VALIDATION MIDDLEWARE] Validation failed:",
+            error.details
+        );
+        const messages = error.details
+            .map((detail) => detail.message)
+            .join(", ");
+        return res.status(400).json({ message: messages });
     }
 
     console.log("[VALIDATION MIDDLEWARE] Validation succeeded");
@@ -74,7 +63,6 @@ const validateNoEmptyBodyParamsMiddleware = (req, res, next) => {
 };
 
 module.exports = {
-    validateRegistration: _validateRegistration,
     validateRegisterMiddleware,
     validateNoEmptyBodyParamsMiddleware,
 };

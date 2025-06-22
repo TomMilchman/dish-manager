@@ -3,6 +3,7 @@ import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { handleSubmit } from "../utils/formHandlers";
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
@@ -27,18 +28,16 @@ export default function ForgotPassword() {
         },
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        mutation.mutate();
-    };
-
     return (
         <div className="forgot-password__container">
             <h2>Forgot Password</h2>
             <p>
                 Insert your email so that we can send you a password reset link
             </p>
-            <form onSubmit={handleSubmit} className="forgot-password__form">
+            <form
+                onSubmit={(e) => handleSubmit(e, mutation)}
+                className="forgot-password__form"
+            >
                 <input
                     type="email"
                     name="email"

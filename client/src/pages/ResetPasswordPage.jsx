@@ -3,6 +3,8 @@ import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { handleSubmitWithMatchedPasswords } from "../utils/formHandlers";
+import { handleChange } from "../utils/formHandlers";
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -33,20 +35,6 @@ export default function ResetPassword() {
         },
     });
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        if (formData.newPassword !== formData.confirmPassword) {
-            toast.error("Passwords don't match.");
-        } else {
-            mutation.mutate();
-        }
-    };
-
     return (
         <div className="reset-password__container">
             <h2>Reset Password</h2>
@@ -55,13 +43,18 @@ export default function ResetPassword() {
                 valid, your password will be reset and you will be redirected to
                 the login page.
             </p>
-            <form onSubmit={handleSubmit} className="reset-password__form">
+            <form
+                onSubmit={(e) =>
+                    handleSubmitWithMatchedPasswords(e, formData, mutation)
+                }
+                className="reset-password__form"
+            >
                 <input
                     type="password"
                     name="newPassword"
                     placeholder="New Password"
                     value={formData.newPassword}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
                 <input
@@ -69,7 +62,7 @@ export default function ResetPassword() {
                     name="confirmPassword"
                     placeholder="Confirm password"
                     value={formData.confirmPassword}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
 

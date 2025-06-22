@@ -2,7 +2,9 @@ import { useState } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
+import { handleSubmitWithMatchedPasswords } from "../utils/formHandlers";
+import { handleChange } from "../utils/formHandlers";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -34,30 +36,21 @@ export default function Register() {
         },
     });
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-            toast.error("Passwords don't match.");
-        } else {
-            mutation.mutate();
-        }
-    };
-
     return (
         <div className="register__container">
             <h2>Register</h2>
-            <form onSubmit={handleSubmit} className="register__form">
+            <form
+                onSubmit={(e) =>
+                    handleSubmitWithMatchedPasswords(e, formData, mutation)
+                }
+                className="register__form"
+            >
                 <input
                     type="text"
                     name="username"
                     placeholder="Username"
                     value={formData.username}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
 
@@ -66,7 +59,7 @@ export default function Register() {
                     name="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
 
@@ -75,7 +68,7 @@ export default function Register() {
                     name="password"
                     placeholder="Password"
                     value={formData.password}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
 
@@ -84,7 +77,7 @@ export default function Register() {
                     name="confirmPassword"
                     placeholder="Confirm Password"
                     value={formData.confirmPassword}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
 

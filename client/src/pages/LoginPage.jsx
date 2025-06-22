@@ -3,6 +3,7 @@ import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { handleSubmit, handleChange } from "../utils/formHandlers";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -32,25 +33,19 @@ export default function Login() {
         },
     });
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        mutation.mutate();
-    };
-
     return (
         <div className="login__container">
             <h2>Login</h2>
-            <form onSubmit={handleSubmit} className="login__form">
+            <form
+                onSubmit={(e) => handleSubmit(e, mutation)}
+                className="login__form"
+            >
                 <input
                     type="text"
                     name="usernameOrEmail"
                     placeholder="Username or email"
                     value={formData.usernameOrEmail}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
 
@@ -59,7 +54,7 @@ export default function Login() {
                     name="password"
                     placeholder="Password"
                     value={formData.password}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
 
