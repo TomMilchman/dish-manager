@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { handleSubmit, handleChange } from "../utils/formHandlers";
 
 export default function Login() {

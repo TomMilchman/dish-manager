@@ -12,10 +12,11 @@ export default function Register() {
     const [formData, setFormData] = useState({
         username: "",
         email: "",
-        confirmPassword: "",
         password: "",
         rememberMe: false,
     });
+
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     const mutation = useMutation({
         mutationFn: async () => {
@@ -41,7 +42,12 @@ export default function Register() {
             <h2>Register</h2>
             <form
                 onSubmit={(e) =>
-                    handleSubmitWithMatchedPasswords(e, formData, mutation)
+                    handleSubmitWithMatchedPasswords(
+                        e,
+                        formData,
+                        confirmPassword,
+                        mutation
+                    )
                 }
                 className="register__form"
             >
@@ -76,8 +82,8 @@ export default function Register() {
                     type="password"
                     name="confirmPassword"
                     placeholder="Confirm Password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                 />
 

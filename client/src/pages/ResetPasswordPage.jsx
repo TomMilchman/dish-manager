@@ -13,9 +13,10 @@ export default function ResetPassword() {
     const [formData, setFormData] = useState({
         email: searchParams.get("email"),
         resetToken: searchParams.get("resetToken"),
-        newPassword: "",
-        confirmPassword: "",
+        password: "",
     });
+
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     const mutation = useMutation({
         mutationFn: async () => {
@@ -45,15 +46,20 @@ export default function ResetPassword() {
             </p>
             <form
                 onSubmit={(e) =>
-                    handleSubmitWithMatchedPasswords(e, formData, mutation)
+                    handleSubmitWithMatchedPasswords(
+                        e,
+                        formData,
+                        confirmPassword,
+                        mutation
+                    )
                 }
                 className="reset-password__form"
             >
                 <input
                     type="password"
-                    name="newPassword"
+                    name="password"
                     placeholder="New Password"
-                    value={formData.newPassword}
+                    value={formData.password}
                     onChange={(e) => handleChange(e, formData, setFormData)}
                     required
                 />
@@ -61,8 +67,8 @@ export default function ResetPassword() {
                     type="password"
                     name="confirmPassword"
                     placeholder="Confirm password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                 />
 

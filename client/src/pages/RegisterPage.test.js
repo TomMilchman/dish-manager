@@ -1,24 +1,14 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
 import Register from "./RegisterPage";
-import { BrowserRouter } from "react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
+import renderWithProviders from "../utils/testUtils";
 
 jest.mock("react-toastify", () => ({
     toast: { success: jest.fn(), error: jest.fn() },
 }));
 
 jest.mock("../api/axios");
-
-const renderWithProviders = (ui) => {
-    const queryClient = new QueryClient();
-    return render(
-        <QueryClientProvider client={queryClient}>
-            <BrowserRouter>{ui}</BrowserRouter>
-        </QueryClientProvider>
-    );
-};
 
 describe("Register Page", () => {
     it("renders form inputs", () => {
@@ -84,7 +74,6 @@ describe("Register Page", () => {
                 username: "testuser",
                 email: "test@example.com",
                 password: "123456",
-                confirmPassword: "123456",
                 rememberMe: false,
             });
         });
