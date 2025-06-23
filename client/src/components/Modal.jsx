@@ -4,7 +4,7 @@ export default function Modal({ modalAction, children }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="modal-container">
+        <>
             <button onClick={() => setIsOpen(true)}>{modalAction}</button>
 
             {isOpen && (
@@ -20,6 +20,6 @@ export default function Modal({ modalAction, children }) {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

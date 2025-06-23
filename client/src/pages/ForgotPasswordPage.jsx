@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { handleSubmit } from "../utils/formHandlers";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
@@ -49,10 +50,10 @@ export default function ForgotPassword() {
                     }}
                     required
                 />
-
-                <button type="submit" disabled={mutation.isLoading}>
-                    {mutation.isLoading ? "Submitting..." : "Submit"}
+                <button type="submit" disabled={mutation.isPending}>
+                    {mutation.isPending ? "Submitting..." : "Submit"}
                 </button>
+                {mutation.isPending && <LoadingSpinner />}
             </form>
             <Link to="/login" className="hover-link">
                 Return to login page

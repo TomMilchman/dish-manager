@@ -154,74 +154,33 @@ async function register(req, res) {
     }
 }
 
-// TODO: Add logout
-// /**
-//  * Handles user login by verifying credentials and issuing access and refresh tokens.
-//  *
-//  * Workflow:
-//  * 1. Finds user by username or email.
-//  * 2. Verifies the provided password against the hashed one in the database.
-//  * 3. On success:
-//  *    - Generates JWT access and refresh tokens.
-//  *    - Sets the refresh token in an HTTP-only cookie.
-//  *    - Sends the access token in the response body.
-//  *
-//  * Errors:
-//  * - 401 Unauthorized for invalid credentials.
-//  * - 400 Bad Request for internal failures.
-//  *
-//  * @param {import("express").Request} req - Express request object. Requires `usernameOrEmail`, `password`, and optionally `rememberMe` in `req.body`.
-//  * @param {import("express").Response} res - Express response object. Sends access token in JSON or error message.
-//  * @returns {Promise<void>}
-//  */
-// async function logout(req, res) {
-//     const { id } = req.body;
+/**
+ * Logs out the user by clearing the refresh token cookie.
+ *
+ * Workflow:
+ * - Clears the `refreshToken` cookie from the client.
+ * - Ensures cookie options match those used during login (e.g. `httpOnly`, `sameSite`, `secure`).
+ * - Responds with a 200 status and a logout confirmation message.
+ *
+ * Notes:
+ * - This does not require access to the JWT or user data.
+ *
+ * @param {import("express").Request} req - Express request object.
+ * @param {import("express").Response} res - Express response object. Sends a JSON message on success.
+ * @returns {void}
+ */
+function logout(req, res) {
+    const userId = req.user?.userId;
+    console.info(`[LOGOUT] User ID ${userId} logged out`);
 
-//     try {
-//         console.info(`[LOGIN] Attempting login for: ${usernameOrEmail}`);
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+    });
 
-//         const user = await User.findOne({
-//             $or: [
-//                 { username: usernameOrEmail },
-//                 { email: usernameOrEmail.toLowerCase() },
-//             ],
-//         });
-
-//         if (!user) {
-//             console.warn(`[LOGIN] User ${usernameOrEmail} not found.`);
-//             return res
-//                 .status(401)
-//                 .json({ message: "Invalid login credentials." });
-//         }
-
-//         const isPasswordValid = await bcrypt.compare(password, user.password);
-//         if (!isPasswordValid) {
-//             console.warn(`[LOGIN] Incorrect password for ${usernameOrEmail}.`);
-//             return res
-//                 .status(401)
-//                 .json({ message: "Invalid login credentials." });
-//         }
-
-//         const { accessToken, refreshToken } = authService.generateJWTTokens(
-//             user._id,
-//             rememberMe
-//         );
-
-//         res.cookie(
-//             "refreshToken",
-//             refreshToken,
-//             authService.getRefreshCookieOptions(rememberMe)
-//         );
-
-//         console.info(
-//             `[LOGIN] Login successful for ${usernameOrEmail}, tokens issued.`
-//         );
-//         res.json({ id: user._id, username: user.username, accessToken });
-//     } catch (err) {
-//         console.error(`[LOGIN] Unexpected error for ${usernameOrEmail}:`, err);
-//         res.status(400).json({ message: err.message });
-//     }
-// }
+    res.status(200).json({ message: "Logged out successfully." });
+}
 
 /**
  * Issues a new access token using a valid refresh token from cookies.
@@ -386,4 +345,11 @@ async function resetPassword(req, res) {
     }
 }
 
-module.exports = { login, register, refresh, forgotPassword, resetPassword };
+module.exports = {
+    login,
+    register,
+    refresh,
+    forgotPassword,
+    resetPassword,
+    logout,
+};

@@ -7,6 +7,7 @@ import {
     handleSubmitWithMatchedPasswords,
     handleChange,
 } from "../utils/formHandlers";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -74,9 +75,10 @@ export default function ResetPassword() {
                     required
                 />
 
-                <button type="submit" disabled={mutation.isLoading}>
-                    {mutation.isLoading ? "Submitting..." : "Submit"}
+                <button type="submit" disabled={mutation.isPending}>
+                    {mutation.isPending ? "Submitting..." : "Submit"}
                 </button>
+                {mutation.isPending && <LoadingSpinner />}
             </form>
         </div>
     );

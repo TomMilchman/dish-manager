@@ -41,7 +41,7 @@ app.delete("/ingredients/:id", ingredientController.deleteIngredient);
 jest.mock("../../models/Dish");
 jest.mock("../../models/Ingredient");
 
-describe("Ingredient Controller", () => {
+describe("apiRoutes (ingredients and dishes)", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });

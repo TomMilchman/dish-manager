@@ -5,7 +5,8 @@ const {
     refresh,
     forgotPassword,
     resetPassword,
-} = require("../controllers/authController");
+    logout,
+} = require("../controllers/authController.js");
 const {
     validateRegisterMiddleware,
     validateNoEmptyBodyParamsMiddleware,
@@ -13,18 +14,30 @@ const {
 const {
     authenticateTokenMiddleware,
 } = require("../middlewares/authenticateTokenMiddleware.js");
+
 const router = express.Router();
 
-router.post("/register", validateRegisterMiddleware, register);
+// Token routes
+router.post("/refresh", refresh);
 router.post("/authenticate-user", authenticateTokenMiddleware, (req, res) => {
     return res.status(200).json({ message: "User authenticated." });
 });
-router.post("/refresh", refresh);
+router.post("/logout", authenticateTokenMiddleware, logout);
 
-router.use(validateNoEmptyBodyParamsMiddleware);
+// Registration and login
+router.post("/register", validateRegisterMiddleware, register);
+router.post("/login", validateNoEmptyBodyParamsMiddleware, login);
 
-router.post("/login", login);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
+// Password reset
+router.post(
+    "/forgot-password",
+    validateNoEmptyBodyParamsMiddleware,
+    forgotPassword
+);
+router.post(
+    "/reset-password",
+    validateNoEmptyBodyParamsMiddleware,
+    resetPassword
+);
 
 module.exports = router;

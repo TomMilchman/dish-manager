@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
 import { handleSubmit, handleChange } from "../utils/formHandlers";
 import useAuthStore from "../store/useAuthStore";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -68,9 +69,10 @@ export default function Login() {
                 />
                 <label htmlFor="rememberMe">Remember Me</label>
 
-                <button type="submit" disabled={mutation.isLoading}>
-                    {mutation.isLoading ? "Logging in..." : "Login"}
+                <button type="submit" disabled={mutation.isPending}>
+                    {mutation.isPending ? "Logging in..." : "Login"}
                 </button>
+                {mutation.isPending && <LoadingSpinner />}
             </form>
             <Link to="/forgot-password" className="hover-link">
                 Forgot password?

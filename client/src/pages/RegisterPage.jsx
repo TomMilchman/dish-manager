@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router";
 import { handleSubmitWithMatchedPasswords } from "../utils/formHandlers";
 import { handleChange } from "../utils/formHandlers";
 import useAuthStore from "../store/useAuthStore";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -97,9 +98,10 @@ export default function Register() {
                 />
                 <label htmlFor="rememberMe">Remember Me</label>
 
-                <button type="submit" disabled={mutation.isLoading}>
-                    {mutation.isLoading ? "Registering..." : "Register"}
+                <button type="submit" disabled={mutation.isPending}>
+                    {mutation.isPending ? "Registering..." : "Register"}
                 </button>
+                {mutation.isPending && <LoadingSpinner />}
             </form>
             <p>Or log in instead: </p>
             <Link to="/login">

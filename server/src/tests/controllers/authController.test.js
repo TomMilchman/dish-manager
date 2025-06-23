@@ -7,6 +7,7 @@ const {
     refresh,
     forgotPassword,
     resetPassword,
+    logout,
 } = require("../../controllers/authController");
 const authService = require("../../services/authService");
 const { sendEmail } = require("../../services/emailService");
@@ -28,13 +29,19 @@ describe("Auth Controller", () => {
 
     beforeEach(() => {
         req = {
-            body: {},
+            body: {
+                username: "testuser",
+                email: "test@example.com",
+                password: "password123",
+                rememberMe: true,
+            },
             cookies: {},
         };
         res = {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
             cookie: jest.fn(),
+            clearCookie: jest.fn(),
         };
         jest.clearAllMocks();
     });
@@ -119,27 +126,6 @@ describe("Auth Controller", () => {
     // ------------------ REGISTER -----------------
 
     describe("register", () => {
-        let req, res;
-
-        beforeEach(() => {
-            req = {
-                body: {
-                    username: "testuser",
-                    email: "test@example.com",
-                    password: "password123",
-                    rememberMe: true,
-                },
-            };
-
-            res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-                cookie: jest.fn(),
-            };
-
-            jest.clearAllMocks();
-        });
-
         it("should register a new user and return access token with refresh token cookie", async () => {
             User.findOne = jest.fn().mockResolvedValue(null);
             bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
@@ -271,17 +257,6 @@ describe("Auth Controller", () => {
 
     // ------------------ FORGOT-PASSWORD -----------------
     describe("forgot password", () => {
-        let req, res;
-
-        beforeEach(() => {
-            req = { body: { email: "test@example.com" } };
-            res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            };
-            jest.clearAllMocks();
-        });
-
         it("should respond with success message even if user not found", async () => {
             User.findOne = jest.fn().mockResolvedValue(null);
             await forgotPassword(req, res);
@@ -344,23 +319,6 @@ describe("Auth Controller", () => {
 
     // ------------------ RESET-PASSWORD -----------------
     describe("reset password", () => {
-        let req, res;
-
-        beforeEach(() => {
-            req = {
-                body: {
-                    email: "test@example.com",
-                    token: "validtoken",
-                    newPassword: "newStrongPass123",
-                },
-            };
-            res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            };
-            jest.clearAllMocks();
-        });
-
         it("should respond 400 if no matching user found", async () => {
             User.findOne = jest.fn().mockResolvedValue(null);
 
@@ -458,6 +416,24 @@ describe("Auth Controller", () => {
             expect(res.status).toHaveBeenCalledWith(500);
             expect(res.json).toHaveBeenCalledWith({
                 message: "Internal server error.",
+            });
+        });
+    });
+
+    // ------------------ LOGOUT -----------------
+    describe("logout", () => {
+        it("should clear refreshToken cookie and respond with 200", () => {
+            logout(req, res);
+
+            expect(res.clearCookie).toHaveBeenCalledWith("refreshToken", {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: false,
+            });
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Logged out successfully.",
             });
         });
     });
