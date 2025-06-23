@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function ProtectedRoute() {
     const { isLoading, isError } = useAuth();
@@ -9,7 +10,7 @@ export default function ProtectedRoute() {
     }
 
     if (isLoading) {
-        return <p>Loading...</p>;
+        return <LoadingSpinner />;
     }
 
     return <Outlet />;

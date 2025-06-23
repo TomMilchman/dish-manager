@@ -66,7 +66,7 @@ async function login(req, res) {
         console.info(
             `[LOGIN] Login successful for ${usernameOrEmail}, tokens issued.`
         );
-        res.json({ accessToken });
+        res.json({ username: user.username, accessToken });
     } catch (err) {
         console.error(`[LOGIN] Unexpected error for ${usernameOrEmail}:`, err);
         res.status(400).json({ message: err.message });
@@ -144,13 +144,84 @@ async function register(req, res) {
             text: `Hey there ${username}!\nThank you for registering to Dish Manager!`,
         });
 
-        // Respond with access token
-        res.status(201).json({ accessToken });
+        res.status(201).json({
+            username: createdUser.username,
+            accessToken,
+        });
     } catch (err) {
         console.error(`[REGISTER] Error occurred for ${username}:`, err);
         res.status(500).json({ message: "Internal server error." });
     }
 }
+
+// TODO: Add logout
+// /**
+//  * Handles user login by verifying credentials and issuing access and refresh tokens.
+//  *
+//  * Workflow:
+//  * 1. Finds user by username or email.
+//  * 2. Verifies the provided password against the hashed one in the database.
+//  * 3. On success:
+//  *    - Generates JWT access and refresh tokens.
+//  *    - Sets the refresh token in an HTTP-only cookie.
+//  *    - Sends the access token in the response body.
+//  *
+//  * Errors:
+//  * - 401 Unauthorized for invalid credentials.
+//  * - 400 Bad Request for internal failures.
+//  *
+//  * @param {import("express").Request} req - Express request object. Requires `usernameOrEmail`, `password`, and optionally `rememberMe` in `req.body`.
+//  * @param {import("express").Response} res - Express response object. Sends access token in JSON or error message.
+//  * @returns {Promise<void>}
+//  */
+// async function logout(req, res) {
+//     const { id } = req.body;
+
+//     try {
+//         console.info(`[LOGIN] Attempting login for: ${usernameOrEmail}`);
+
+//         const user = await User.findOne({
+//             $or: [
+//                 { username: usernameOrEmail },
+//                 { email: usernameOrEmail.toLowerCase() },
+//             ],
+//         });
+
+//         if (!user) {
+//             console.warn(`[LOGIN] User ${usernameOrEmail} not found.`);
+//             return res
+//                 .status(401)
+//                 .json({ message: "Invalid login credentials." });
+//         }
+
+//         const isPasswordValid = await bcrypt.compare(password, user.password);
+//         if (!isPasswordValid) {
+//             console.warn(`[LOGIN] Incorrect password for ${usernameOrEmail}.`);
+//             return res
+//                 .status(401)
+//                 .json({ message: "Invalid login credentials." });
+//         }
+
+//         const { accessToken, refreshToken } = authService.generateJWTTokens(
+//             user._id,
+//             rememberMe
+//         );
+
+//         res.cookie(
+//             "refreshToken",
+//             refreshToken,
+//             authService.getRefreshCookieOptions(rememberMe)
+//         );
+
+//         console.info(
+//             `[LOGIN] Login successful for ${usernameOrEmail}, tokens issued.`
+//         );
+//         res.json({ id: user._id, username: user.username, accessToken });
+//     } catch (err) {
+//         console.error(`[LOGIN] Unexpected error for ${usernameOrEmail}:`, err);
+//         res.status(400).json({ message: err.message });
+//     }
+// }
 
 /**
  * Issues a new access token using a valid refresh token from cookies.
@@ -177,8 +248,13 @@ function refresh(req, res) {
             { expiresIn: payload.rememberMe ? "7d" : "15m" }
         );
 
+        console.info(
+            "[REFRESH] Refreshed cookies for user ID ",
+            payload.userId
+        );
         res.json({ accessToken: newAccessToken });
     } catch (err) {
+        console.error(`[REFRESH] Failed to refresh cookies: ${err} `);
         res.status(403).json({ message: "Invalid refresh token" });
     }
 }
@@ -244,15 +320,15 @@ async function forgotPassword(req, res) {
 }
 
 /**
- * Resets a user's password using the token and email provided in the request.
+ * Resets a user's password using the token, the new password and email provided in the request.
  * Verifies the token and expiry, hashes the new password, and updates the user.
  *
- * @param {import("express").Request} req - Express request object. Expects `email`, `token`, and `newPassword` in `req.body`.
+ * @param {import("express").Request} req - Express request object. Expects `email`, `token`, and `password` in `req.body`.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
  */
 async function resetPassword(req, res) {
-    const { email, resetToken, newPassword } = req.body;
+    const { email, resetToken, password } = req.body;
 
     console.info(`[RESET PASSWORD] Password reset attempt for email: ${email}`);
 
@@ -279,7 +355,7 @@ async function resetPassword(req, res) {
         }
 
         // Hash and set new password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
 
         // Clear reset token fields

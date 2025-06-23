@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { handleSubmit } from "../utils/formHandlers";
+import { Link } from "react-router-dom";
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
@@ -53,6 +54,9 @@ export default function ForgotPassword() {
                     {mutation.isLoading ? "Submitting..." : "Submit"}
                 </button>
             </form>
+            <Link to="/login" className="hover-link">
+                Return to login page
+            </Link>
         </div>
     );
 }

@@ -219,12 +219,12 @@ async function getAllDishes(req, res) {
  * @returns {Promise<void>}
  */
 async function updateDish(req, res) {
-    const { id } = req.params;
+    const { dishId } = req.params;
     const userId = req.user.userId;
     const role = req.user.role;
 
     try {
-        const dish = await Dish.findById(id);
+        const dish = await Dish.findById(dishId);
 
         if (!dish) {
             return res.status(404).json({ message: "Dish not found." });
@@ -238,12 +238,12 @@ async function updateDish(req, res) {
         await dish.save();
 
         console.info(
-            `[UPDATE DISH] Dish ID ${id} updated by user ID ${userId} (${role})`
+            `[UPDATE DISH] Dish ID ${dishId} updated by user ID ${userId} (${role})`
         );
 
         res.status(200).json({ message: "Dish updated successfully.", dish });
     } catch (err) {
-        console.error(`[UPDATE DISH] Error updating dish ID ${id}:`, err);
+        console.error(`[UPDATE DISH] Error updating dish ID ${dishId}:`, err);
         res.status(500).json({ message: "Internal server error." });
     }
 }

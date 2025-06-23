@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
 import { handleSubmitWithMatchedPasswords } from "../utils/formHandlers";
 import { handleChange } from "../utils/formHandlers";
+import useAuthStore from "../store/useAuthStore";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -24,7 +25,8 @@ export default function Register() {
             return res.data;
         },
         onSuccess: (data) => {
-            localStorage.setItem("accessToken", data.accessToken);
+            useAuthStore.getState().setUser(data.username);
+            useAuthStore.getState().setAccessToken(data.accessToken);
             toast.success("Registration successful!");
             console.log("User registration successful!");
             navigate("/");

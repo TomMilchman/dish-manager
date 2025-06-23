@@ -47,10 +47,78 @@ button:hover {
     text-decoration: underline;
 }
 
-@keyframes App-logo-spin {
+.modal {
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    height: auto;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    animation: Modal-fade-in 0.3s ease-in;
+}
+
+.close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+@keyframes Modal-fade-in {
     from {
-        transform: rotate(0deg);
+        opacity: 0;
     }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes Modal-fade-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Spin animation */
+@keyframes spin {
     to {
         transform: rotate(360deg);
     }

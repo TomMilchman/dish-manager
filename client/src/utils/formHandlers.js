@@ -12,8 +12,6 @@ export const handleSubmitWithMatchedPasswords = (
 ) => {
     e.preventDefault();
 
-    console.log(formData.password);
-
     if (formData.password !== confirmPassword) {
         toast.error("Passwords don't match.");
     } else {

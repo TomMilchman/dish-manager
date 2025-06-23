@@ -1,7 +1,15 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export const useAuthStore = create((set) => ({
-    accessToken: null,
-    setAccessToken: (token) => set({ accessToken: token }),
-    logout: () => set({ accessToken: null }),
-}));
+const useAuthStore = create(
+    persist((set) => ({
+        username: "",
+        accessToken: null,
+        setUser: (username) => set({ username }),
+        setAccessToken: (accessToken) => set({ accessToken }),
+        logout: () =>
+            set({ user: null, accessToken: null, isAuthenticated: false }),
+    }))
+);
+
+export default useAuthStore;

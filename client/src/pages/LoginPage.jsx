@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
 import { handleSubmit, handleChange } from "../utils/formHandlers";
+import useAuthStore from "../store/useAuthStore";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -20,7 +21,8 @@ export default function Login() {
             return res.data;
         },
         onSuccess: (data) => {
-            localStorage.setItem("accessToken", data.accessToken);
+            useAuthStore.getState().setUser(data.username);
+            useAuthStore.getState().setAccessToken(data.accessToken);
             toast.success("Login successful!");
             console.log("User login successful!");
             navigate("/");
