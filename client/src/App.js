@@ -9,7 +9,6 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-//TODO: Fix dashboard not being displayed
 function App() {
     return (
         <BrowserRouter>

@@ -22,12 +22,6 @@ export default function ForgotPassword() {
             console.log(data.message);
             navigate("/login");
         },
-        onError: (error) => {
-            toast.error(
-                "Error sending password reset email: " +
-                    error.response?.data?.message || error.message
-            );
-        },
     });
 
     return (

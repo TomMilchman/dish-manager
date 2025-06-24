@@ -31,12 +31,6 @@ export default function ResetPassword() {
             console.log(data.message);
             navigate("/login");
         },
-        onError: (error) => {
-            toast.error(
-                "Error resetting password: " + error.response?.data?.message ||
-                    error.message
-            );
-        },
     });
 
     return (

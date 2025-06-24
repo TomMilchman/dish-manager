@@ -32,12 +32,6 @@ export default function Register() {
             console.log("User registration successful!");
             navigate("/");
         },
-        onError: (error) => {
-            toast.error(
-                "Registration failed: " + error.response?.data?.message ||
-                    error.message
-            );
-        },
     });
 
     return (

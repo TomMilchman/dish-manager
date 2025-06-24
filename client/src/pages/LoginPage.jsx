@@ -28,12 +28,6 @@ export default function Login() {
             console.log("User login successful!");
             navigate("/");
         },
-        onError: (error) => {
-            toast.error(
-                "Login failed: " + error.response?.data?.message ||
-                    error.message
-            );
-        },
     });
 
     return (
