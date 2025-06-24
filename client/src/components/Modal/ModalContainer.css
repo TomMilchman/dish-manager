@@ -8,13 +8,14 @@
     background-color: rgba(0, 0, 0, 0.5);
 
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: center;
 }
 
-.modal-content {
+.modal__content {
     background: white;
     padding: 2rem;
+    margin-top: 20vh;
     max-width: 500px;
     width: 90%;
     height: auto;
@@ -24,7 +25,7 @@
     animation: Modal-fade-in 0.3s ease-in;
 }
 
-.close {
+.modal__close-button {
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -32,6 +33,9 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @keyframes Modal-fade-in {

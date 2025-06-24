@@ -1,9 +1,10 @@
-//import LogoutButton from "../components/LogoutButton";
+import "./DashboardPage.css";
+import TopBar from "../../components/TopBar/TopBar";
 
 function Dashboard() {
     return (
         <div className="dashboard">
-            {/*<TopBar />*/}
+            <TopBar />
             <div className="main-content">
                 <div className="dish-panel"></div>
                 <div className="summary-panel"></div>

@@ -1,3 +1,21 @@
+@font-face {
+    font-family: "Fredoka";
+    src: url("../public/fonts/FredokaOne-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+#root {
+    height: 100%;
+}
+
+html,
+body {
+    font-family: "Fredoka", sans-serif;
+    height: 100%;
+    margin: 0;
+}
+
 .App {
     text-align: center;
 }
@@ -5,6 +23,10 @@
 .App-logo {
     height: 40vmin;
     pointer-events: none;
+}
+
+li {
+    list-style: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -29,6 +51,10 @@ button:hover {
     cursor: pointer;
 }
 
+button:active {
+    background-color: #c7c7c7;
+}
+
 .App-link {
     color: #61dafb;
 }
@@ -44,4 +70,17 @@ button:hover {
 
 .hover-link:hover {
     text-decoration: underline;
+}
+
+.icon-button {
+    border-radius: 50%;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-style: solid;
+    box-shadow: #282c34;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
 }

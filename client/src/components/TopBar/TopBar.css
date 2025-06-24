@@ -1,0 +1,38 @@
+.top-bar__container {
+    position: relative;
+    padding: 1vh 0;
+    top: 0;
+    left: 0;
+    height: 7vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    background-color: #ff7746;
+}
+
+.top-bar__title {
+    color: white;
+    left: 7vw;
+}
+
+.top-bar__logo-image {
+    margin-right: 0.5vw;
+    margin-left: 0.5vw;
+    height: 80%;
+    display: flex;
+    align-items: center;
+}
+
+.top-bar__logo-image img {
+    width: auto;
+    object-fit: contain;
+}
+
+.top-bar__buttons-container {
+    position: absolute;
+    right: 3vw;
+    display: flex;
+    align-items: center;
+    gap: 0.5vw;
+}
