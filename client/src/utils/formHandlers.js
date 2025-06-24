@@ -15,11 +15,11 @@ export const handleSubmitWithMatchedPasswords = (
     if (formData.password !== confirmPassword) {
         toast.error("Passwords don't match.");
     } else {
-        mutation.mutate();
+        mutation.mutate(formData);
     }
 };
 
-export const handleSubmit = (e, mutation) => {
+export const handleSubmit = (e, mutation, formData) => {
     e.preventDefault();
-    mutation.mutate();
+    mutation.mutate(formData);
 };

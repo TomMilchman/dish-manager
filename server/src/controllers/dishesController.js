@@ -48,8 +48,9 @@ async function createUserDish(req, res) {
 }
 
 /**
- * Retrieves all dishes owned by the authenticated user.
- *
+ * Fetch all dishes based on the user's role.
+ *       - If the user is an admin, returns all dishes from all users.
+ *       - If the user is a regular user, returns only their own dishes.
  * Response on success (200 OK):
  * {
  *   dishes: [
@@ -63,37 +64,39 @@ async function createUserDish(req, res) {
  *     ...
  *   ]
  * }
- *
- * @param {import("express").Request} req - Express request object. Assumes `req.user.userId` is set by authentication middleware.
- * @param {import("express").Response} res - Express response object.
- * @returns {Promise<void>}
  */
-async function getAllUserDishes(req, res) {
-    const userId = req.user.userId;
+async function getDishes(req, res) {
+    const { userId, role } = req.user;
 
     try {
-        const dishes = await Dish.find({ owner: userId }).populate(
-            "ingredients"
-        );
+        let dishes;
 
-        if (dishes.length === 0) {
+        if (role === "admin") {
+            dishes = await Dish.find()
+                .populate("ingredients")
+                .populate("owner", "username email");
+
+            console.info(`[GET ALL DISHES] Admin retrieved all dishes.`);
+        } else {
+            dishes = await Dish.find({ owner: userId }).populate("ingredients");
+
+            if (dishes.length === 0) {
+                console.info(
+                    `[GET USER DISHES] No dishes found for user ID ${userId}`
+                );
+                return res
+                    .status(404)
+                    .json({ message: "No dishes found for user." });
+            }
+
             console.info(
-                `[GET USER DISHES] No dishes found for user ID ${userId}`
+                `[GET USER DISHES] Retrieved ${dishes.length} dish(es) for user ID ${userId}`
             );
-            return res
-                .status(404)
-                .json({ message: "No dishes found for user." });
         }
 
-        console.info(
-            `[GET USER DISHES] Retrieved ${dishes.length} dish(es) for user ID ${userId}`
-        );
         res.status(200).json({ dishes });
     } catch (err) {
-        console.error(
-            `[GET USER DISHES] Error retrieving dishes for user ID ${userId}:`,
-            err
-        );
+        console.error(`[GET DISHES] Error retrieving dishes:`, err);
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -149,49 +152,6 @@ async function getUserDishById(req, res) {
             `[GET USER DISH BY ID] Error retrieving dish ID ${dishId}:`,
             err
         );
-        res.status(500).json({ message: "Internal server error." });
-    }
-}
-
-/**
- * Retrieves all dishes in the system. Admin-only access.
- *
- * Response on success (200 OK):
- * {
- *   dishes: [
- *     {
- *       _id: string,
- *       name: string,
- *       ingredients: Array<Object>, // Populated ingredient objects
- *       owner: {
- *         _id: string,
- *         username: string,
- *         email: string
- *       },
- *       __v: number
- *     },
- *     ...
- *   ]
- * }
- *
- * @param {import("express").Request} req - Express request object. Assumes `req.user.role` is set.
- * @param {import("express").Response} res - Express response object.
- * @returns {Promise<void>}
- */
-async function getAllDishes(req, res) {
-    if (req.user.role !== "admin") {
-        return res.status(403).json({ message: "Admin access required." });
-    }
-
-    try {
-        const dishes = await Dish.find()
-            .populate("ingredients")
-            .populate("owner", "username email");
-
-        console.info(`[GET ALL DISHES] Admin retrieved all dishes.`);
-        res.status(200).json({ dishes });
-    } catch (err) {
-        console.error(`[GET ALL DISHES] Error retrieving dishes:`, err);
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -372,9 +332,8 @@ async function aggregateIngredientsFromDishes(req, res) {
 
 module.exports = {
     createUserDish,
-    getAllUserDishes,
+    getDishes,
     getUserDishById,
-    getAllDishes,
     updateDish,
     deleteDish,
     aggregateIngredientsFromDishes,

@@ -1,13 +1,13 @@
 import { useState } from "react";
-import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     handleSubmitWithMatchedPasswords,
     handleChange,
-} from "../utils/formHandlers";
-import LoadingSpinner from "../components/LoadingSpinner";
+} from "../../utils/formHandlers";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { resetPassword } from "../../api/auth";
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -22,10 +22,7 @@ export default function ResetPassword() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const mutation = useMutation({
-        mutationFn: async () => {
-            const res = await axios.post("/auth/reset-password", formData);
-            return res.data;
-        },
+        mutationFn: resetPassword,
         onSuccess: (data) => {
             toast.success(data.message);
             console.log(data.message);
@@ -34,7 +31,7 @@ export default function ResetPassword() {
     });
 
     return (
-        <div className="reset-password-container">
+        <div className="reset-password__container">
             <h2>Reset Password</h2>
             <p>
                 Please insert your new password. If the link you are using is
@@ -50,7 +47,7 @@ export default function ResetPassword() {
                         mutation
                     )
                 }
-                className="reset-password-form"
+                className="reset-password__form"
             >
                 <input
                     type="password"

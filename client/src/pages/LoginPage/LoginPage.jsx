@@ -1,11 +1,11 @@
 import { useState } from "react";
-import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
-import { handleSubmit, handleChange } from "../utils/formHandlers";
-import useAuthStore from "../store/useAuthStore";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { handleSubmit, handleChange } from "../../utils/formHandlers";
+import useAuthStore from "../../store/useAuthStore";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { loginUser } from "../../api/auth";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -17,10 +17,7 @@ export default function Login() {
     });
 
     const mutation = useMutation({
-        mutationFn: async () => {
-            const res = await axios.post("/auth/login", formData);
-            return res.data;
-        },
+        mutationFn: loginUser,
         onSuccess: (data) => {
             useAuthStore.getState().setUser(data.username);
             useAuthStore.getState().setAccessToken(data.accessToken);
@@ -34,7 +31,7 @@ export default function Login() {
         <div className="login__container">
             <h2>Login</h2>
             <form
-                onSubmit={(e) => handleSubmit(e, mutation)}
+                onSubmit={(e) => handleSubmit(e, mutation, formData)}
                 className="login__form"
             >
                 <input

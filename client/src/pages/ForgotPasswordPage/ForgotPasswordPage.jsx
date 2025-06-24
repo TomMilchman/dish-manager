@@ -1,11 +1,11 @@
 import { useState } from "react";
-import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { handleSubmit } from "../utils/formHandlers";
+import { handleSubmit } from "../../utils/formHandlers";
 import { Link } from "react-router-dom";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { forgotUserPassword } from "../../api/auth";
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
@@ -13,10 +13,7 @@ export default function ForgotPassword() {
     const [email, setEmail] = useState("");
 
     const mutation = useMutation({
-        mutationFn: async () => {
-            const res = await axios.post("/auth/forgot-password", { email });
-            return res.data;
-        },
+        mutationFn: forgotUserPassword,
         onSuccess: (data) => {
             toast.success(data.message);
             console.log(data.message);
@@ -31,7 +28,7 @@ export default function ForgotPassword() {
                 Insert your email so that we can send you a password reset link
             </p>
             <form
-                onSubmit={(e) => handleSubmit(e, mutation)}
+                onSubmit={(e) => handleSubmit(e, mutation, { email })}
                 className="forgot-password__form"
             >
                 <input

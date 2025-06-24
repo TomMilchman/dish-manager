@@ -1,12 +1,12 @@
 import { useState } from "react";
-import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
-import { handleSubmitWithMatchedPasswords } from "../utils/formHandlers";
-import { handleChange } from "../utils/formHandlers";
-import useAuthStore from "../store/useAuthStore";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { handleSubmitWithMatchedPasswords } from "../../utils/formHandlers";
+import { handleChange } from "../../utils/formHandlers";
+import useAuthStore from "../../store/useAuthStore";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { registerUser } from "../../api/auth";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -21,10 +21,7 @@ export default function Register() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const mutation = useMutation({
-        mutationFn: async () => {
-            const res = await axios.post("/auth/register", formData);
-            return res.data;
-        },
+        mutationFn: registerUser,
         onSuccess: (data) => {
             useAuthStore.getState().setUser(data.username);
             useAuthStore.getState().setAccessToken(data.accessToken);

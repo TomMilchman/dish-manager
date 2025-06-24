@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "../api/axios";
+import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "../store/useAuthStore";
-import LoadingSpinner from "./LoadingSpinner";
+import useAuthStore from "../../store/useAuthStore";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 export default function LogoutButton() {
     const navigate = useNavigate();

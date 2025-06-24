@@ -13,11 +13,10 @@ const router = express.Router();
 router.use(authenticateTokenMiddleware);
 
 // ---------------------------- DISHES ROUTES ----------------------------
-// Accessible by all authenticated users
 router
     .route("/dishes")
     .post(dishesController.createUserDish)
-    .get(dishesController.getAllUserDishes);
+    .get(dishesController.getDishes);
 
 router
     .route("/dishes/:id")
@@ -26,9 +25,6 @@ router
     .delete(dishesController.deleteDish);
 
 router.get("dishes/aggregate", dishesController.aggregateIngredientsFromDishes);
-
-// Admin-only route for viewing all user dishes
-router.get("/admin/dishes", dishesController.getAllDishes);
 
 // ------------------------- INGREDIENTS ROUTES --------------------------
 // Accessible by all authenticated users
