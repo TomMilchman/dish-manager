@@ -5,10 +5,30 @@ const ingredientSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        maxLength: 20,
     },
-    price: Number,
-    imageURL: {
+    unitType: {
         type: String,
+        enum: ["unit", "gram", "liter"],
+        required: true,
+    },
+    pricePerUnit: {
+        type: Number,
+        required: function () {
+            return this.unitType === "unit";
+        },
+    },
+    pricePer100g: {
+        type: Number,
+        required: function () {
+            return this.unitType === "gram";
+        },
+    },
+    pricePerLiter: {
+        type: Number,
+        required: function () {
+            return this.unitType === "liter";
+        },
     },
 });
 

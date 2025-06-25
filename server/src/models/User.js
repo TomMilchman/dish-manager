@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
-            minlength: 3,
-            maxlength: 20,
+            minLength: 3,
+            maxLength: 20,
         },
         email: {
             type: String,
@@ -18,8 +18,8 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
-            minlength: 6,
-            maxlength: 1024, // hashed passwords can be long
+            minLength: 6,
+            maxLength: 1024, // hashed passwords can be long
         },
         role: {
             type: String,

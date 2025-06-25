@@ -19,17 +19,15 @@ router
     .get(dishesController.getDishes);
 
 router
-    .route("/dishes/:id")
+    .route("/dishes/:dishId")
     .get(dishesController.getUserDishById)
     .put(dishesController.updateDish)
     .delete(dishesController.deleteDish);
 
-router.get("dishes/aggregate", dishesController.aggregateIngredientsFromDishes);
-
 // ------------------------- INGREDIENTS ROUTES --------------------------
 // Accessible by all authenticated users
 router.get("/ingredients", ingredientsController.getAllIngredients);
-router.get("/ingredients/:id", ingredientsController.getIngredientById);
+router.get("/ingredients/:dishId", ingredientsController.getIngredientById);
 
 // Admin-only routes for modifying ingredients
 router.post(
@@ -39,7 +37,7 @@ router.post(
 );
 
 router
-    .route("/ingredients/:id")
+    .route("/ingredients/:dishId")
     .put(authorizeAdminMiddleware, ingredientsController.updateIngredient)
     .delete(authorizeAdminMiddleware, ingredientsController.deleteIngredient);
 

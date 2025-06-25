@@ -3,28 +3,70 @@ const Ingredient = require("../models/Ingredient");
 /**
  * Creates a new ingredient and saves it to the database.
  *
- * @param {import("express").Request} req - Express request object. Expects `name`, `price`, and `imageUrl` in `req.body`.
+ * @param {import("express").Request} req - Express request object. Expects `name`, `unitType`, and one of the price fields in `req.body`.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
  */
 async function createIngredient(req, res) {
-    const { name, price, imageUrl } = req.body;
+    const { name, unitType, pricePerUnit, pricePer100g, pricePerLiter } =
+        req.body;
+
+    // Validate required fields
+    if (!name || !unitType) {
+        return res
+            .status(400)
+            .json({ message: "Name and unitType are required." });
+    }
+
+    if (!["unit", "gram", "liter"].includes(unitType)) {
+        return res.status(400).json({
+            message: "Invalid unitType. Must be 'unit', 'gram', or 'liter'.",
+        });
+    }
+
+    let priceField;
+
+    if (unitType === "unit") {
+        if (typeof pricePerUnit !== "number") {
+            return res
+                .status(400)
+                .json({ message: "pricePerUnit is required for unit type." });
+        }
+
+        priceField = { pricePerUnit };
+    } else if (unitType === "gram") {
+        if (typeof pricePer100g !== "number") {
+            return res
+                .status(400)
+                .json({ message: "pricePer100g is required for gram type." });
+        }
+
+        priceField = { pricePer100g };
+    } else if (unitType === "liter") {
+        if (typeof pricePerLiter !== "number") {
+            return res
+                .status(400)
+                .json({ message: "pricePerLiter is required for liter type." });
+        }
+
+        priceField = { pricePerLiter };
+    }
 
     try {
-        await Ingredient.create({ name, price, imageUrl });
+        const newIngredient = await Ingredient.create({
+            name,
+            unitType,
+            ...priceField,
+        });
 
-        console.info(
-            `[CREATE INGREDIENT] New ingredient "${name}" has been added to DB.`
-        );
+        console.info(`[CREATE INGREDIENT] New ingredient "${name}" added.`);
 
         res.status(201).json({
             message: `Ingredient "${name}" has been created.`,
+            ingredient: newIngredient,
         });
     } catch (err) {
-        console.error(
-            `[CREATE INGREDIENT] Error creating ingredient "${name}":`,
-            err
-        );
+        console.error(`[CREATE INGREDIENT] Error creating "${name}":`, err);
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -59,7 +101,7 @@ async function getAllIngredients(req, res) {
  */
 async function getIngredientById(req, res) {
     try {
-        const ingredient = await Ingredient.findById(req.params.id);
+        const ingredient = await Ingredient.findById(req.params.dishId);
 
         if (!ingredient) {
             return res.status(404).json({ message: "Ingredient not found." });
@@ -76,9 +118,9 @@ async function getIngredientById(req, res) {
 }
 
 /**
- * Updates an existing ingredient by ID with provided fields.
+ * Updates an existing ingredient by ID with provided fields. Returns the updated ingredient.
  *
- * @param {import("express").Request} req - Express request object. Expects `id` in `req.params` and updated fields in `req.body`.
+ * @param {import("express").Request} req - Express request object. Expects `id` in `req.params` and updated fields (object) in `req.body`.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
  */

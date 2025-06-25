@@ -5,11 +5,19 @@ const dishSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        maxLength: 30,
     },
     ingredients: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Ingredient",
+            ingredient: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Ingredient",
+                required: true,
+            },
+            amount: {
+                type: Number,
+                required: true,
+            },
         },
     ],
     owner: {
