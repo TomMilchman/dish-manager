@@ -313,5 +313,4 @@ module.exports = {
     getUserDishById,
     updateDish,
     deleteDish,
-    aggregateIngredientsFromDishes,
 };
