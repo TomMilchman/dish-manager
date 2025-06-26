@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const logger = require("../utils/logger");
 
 const USERNAME_MIN_LENGTH = 3;
 const USERNAME_MAX_LENGTH = 20;
@@ -29,9 +30,9 @@ const validateRegisterMiddleware = (req, res, next) => {
     const { error } = registerSchema.validate(req.body, { abortEarly: false });
 
     if (error) {
-        console.log(
-            "[VALIDATION MIDDLEWARE] Validation failed:",
-            error.details
+        logger.logError(
+            "validation middleware",
+            `Validation failed: ${error.details}`
         );
         const messages = error.details
             .map((detail) => detail.message)
@@ -39,7 +40,7 @@ const validateRegisterMiddleware = (req, res, next) => {
         return res.status(400).json({ message: messages });
     }
 
-    console.log("[VALIDATION MIDDLEWARE] Validation succeeded");
+    logger.logInfo("validation middleware", "Validation succeeded");
     next();
 };
 

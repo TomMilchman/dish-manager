@@ -1,4 +1,5 @@
 const Dish = require("../models/Dish");
+const { logInfo, logError } = require("../utils/logger");
 
 /**
  * Creates a new dish for the authenticated user and saves it to the database.
@@ -54,17 +55,18 @@ async function createUserDish(req, res) {
             "ingredients.ingredient"
         );
 
-        console.info(
-            `[CREATE USER DISH] User ID ${userId} created new dish "${name}" (ID: ${newDish._id})`
+        logInfo(
+            "create user dish",
+            `User ID ${userId} created new dish "${name}" (ID: ${newDish._id})`
         );
 
         res.status(201).json({
             dish: newDish,
         });
     } catch (err) {
-        console.error(
-            `[CREATE USER DISH] Error creating dish for user ID ${userId}:`,
-            err
+        logError(
+            "create user dish",
+            `Error creating dish for user ID ${userId}: ${err}`
         );
         res.status(500).json({ message: "Internal server error." });
     }
@@ -110,27 +112,29 @@ async function getDishes(req, res) {
                 .populate("ingredients.ingredient")
                 .populate("owner", "username email");
 
-            console.info(`[GET ALL DISHES] Admin retrieved all dishes.`);
+            logInfo("get all dishes", `Admin retrieved all dishes.`);
         } else {
             dishes = await Dish.find({ owner: userId }).populate("ingredients");
 
             if (dishes.length === 0) {
-                console.info(
-                    `[GET USER DISHES] No dishes found for user ID ${userId}`
+                logInfo(
+                    "get user dishes",
+                    `No dishes found for user ID ${userId}`
                 );
                 return res
-                    .status(404)
+                    .status(200)
                     .json({ message: "No dishes found for user." });
             }
 
-            console.info(
-                `[GET USER DISHES] Retrieved ${dishes.length} dish(es) for user ID ${userId}`
+            logInfo(
+                "get user dishes",
+                `Retrieved ${dishes.length} dish(es) for user ID ${userId}`
             );
         }
 
         res.status(200).json({ dishes });
     } catch (err) {
-        console.error(`[GET DISHES] Error retrieving dishes:`, err);
+        logError("get dishes", `Error retrieving dishes: ${err}`);
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -184,20 +188,22 @@ async function getUserDishById(req, res) {
         }
 
         if (!dish) {
-            console.info(
-                `[GET USER DISH BY ID] No dish found with ID ${dishId} for user ID ${userId}`
+            logInfo(
+                "GET USER DISH BY ID",
+                `No dish found with ID ${dishId} for user ID ${userId}`
             );
             return res.status(404).json({ message: "Dish not found" });
         }
 
-        console.info(
-            `[GET USER DISH BY ID] Retrieved dish ID ${dishId} for user ID ${userId}`
+        logInfo(
+            "GET USER DISH BY ID",
+            `Retrieved dish ID ${dishId} for user ID ${userId}`
         );
         res.status(200).json({ dish });
     } catch (err) {
-        console.error(
-            `[GET USER DISH BY ID] Error retrieving dish ID ${dishId}:`,
-            err
+        logError(
+            "GET USER DISH BY ID",
+            `Error retrieving dish ID ${dishId}: ${err}`
         );
         res.status(500).json({ message: "Internal server error." });
     }
@@ -254,13 +260,14 @@ async function updateDish(req, res) {
         Object.assign(dish, req.body);
         await dish.save();
 
-        console.info(
-            `[UPDATE DISH] Dish ID ${dishId} updated by user ID ${userId} (${role})`
+        logInfo(
+            "UPDATE DISH",
+            `Dish ${dish.name} (ID ${dishId}) updated by user ID ${userId} (${role})`
         );
 
         res.status(200).json({ dish });
     } catch (err) {
-        console.error(`[UPDATE DISH] Error updating dish ID ${dishId}:`, err);
+        logError("UPDATE DISH", `Error updating dish ID ${dishId}: ${err}`);
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -287,6 +294,11 @@ async function deleteDish(req, res) {
         const dish = await Dish.findById(dishId);
 
         if (!dish) {
+            logInfo(
+                "DELETE DISH",
+                `Dish ID ${dishId} not found for user ID ${userId}`
+            );
+
             return res.status(404).json({ message: "Dish not found." });
         }
 
@@ -296,13 +308,14 @@ async function deleteDish(req, res) {
 
         await dish.deleteOne();
 
-        console.info(
-            `[DELETE DISH] Dish ID ${dishId} deleted by user ID ${userId} (${role})`
+        logInfo(
+            "DELETE DISH",
+            `Dish ${dish.name} (ID ${dishId}) deleted by user ID ${userId} (${role})`
         );
 
         res.status(200).json({ message: "Dish successfully deleted." });
     } catch (err) {
-        console.error(`[DELETE DISH] Error deleting dish ID ${dishId}:`, err);
+        logError("DELETE DISH", `Error deleting dish ID ${dishId}: ${err}`);
         res.status(500).json({ message: "Internal server error." });
     }
 }

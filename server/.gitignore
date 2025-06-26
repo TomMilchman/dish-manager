@@ -8,6 +8,8 @@ coverage
 dist
 
 # misc
+logs
+*.log
 .vscode
 .DS_Store
 .env

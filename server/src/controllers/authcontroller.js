@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authService = require("../services/authService");
@@ -28,7 +29,7 @@ async function login(req, res) {
     const { usernameOrEmail, password, rememberMe } = req.body;
 
     try {
-        console.info(`[LOGIN] Attempting login for: ${usernameOrEmail}`);
+        logger.logInfo("login", `Attempting login for: ${usernameOrEmail}`);
 
         const user = await User.findOne({
             $or: [
@@ -38,7 +39,7 @@ async function login(req, res) {
         });
 
         if (!user) {
-            console.warn(`[LOGIN] User ${usernameOrEmail} not found.`);
+            logger.logWarning("login", `User ${usernameOrEmail} not found.`);
             return res
                 .status(401)
                 .json({ message: "Invalid login credentials." });
@@ -46,7 +47,10 @@ async function login(req, res) {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            console.warn(`[LOGIN] Incorrect password for ${usernameOrEmail}.`);
+            logger.logWarning(
+                "login",
+                `Incorrect password for ${usernameOrEmail}.`
+            );
             return res
                 .status(401)
                 .json({ message: "Invalid login credentials." });
@@ -63,12 +67,16 @@ async function login(req, res) {
             authService.getRefreshCookieOptions(rememberMe)
         );
 
-        console.info(
-            `[LOGIN] Login successful for ${usernameOrEmail}, tokens issued.`
+        logger.logInfo(
+            "login",
+            `Login successful for ${usernameOrEmail}, tokens issued.`
         );
         res.json({ username: user.username, accessToken });
     } catch (err) {
-        console.error(`[LOGIN] Unexpected error for ${usernameOrEmail}:`, err);
+        logger.logError(
+            "login",
+            `Unexpected error for ${usernameOrEmail}: ${err}`
+        );
         res.status(400).json({ message: err.message });
     }
 }
@@ -101,8 +109,9 @@ async function register(req, res) {
         });
 
         if (existingUser) {
-            console.warn(
-                `[REGISTER] Attempt to register with existing username/email: ${username}, ${email}`
+            logger.logWarning(
+                "register",
+                `Attempt to register with existing username/email: ${username}, ${email}`
             );
             return res
                 .status(409)
@@ -119,8 +128,9 @@ async function register(req, res) {
             password: hashedPassword,
         });
 
-        console.info(
-            `[REGISTER] New user registered: ${createdUser._id} (${username})`
+        logger.logInfo(
+            "register",
+            `New user registered: ${createdUser._id} (${username})`
         );
 
         // Generate tokens
@@ -149,7 +159,7 @@ async function register(req, res) {
             accessToken,
         });
     } catch (err) {
-        console.error(`[REGISTER] Error occurred for ${username}:`, err);
+        logger.logError("register", `Error occurred for ${username}: ${err}`);
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -171,7 +181,7 @@ async function register(req, res) {
  */
 function logout(req, res) {
     const userId = req.user?.userId;
-    console.info(`[LOGOUT] User ID ${userId} logged out`);
+    logger.logInfo("logout", `User ID ${userId} logged out`);
 
     res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -207,13 +217,13 @@ function refresh(req, res) {
             { expiresIn: payload.rememberMe ? "7d" : "15m" }
         );
 
-        console.info(
-            "[REFRESH] Refreshed cookies for user ID ",
-            payload.userId
+        logger.logInfo(
+            "refresh",
+            `Refreshed cookies for user ID ${payload.userId}`
         );
         res.json({ accessToken: newAccessToken });
     } catch (err) {
-        console.error(`[REFRESH] Failed to refresh cookies: ${err} `);
+        logger.logError("refresh", `Failed to refresh cookies: ${err}`);
         res.status(403).json({ message: "Invalid refresh token" });
     }
 }
@@ -228,15 +238,16 @@ function refresh(req, res) {
  */
 async function forgotPassword(req, res) {
     const { email } = req.body;
-    console.info(`[FORGOT PASSWORD] Password reset requested for: ${email}`);
+    logger.logInfo("forgot password", `Password reset requested for: ${email}`);
 
     try {
         const user = await User.findOne({ email });
 
         // Always respond with the same message for security reasons
         if (!user) {
-            console.info(
-                `[FORGOT PASSWORD] No user found with email: ${email}`
+            logger.logInfo(
+                "forgot password",
+                `No user found with email: ${email}`
             );
             return res
                 .status(200)
@@ -264,15 +275,16 @@ async function forgotPassword(req, res) {
             text: `Reset your password using the following link: ${resetLink}`,
         });
 
-        console.info(
-            `[FORGOT PASSWORD] Password reset email sent to: ${user.email}`
+        logger.logInfo(
+            "forgot password",
+            `Password reset email sent to: ${user.email}`
         );
 
         res.status(200).json({ message: "If user exists, email sent." });
     } catch (error) {
-        console.error(
-            `[FORGOT PASSWORD] Error processing request for: ${email}`,
-            error
+        logger.logError(
+            "forgot password",
+            `Error processing request for: ${email}, ${error}`
         );
         res.status(500).json({ message: "Internal server error." });
     }
@@ -289,7 +301,10 @@ async function forgotPassword(req, res) {
 async function resetPassword(req, res) {
     const { email, resetToken, password } = req.body;
 
-    console.info(`[RESET PASSWORD] Password reset attempt for email: ${email}`);
+    logger.logInfo(
+        "reset password",
+        `Password reset attempt for email: ${email}`
+    );
 
     try {
         const hashedToken = crypto
@@ -305,8 +320,9 @@ async function resetPassword(req, res) {
         });
 
         if (!user) {
-            console.warn(
-                `[RESET PASSWORD] Invalid or expired token for email: ${email}`
+            logger.logWarning(
+                "reset password",
+                `Invalid or expired token for email: ${email}`
             );
             return res
                 .status(400)
@@ -322,8 +338,9 @@ async function resetPassword(req, res) {
         user.passwordResetExpires = undefined;
 
         await user.save();
-        console.info(
-            `[RESET PASSWORD] Password successfully reset for email: ${email}`
+        logger.logInfo(
+            "reset password",
+            `Password successfully reset for email: ${email}`
         );
 
         await sendEmail({
@@ -331,15 +348,16 @@ async function resetPassword(req, res) {
             subject: "Password Has Been Reset",
             text: `Hi, ${user.username}.\nWe wanted to let you know that your password has been reset.\nIf this was not done by you, please change your password again and make sure to do the same for your email address.`,
         });
-        console.info(
-            `[RESET PASSWORD] Notification email sent to: ${user.email}`
+        logger.logInfo(
+            "reset password",
+            `Notification email sent to: ${user.email}`
         );
 
         res.status(200).json({ message: "Password successfully reset." });
     } catch (err) {
-        console.error(
-            `[RESET PASSWORD] Error resetting password for email: ${email}`,
-            err
+        logger.logError(
+            "reset password",
+            `Error resetting password for email: ${email}, ${err}`
         );
         res.status(500).json({ message: "Internal server error." });
     }

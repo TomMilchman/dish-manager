@@ -27,7 +27,10 @@ router
 // ------------------------- INGREDIENTS ROUTES --------------------------
 // Accessible by all authenticated users
 router.get("/ingredients", ingredientsController.getAllIngredients);
-router.get("/ingredients/:dishId", ingredientsController.getIngredientById);
+router.get(
+    "/ingredients/:ingredientId",
+    ingredientsController.getIngredientById
+);
 
 // Admin-only routes for modifying ingredients
 router.post(
@@ -37,7 +40,7 @@ router.post(
 );
 
 router
-    .route("/ingredients/:dishId")
+    .route("/ingredients/:ingredientId")
     .put(authorizeAdminMiddleware, ingredientsController.updateIngredient)
     .delete(authorizeAdminMiddleware, ingredientsController.deleteIngredient);
 

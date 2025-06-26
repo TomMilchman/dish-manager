@@ -1,14 +1,3 @@
-.top-bar__container {
-    height: 10%;
-    width: 100%;
-    background-color: #ff7746;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2vw;
-    box-sizing: border-box;
-}
-
 .top-bar__logo-container {
     display: flex;
     align-items: center;

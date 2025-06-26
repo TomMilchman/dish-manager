@@ -1,7 +1,19 @@
 .dashboard {
-    height: 100vh;
+    height: 100%;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+}
+
+.top-bar__container {
+    height: auto;
+    width: 100%;
+    background-color: #ff7746;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2vw;
+    box-sizing: border-box;
 }
 
 .main-content {

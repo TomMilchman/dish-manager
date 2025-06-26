@@ -1,4 +1,5 @@
 const { transporter } = require("../config/smtp");
+const logger = require("../utils/logger");
 
 /**
  * Sends an email using the configured SMTP transporter.
@@ -21,9 +22,9 @@ async function sendEmail({ to, subject, text }) {
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.info("Email sent:", info.messageId);
+        logger.logInfo("send email", `Email sent to ${to}: ${info.messageId}`);
     } catch (error) {
-        console.error("Error sending email:", error);
+        logger.logError("send email", `Error sending email to ${to}: ${err}`);
         throw error;
     }
 }
