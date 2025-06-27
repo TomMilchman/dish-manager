@@ -58,8 +58,9 @@ async function login(req, res) {
 
         const { accessToken, refreshToken } = authService.generateJWTTokens(
             user._id,
-            rememberMe
-        );
+            rememberMe,
+            user.role
+        ); // TODO: Add role test case to login tests
 
         res.cookie(
             "refreshToken",
@@ -136,7 +137,8 @@ async function register(req, res) {
         // Generate tokens
         const { accessToken, refreshToken } = authService.generateJWTTokens(
             createdUser._id,
-            rememberMe
+            rememberMe,
+            createdUser.role // TODO: Add role test case to register tests
         );
 
         // Set refresh token cookie

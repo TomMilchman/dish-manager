@@ -1,3 +1,5 @@
+const { logWarning } = require("../utils/logger");
+
 /**
  * Middleware to authorize admin users.
  *
@@ -14,6 +16,10 @@
  */
 const authorizeAdminMiddleware = (req, res, next) => {
     if (req.user?.role !== "admin") {
+        logWarning(
+            "authorize admin middleware",
+            `User ID ${req.user?.userId} tried to access an admin only action, but is ${req.user?.role}.`
+        );
         return res.status(403).json({ message: "Admin access required." });
     }
 

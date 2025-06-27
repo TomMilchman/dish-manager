@@ -13,6 +13,7 @@ const jwt = require("jsonwebtoken");
  * @param {boolean} rememberMe - Whether the user chose "remember me" (affects token lifespan)
  * @returns {Tokens} An object containing the access and refresh tokens
  */
+// TODO: Remove default role of user and check that all fields are inserted
 const generateJWTTokens = (userId, rememberMe, role = "user") => {
     if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
         throw new Error("Missing JWT secret(s).");

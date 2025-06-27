@@ -6,6 +6,7 @@ import useAuthStore from "../../store/useAuthStore";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { FaPowerOff } from "react-icons/fa";
 
+//TODO: Clear store (ingredients and dishes) on logout
 export default function LogoutButton() {
     const navigate = useNavigate();
     const mutation = useMutation({

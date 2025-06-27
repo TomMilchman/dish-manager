@@ -1,29 +1,41 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
-const useIngredientStore = create((set) => ({
-    ingredients: [],
-    selectedIngredients: [], // [{ingredientId: String, amount: Number},...]
-    setIngredients: (ingredients) => set({ ingredients }),
-    addIngredientRow: () =>
-        set((state) => ({
-            selectedIngredients: [
-                ...state.selectedIngredients,
-                { ingredientId: "", amount: 0 },
-            ],
-        })),
-    updateSelectedIngredientAtIndex: (index, updatedRow) =>
-        set((state) => {
-            const copiedSelectedIngredients = [...state.selectedIngredients];
-            copiedSelectedIngredients[index] = updatedRow;
-            return { selectedIngredients: copiedSelectedIngredients };
-        }),
-    removeSelectedIngredientAtIndex: (index) =>
-        set((state) => ({
-            selectedIngredients: state.selectedIngredients.filter(
-                (_, i) => i !== index
-            ),
-        })),
-    clearSelectedIngredients: () => set({ selectedIngredients: [] }),
-}));
+const useIngredientStore = create(
+    devtools((set) => ({
+        ingredients: [],
+        selectedIngredients: [{ ingredientId: "", amount: 0 }], // [{ingredientId: String, amount: Number},...]
+        setIngredients: (ingredients) => set({ ingredients }),
+        addIngredientRow: () =>
+            set((state) => ({
+                selectedIngredients: [
+                    ...state.selectedIngredients,
+                    { ingredientId: "", amount: 0 },
+                ],
+            })),
+        updateSelectedIngredientAtIndex: (index, updatedRow) =>
+            set((state) => {
+                const copiedSelectedIngredients = [
+                    ...state.selectedIngredients,
+                ];
+                copiedSelectedIngredients[index] = updatedRow;
+                return { selectedIngredients: copiedSelectedIngredients };
+            }),
+        removeSelectedIngredientAtIndex: (index) =>
+            set((state) => {
+                const updated = state.selectedIngredients.filter(
+                    (_, i) => i !== index
+                );
+                return {
+                    selectedIngredients:
+                        updated.length > 0
+                            ? updated
+                            : [{ ingredientId: "", amount: 0 }],
+                };
+            }),
+        clearSelectedIngredients: () =>
+            set({ selectedIngredients: [{ ingredientId: "", amount: 0 }] }),
+    }))
+);
 
 export default useIngredientStore;

@@ -73,6 +73,7 @@ export default function IngredientInputRow({
                 onClick={onDelete}
                 className="ingredient-input-row__delete-btn"
                 type="button"
+                disabled={rowIndex === 0}
             >
                 <FaTrash />
             </button>

@@ -1,5 +1,5 @@
 const Dish = require("../models/Dish");
-const { logInfo, logError } = require("../utils/logger");
+const { logInfo, logError, logWarning } = require("../utils/logger");
 
 /**
  * Creates a new dish for the authenticated user and saves it to the database.
@@ -45,7 +45,34 @@ async function createUserDish(req, res) {
     const userId = req.user.userId;
     const { name, ingredients } = req.body;
 
+    if (
+        typeof name !== "string" ||
+        name.trim() === "" ||
+        !Array.isArray(ingredients) ||
+        ingredients.length === 0
+    ) {
+        logWarning(
+            "create user dish",
+            `User ${userId} tried to create dish with invalid or missing arguments.`
+        );
+        return res.status(400).json({
+            message: "Dish must have a name and at least one ingredient.",
+        });
+    }
+
     try {
+        const existingDish = await Dish.findOne({ name });
+
+        if (existingDish) {
+            logWarning(
+                "create user dish",
+                `User ${userId} tried to create dish ${name}, which already exists in DB.`
+            );
+            return res.status(400).json({
+                message: "Dish with exact name already exists.",
+            });
+        }
+
         const createdDish = await Dish.create({
             name,
             ingredients,
