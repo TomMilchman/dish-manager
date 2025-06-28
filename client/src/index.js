@@ -14,6 +14,7 @@ const queryClient = new QueryClient({
                     error?.message ||
                     "An error occurred";
                 toast.error(message);
+                console.error(message);
             },
         },
     },

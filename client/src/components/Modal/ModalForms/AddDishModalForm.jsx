@@ -1,27 +1,31 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { handleChange, handleSubmit } from "../../../utils/formHandlers";
+import { handleSubmit } from "../../../utils/formHandlers";
 import IngredientInputRow from "../IngredientInputRow/IngredientInputRow";
 import useIngredientStore from "../../../store/useIngredientStore";
 import { useMutation } from "@tanstack/react-query";
-import { addDish } from "../../../api/dishes";
+import { addDishToServer } from "../../../api/dishes";
 import useDishStore from "../../../store/useDishStore";
+import useModalStore from "../../../store/useModalStore";
 
 export default function AddDishForm() {
     const [dishName, setDishName] = useState("");
     const {
+        ingredients,
         selectedIngredients,
         removeSelectedIngredientAtIndex,
         addIngredientRow,
         clearSelectedIngredients,
     } = useIngredientStore();
+    const { closeModal } = useModalStore();
 
     const mutation = useMutation({
-        mutationFn: addDish,
+        mutationFn: addDishToServer,
         onSuccess: (data) => {
             const dish = data.dish;
             useDishStore.getState().addDish(dish);
             clearSelectedIngredients();
+            setDishName("");
             toast.success("Successfully created a new dish!");
             console.info(`Created a new dish ${data.name}`);
         },
@@ -43,6 +47,7 @@ export default function AddDishForm() {
             <button
                 onClick={() => addIngredientRow()}
                 className="add-dish__add-row-btn"
+                disabled={selectedIngredients.length === ingredients.length}
             >
                 Add Row
             </button>
@@ -75,6 +80,8 @@ export default function AddDishForm() {
                             )
                         ),
                     });
+
+                    closeModal();
                 }}
                 className="add-dish__form"
             >
@@ -85,7 +92,7 @@ export default function AddDishForm() {
                     id="dish-name-input"
                     type="text"
                     placeholder="Dish Name"
-                    onChange={(e) => handleChange(e, dishName, setDishName)}
+                    onChange={(e) => setDishName(e.target.value)}
                 />
                 <IngredientInputRow
                     key={0}

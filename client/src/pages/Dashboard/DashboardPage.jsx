@@ -1,31 +1,47 @@
 import "./DashboardPage.css";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import TopBar from "../../components/TopBar/TopBar";
 import useDishStore from "../../store/useDishStore";
 import useIngredientStore from "../../store/useIngredientStore";
-import { getAllDishes } from "../../api/dishes.js";
-import { getAllIngredients } from "../../api/ingredients.js";
+import { getAllDishesFromServer } from "../../api/dishes.js";
+import { getAllIngredientsFromServer } from "../../api/ingredients.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 
 function Dashboard() {
     const { setDishes } = useDishStore();
     const { setIngredients } = useIngredientStore();
 
-    const { isLoading: dishesLoading } = useQuery({
+    const {
+        data: dishesData,
+        isLoading: dishesLoading,
+        isSuccess: dishesSuccess,
+    } = useQuery({
         queryKey: ["dishes"],
-        queryFn: getAllDishes,
-        onSuccess: (data) => {
-            setDishes(data.dishes);
-        },
+        queryFn: getAllDishesFromServer,
     });
 
-    const { isLoading: ingredientsLoading } = useQuery({
+    const {
+        data: ingredientsData,
+        isLoading: ingredientsLoading,
+        isSuccess: ingredientsSuccess,
+    } = useQuery({
         queryKey: ["ingredients"],
-        queryFn: getAllIngredients,
-        onSuccess: (data) => {
-            setIngredients(data.ingredients);
-        },
+        queryFn: getAllIngredientsFromServer,
     });
+
+    // Sync data into Zustand after query success
+    useEffect(() => {
+        if (dishesSuccess && dishesData) {
+            setDishes(dishesData.dishes);
+        }
+    }, [dishesSuccess, dishesData, setDishes]);
+
+    useEffect(() => {
+        if (ingredientsSuccess && ingredientsData) {
+            setIngredients(ingredientsData.ingredients);
+        }
+    }, [ingredientsSuccess, ingredientsData, setIngredients]);
 
     if (dishesLoading || ingredientsLoading) {
         return <LoadingSpinner />;
