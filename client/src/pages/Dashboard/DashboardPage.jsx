@@ -8,6 +8,7 @@ import { getAllDishesFromServer } from "../../api/dishes.js";
 import { getAllIngredientsFromServer } from "../../api/ingredients.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 import DishCard from "../../components/DishCard/DishCard.jsx";
+import AddDishModalButton from "../../components/DishCard/Buttons/AddDishModalButton.jsx";
 
 function Dashboard() {
     const { setDishes, dishes } = useDishStore();
@@ -55,10 +56,13 @@ function Dashboard() {
     return (
         <div className="dashboard__container">
             <TopBar />
+            <div className="dashboard__dish-cards-controls">
+                <AddDishModalButton />
+            </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
-                    {dishes.map((dish) => (
-                        <DishCard key={dish._id} dishId={dish._id} />
+                    {dishes.map((dish, index) => (
+                        <DishCard key={index} dishId={dish._id} index={index} />
                     ))}
                 </div>
                 <div className="dashboard__summary-panel"></div>

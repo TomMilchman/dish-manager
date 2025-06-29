@@ -60,7 +60,7 @@ async function createUserDish(req, res) {
         });
     }
 
-    if (name.length > 30) {
+    if (name.length > 24) {
         logWarning(
             "create user dish",
             `User ${userId} tried to create a dish with name exceeding allowed name length.`

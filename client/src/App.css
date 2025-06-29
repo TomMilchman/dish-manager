@@ -5,6 +5,13 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: "Baloo2";
+    src: url("../public/fonts/Baloo2-VariableFont_wght.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
 #root {
     height: 100%;
 }
@@ -14,6 +21,7 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: "Baloo2";
 }
 
 .App {

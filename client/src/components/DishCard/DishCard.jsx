@@ -2,13 +2,28 @@ import "./DishCard.css";
 import useDishStore from "../../store/useDishStore";
 import { useState } from "react";
 
-export default function DishCard({ dishId }) {
+export default function DishCard({ dishId, index }) {
     const { getDishById, toggleDishSelectionById, isDishIdInSelectedDishIds } =
         useDishStore();
     const dish = getDishById(dishId);
     const [isSelected, setIsSelected] = useState(
         isDishIdInSelectedDishIds(dishId)
     );
+
+    function selectColor() {
+        switch (index % 4) {
+            case 0:
+                return "yellow";
+            case 1:
+                return "baige";
+            case 2:
+                return "orange";
+            case 3:
+                return "light-green";
+            default:
+                return "white";
+        }
+    }
 
     return (
         <div
@@ -23,7 +38,8 @@ export default function DishCard({ dishId }) {
                     toggleDishSelectionById(dishId);
                 setIsSelected(!isSelected);
             }}
-            className={`dish-card__container ${isSelected ? "-selected" : ""}`}
+            className={`dish-card__container ${isSelected ? "selected" : ""}
+            color-${selectColor()}`}
         >
             <h3 className="dish-card__dish-name">{dish.name}</h3>
             <ul className="dish-card__ingredient-list">

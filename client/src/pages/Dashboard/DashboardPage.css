@@ -1,38 +1,60 @@
 .dashboard__container {
     height: 100%;
+    background-color: #ffa67c;
     overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-.top-bar__container {
-    height: auto;
-    width: 100%;
-    background-color: #ff7746;
+.dashboard__container button {
+    background-color: #fd5e19;
+    color: white;
+    font-family: "Baloo2", sans-serif;
+    font-size: 24px;
+    font-weight: normal;
+    border-radius: 8px;
+    border: none;
+    padding: 0.2rem 1rem;
+    cursor: pointer;
+    height: 3rem;
+    width: auto;
+
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
+    gap: 0.25rem;
     align-items: center;
-    padding: 0 2vw;
-    box-sizing: border-box;
+    justify-content: center;
+}
+
+.dashboard__dish-cards-controls {
+    margin-top: 1rem;
+    margin-left: 2rem;
+}
+
+.dashboard__dish-cards-controls button {
+    background-color: #2b9341;
 }
 
 .dashboard__main-content {
     display: flex;
     flex-direction: row;
     height: 100vh;
-    background-color: #ffa67c;
+    overflow: hidden;
 }
 
 .dashboard__dish-cards-panel {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 3rem;
+    gap: 4rem;
     flex: 3;
-    max-height: 90vh;
+    max-height: none;
+    min-height: 0;
     overflow-y: auto;
-    padding-right: 0.5rem;
-    margin-top: 1rem;
+    padding: 1rem 2.5rem 1rem 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-top: 0.5rem;
 }
 
 .dashboard__summary-panel {

@@ -1,6 +1,5 @@
 import "./TopBar.css";
-import LogoutButton from "../LogoutButton/LogoutButton";
-import AddDishModalButton from "../Modal/ModalButtons/AddDishModalButton";
+import LogoutButton from "../DishCard/Buttons/LogoutButton";
 
 export default function TopBar() {
     return (
@@ -14,7 +13,6 @@ export default function TopBar() {
                 <h1 className="top-bar__title">DISH MANAGER</h1>
             </div>
             <div className="top-bar__buttons-container">
-                <AddDishModalButton />
                 <LogoutButton />
             </div>
         </div>
