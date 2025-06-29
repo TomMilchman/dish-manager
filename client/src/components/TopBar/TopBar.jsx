@@ -11,7 +11,6 @@ import { FaPowerOff } from "react-icons/fa6";
 import useAuthStore from "../../store/useAuthStore";
 
 // Components
-import ActionButton from "../ActionButton";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 // API
@@ -41,12 +40,13 @@ export default function TopBar() {
                 <h1 className="top-bar__title">DISH MANAGER</h1>
             </div>
             <div className="top-bar__buttons-container">
-                <ActionButton
-                    action={logoutMutation.mutate}
+                <button
+                    onClick={logoutMutation.mutate}
                     className="dashboard-btn logout-btn"
                     title="Log Out"
-                    buttonContentIcon={<FaPowerOff />}
-                />
+                >
+                    <FaPowerOff />
+                </button>
             </div>
             {logoutMutation.isPending && <LoadingSpinner />}
         </div>

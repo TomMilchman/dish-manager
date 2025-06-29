@@ -39,7 +39,7 @@ const useDishStore = create(
             })),
 
         // Delete a dish by ID
-        deleteDish: (dishId) =>
+        deleteDishById: (dishId) =>
             set((state) => ({
                 dishes: state.dishes.filter((dish) => dish._id !== dishId),
                 selectedDishIds: state.selectedDishIds.filter(

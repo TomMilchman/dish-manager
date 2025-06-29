@@ -19,7 +19,7 @@ export default function AddDishForm() {
     } = useIngredientStore();
     const { closeModal } = useModalStore();
 
-    const mutation = useMutation({
+    const addDishMutation = useMutation({
         mutationFn: addDishToServer,
         onSuccess: (data) => {
             const dish = data.dish;
@@ -70,7 +70,7 @@ export default function AddDishForm() {
                         return;
                     }
 
-                    handleSubmit(e, mutation, {
+                    handleSubmit(e, addDishMutation, {
                         name: dishName,
                         // Dish creation route in server expects the field ingredient inside each array object
                         ingredients: selectedIngredients.map((obj) =>
@@ -110,7 +110,9 @@ export default function AddDishForm() {
                     />
                 ))}
 
-                <button type="submit">Save</button>
+                <button type="submit" disabled={addDishMutation.isPending}>
+                    Save
+                </button>
             </form>
         </div>
     );

@@ -20,7 +20,6 @@ import { getAllIngredientsFromServer } from "../../api/ingredients.js";
 import TopBar from "../../components/TopBar/TopBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 import DishCard from "../../components/DishCard/DishCard.jsx";
-import ActionButton from "../../components/ActionButton.jsx";
 import AddDishForm from "../../components/Modal/ModalForms/AddDishModalForm.jsx";
 
 export default function Dashboard() {
@@ -69,20 +68,20 @@ export default function Dashboard() {
         <div className="dashboard__container">
             <TopBar />
             <div className="dashboard__dish-cards-controls">
-                <ActionButton
+                <button
                     className="dashboard-btn add-dish-btn"
                     title="Add Dish"
-                    action={() => openModal(<AddDishForm />)}
-                    buttonContentIcon={<FaPlus />}
-                    buttonContentText={"Add Dish"}
-                />
-                <ActionButton
+                    onClick={() => openModal(<AddDishForm />)}
+                >
+                    <FaPlus /> Add Dish
+                </button>
+                <button
                     className="dashboard-btn clear-card-selection-btn"
                     title="Clear Selection"
-                    action={() => clearSelectedDishes()}
-                    buttonContentIcon={<MdOutlinePlaylistRemove />}
-                    buttonContentText="Clear Selection"
-                />
+                    onClick={() => clearSelectedDishes()}
+                >
+                    <MdOutlinePlaylistRemove /> Clear Selection
+                </button>
             </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
