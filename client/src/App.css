@@ -54,13 +54,17 @@ body {
     color: white;
 }
 
+button {
+    transition: filter 0.1s ease-in-out, transform 0.1s ease-in-out;
+}
+
 button:hover {
-    background-color: #e0e0e0;
+    filter: brightness(130%);
     cursor: pointer;
 }
 
 button:active {
-    background-color: #c7c7c7;
+    transform: scale(95%);
 }
 
 .App-link {

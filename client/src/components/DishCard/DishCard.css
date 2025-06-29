@@ -15,7 +15,7 @@
     transform: scale(1.1);
 }
 
-.dish-card__container.selected::before {
+.dish-card__container::before {
     content: "✔";
     position: absolute;
     top: 8px;
@@ -31,6 +31,29 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+}
+
+.dish-card__container.selected::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+@keyframes checkmark-pop {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.dish-card__container h3,
+li {
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .dish-card__container.color-yellow {

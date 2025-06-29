@@ -1,14 +1,11 @@
 import "./DishCard.css";
 import useDishStore from "../../store/useDishStore";
-import { useState } from "react";
 
 export default function DishCard({ dishId, index }) {
     const { getDishById, toggleDishSelectionById, isDishIdInSelectedDishIds } =
         useDishStore();
     const dish = getDishById(dishId);
-    const [isSelected, setIsSelected] = useState(
-        isDishIdInSelectedDishIds(dishId)
-    );
+    const isSelected = isDishIdInSelectedDishIds(dishId);
 
     function selectColor() {
         switch (index % 4) {
@@ -31,12 +28,10 @@ export default function DishCard({ dishId, index }) {
             tabIndex={0}
             onClick={() => {
                 toggleDishSelectionById(dishId);
-                setIsSelected(!isSelected);
             }}
             onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ")
                     toggleDishSelectionById(dishId);
-                setIsSelected(!isSelected);
             }}
             className={`dish-card__container ${isSelected ? "selected" : ""}
             color-${selectColor()}`}

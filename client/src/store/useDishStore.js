@@ -14,11 +14,13 @@ const useDishStore = create(
             set({ dishes });
         },
 
+        // Returns the dish object according to ID
         getDishById: (dishId) => {
             const { dishes } = get();
             return dishes.find((dish) => dish._id === dishId);
         },
 
+        // Returns whether dish ID is in selected dishes or not
         isDishIdInSelectedDishIds: (dishId) => {
             const { selectedDishIds } = get();
             return selectedDishIds.includes(dishId);

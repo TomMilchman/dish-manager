@@ -1,18 +1,32 @@
-import "./DashboardPage.css";
+// External libraries
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import TopBar from "../../components/TopBar/TopBar";
+import { FaPlus } from "react-icons/fa6";
+import { MdOutlinePlaylistRemove } from "react-icons/md";
+
+// Styles
+import "./DashboardPage.css";
+
+// State management
 import useDishStore from "../../store/useDishStore";
+import useModalStore from "../../store/useModalStore";
 import useIngredientStore from "../../store/useIngredientStore";
+
+// API
 import { getAllDishesFromServer } from "../../api/dishes.js";
 import { getAllIngredientsFromServer } from "../../api/ingredients.js";
+
+// Components
+import TopBar from "../../components/TopBar/TopBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 import DishCard from "../../components/DishCard/DishCard.jsx";
-import AddDishModalButton from "../../components/DishCard/Buttons/AddDishModalButton.jsx";
+import ActionButton from "../../components/ActionButton.jsx";
+import AddDishForm from "../../components/Modal/ModalForms/AddDishModalForm.jsx";
 
-function Dashboard() {
-    const { setDishes, dishes } = useDishStore();
+export default function Dashboard() {
+    const { setDishes, dishes, clearSelectedDishes } = useDishStore();
     const { setIngredients } = useIngredientStore();
+    const openModal = useModalStore((state) => state.openModal);
 
     const {
         data: dishesData,
@@ -39,14 +53,12 @@ function Dashboard() {
         if (dishesSuccess && dishesData) {
             setDishes(dishesData.dishes);
         }
-        console.log(dishesData);
     }, [dishesSuccess, dishesData, setDishes]);
 
     useEffect(() => {
         if (ingredientsSuccess && ingredientsData) {
             setIngredients(ingredientsData.ingredients);
         }
-        console.log(ingredientsData);
     }, [ingredientsSuccess, ingredientsData, setIngredients]);
 
     if (dishesLoading || ingredientsLoading) {
@@ -57,7 +69,20 @@ function Dashboard() {
         <div className="dashboard__container">
             <TopBar />
             <div className="dashboard__dish-cards-controls">
-                <AddDishModalButton />
+                <ActionButton
+                    className="dashboard-btn add-dish-btn"
+                    title="Add Dish"
+                    action={() => openModal(<AddDishForm />)}
+                    buttonContentIcon={<FaPlus />}
+                    buttonContentText={"Add Dish"}
+                />
+                <ActionButton
+                    className="dashboard-btn clear-card-selection-btn"
+                    title="Clear Selection"
+                    action={() => clearSelectedDishes()}
+                    buttonContentIcon={<MdOutlinePlaylistRemove />}
+                    buttonContentText="Clear Selection"
+                />
             </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
@@ -70,5 +95,3 @@ function Dashboard() {
         </div>
     );
 }
-
-export default Dashboard;
