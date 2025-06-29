@@ -12,7 +12,7 @@ export default function ForgotPassword() {
 
     const [email, setEmail] = useState("");
 
-    const mutation = useMutation({
+    const forgotUserPasswordMutation = useMutation({
         mutationFn: forgotUserPassword,
         onSuccess: (data) => {
             toast.success(data.message);
@@ -28,7 +28,9 @@ export default function ForgotPassword() {
                 Insert your email so that we can send you a password reset link
             </p>
             <form
-                onSubmit={(e) => handleSubmit(e, mutation, { email })}
+                onSubmit={(e) =>
+                    handleSubmit(e, forgotUserPasswordMutation, { email })
+                }
                 className="forgot-password__form"
             >
                 <input
@@ -41,10 +43,15 @@ export default function ForgotPassword() {
                     }}
                     required
                 />
-                <button type="submit" disabled={mutation.isPending}>
-                    {mutation.isPending ? "Submitting..." : "Submit"}
+                <button
+                    type="submit"
+                    disabled={forgotUserPasswordMutation.isPending}
+                >
+                    {forgotUserPasswordMutation.isPending
+                        ? "Submitting..."
+                        : "Submit"}
                 </button>
-                {mutation.isPending && <LoadingSpinner />}
+                {forgotUserPasswordMutation.isPending && <LoadingSpinner />}
             </form>
             <Link to="/login" className="hover-link">
                 Return to login page

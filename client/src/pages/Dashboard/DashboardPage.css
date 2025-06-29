@@ -2,7 +2,7 @@
 
 .dashboard__container {
     height: 100%;
-    background-image: linear-gradient(to bottom, #ffb352, #ffa9a3);
+    background-image: linear-gradient(to bottom, #ffa9a3, #ffb352);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -72,4 +72,11 @@
 .dashboard__summary-panel {
     flex: 1;
     height: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.3);
+    margin-right: 2rem;
+    margin-bottom: 2rem;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: 2%;
 }

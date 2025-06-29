@@ -20,7 +20,7 @@ export default function Register() {
 
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const mutation = useMutation({
+    const registerUserMutation = useMutation({
         mutationFn: registerUser,
         onSuccess: (data) => {
             useAuthStore.getState().setUser(data.username);
@@ -40,7 +40,7 @@ export default function Register() {
                         e,
                         formData,
                         confirmPassword,
-                        mutation
+                        registerUserMutation
                     )
                 }
                 className="register__form"
@@ -89,10 +89,12 @@ export default function Register() {
                 />
                 <label htmlFor="rememberMe">Remember Me</label>
 
-                <button type="submit" disabled={mutation.isPending}>
-                    {mutation.isPending ? "Registering..." : "Register"}
+                <button type="submit" disabled={registerUserMutation.isPending}>
+                    {registerUserMutation.isPending
+                        ? "Registering..."
+                        : "Register"}
                 </button>
-                {mutation.isPending && <LoadingSpinner />}
+                {registerUserMutation.isPending && <LoadingSpinner />}
             </form>
             <p>Or log in instead: </p>
             <Link to="/login">

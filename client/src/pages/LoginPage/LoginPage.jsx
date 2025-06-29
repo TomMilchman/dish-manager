@@ -16,7 +16,7 @@ export default function Login() {
         rememberMe: false,
     });
 
-    const mutation = useMutation({
+    const loginUserMutation = useMutation({
         mutationFn: loginUser,
         onSuccess: (data) => {
             useAuthStore.getState().setUser(data.username);
@@ -31,7 +31,7 @@ export default function Login() {
         <div className="login__container">
             <h2>Login</h2>
             <form
-                onSubmit={(e) => handleSubmit(e, mutation, formData)}
+                onSubmit={(e) => handleSubmit(e, loginUserMutation, formData)}
                 className="login__form"
             >
                 <input
@@ -60,10 +60,10 @@ export default function Login() {
                 />
                 <label htmlFor="rememberMe">Remember Me</label>
 
-                <button type="submit" disabled={mutation.isPending}>
-                    {mutation.isPending ? "Logging in..." : "Login"}
+                <button type="submit" disabled={loginUserMutation.isPending}>
+                    {loginUserMutation.isPending ? "Logging in..." : "Login"}
                 </button>
-                {mutation.isPending && <LoadingSpinner />}
+                {loginUserMutation.isPending && <LoadingSpinner />}
             </form>
             <Link to="/forgot-password" className="hover-link">
                 Forgot password?

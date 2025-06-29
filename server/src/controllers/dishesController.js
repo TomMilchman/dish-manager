@@ -352,7 +352,7 @@ async function deleteDish(req, res) {
             `Dish ${dish.name} (ID ${dishId}) deleted by user ID ${userId} (${role})`
         );
 
-        res.status(200).json({ message: "Dish successfully deleted." });
+        res.status(200).json({ id: dishId, name: dish.name });
     } catch (err) {
         logError("DELETE DISH", `Error deleting dish ID ${dishId}: ${err}`);
         res.status(500).json({ message: "Internal server error." });

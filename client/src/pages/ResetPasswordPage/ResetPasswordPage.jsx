@@ -21,7 +21,7 @@ export default function ResetPassword() {
 
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const mutation = useMutation({
+    const resetPasswordMutation = useMutation({
         mutationFn: resetPassword,
         onSuccess: (data) => {
             toast.success(data.message);
@@ -44,7 +44,7 @@ export default function ResetPassword() {
                         e,
                         formData,
                         confirmPassword,
-                        mutation
+                        resetPasswordMutation
                     )
                 }
                 className="reset-password__form"
@@ -66,10 +66,15 @@ export default function ResetPassword() {
                     required
                 />
 
-                <button type="submit" disabled={mutation.isPending}>
-                    {mutation.isPending ? "Submitting..." : "Submit"}
+                <button
+                    type="submit"
+                    disabled={resetPasswordMutation.isPending}
+                >
+                    {resetPasswordMutation.isPending
+                        ? "Submitting..."
+                        : "Submit"}
                 </button>
-                {mutation.isPending && <LoadingSpinner />}
+                {resetPasswordMutation.isPending && <LoadingSpinner />}
             </form>
         </div>
     );

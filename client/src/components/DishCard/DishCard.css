@@ -9,6 +9,7 @@
     transition: transform 0.2s ease-in-out;
     cursor: pointer;
     color: #a32e03;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .dish-card__button-control-container {
