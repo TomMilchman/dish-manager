@@ -1,0 +1,18 @@
+.dish-card__container {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffd465;
+    padding: 1rem;
+    height: 200px;
+    width: 200px;
+    border-radius: 10%;
+}
+
+.dish-card__dish-name {
+    overflow-x: hidden;
+}
+
+.dish-card__ingredient-list {
+    overflow-y: auto;
+    transform: translate(0, -20px);
+}

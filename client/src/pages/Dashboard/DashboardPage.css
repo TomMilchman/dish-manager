@@ -1,4 +1,4 @@
-.dashboard {
+.dashboard__container {
     height: 100%;
     overflow: hidden;
     display: flex;
@@ -16,7 +16,26 @@
     box-sizing: border-box;
 }
 
-.main-content {
+.dashboard__main-content {
+    display: flex;
+    flex-direction: row;
     height: 100vh;
     background-color: #ffa67c;
+}
+
+.dashboard__dish-cards-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 3rem;
+    flex: 3;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    margin-top: 1rem;
+}
+
+.dashboard__summary-panel {
+    flex: 1;
+    height: auto;
 }

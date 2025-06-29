@@ -27,9 +27,13 @@ const generateJWTTokens = (userId, rememberMe, role = "user") => {
         expiresIn: rememberMe ? "7d" : "15m",
     });
 
-    const refreshToken = jwt.sign({ userId }, process.env.REFRESH_SECRET, {
-        expiresIn: rememberMe ? "30d" : "1d",
-    });
+    const refreshToken = jwt.sign(
+        { userId, role },
+        process.env.REFRESH_SECRET,
+        {
+            expiresIn: rememberMe ? "30d" : "1d",
+        }
+    );
 
     return { accessToken, refreshToken };
 };
@@ -47,8 +51,8 @@ const generateJWTTokens = (userId, rememberMe, role = "user") => {
 function getRefreshCookieOptions(rememberMe) {
     return {
         httpOnly: true,
-        secure: true,
-        sameSite: "Strict",
+        secure: false,
+        sameSite: "lax",
         maxAge: (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000,
     };
 }

@@ -12,10 +12,10 @@ export default function LogoutButton() {
     const mutation = useMutation({
         mutationFn: logout,
         onSuccess: (data) => {
-            useAuthStore.getState().setAccessToken(null);
             toast.success(data.message);
             console.log(data.message);
             navigate("/login");
+            useAuthStore.getState().logout();
         },
     });
 

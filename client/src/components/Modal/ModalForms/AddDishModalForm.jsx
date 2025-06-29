@@ -27,7 +27,8 @@ export default function AddDishForm() {
             clearSelectedIngredients();
             setDishName("");
             toast.success("Successfully created a new dish!");
-            console.info(`Created a new dish ${data.name}`);
+            console.info(`Created a new dish ${dish.name}`);
+            closeModal();
         },
     });
 
@@ -80,8 +81,6 @@ export default function AddDishForm() {
                             )
                         ),
                     });
-
-                    closeModal();
                 }}
                 className="add-dish__form"
             >

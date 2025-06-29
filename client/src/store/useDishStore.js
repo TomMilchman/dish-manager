@@ -14,6 +14,16 @@ const useDishStore = create(
             set({ dishes });
         },
 
+        getDishById: (dishId) => {
+            const { dishes } = get();
+            return dishes.find((dish) => dish._id === dishId);
+        },
+
+        isDishIdInSelectedDishIds: (dishId) => {
+            const { selectedDishIds } = get();
+            return selectedDishIds.includes(dishId);
+        },
+
         // Add a new dish to the list
         addDish: (dish) =>
             set((state) => ({ dishes: [...state.dishes, dish] })),
@@ -36,7 +46,7 @@ const useDishStore = create(
             })),
 
         // Select a dish
-        selectDish: (dishId) =>
+        selectDishById: (dishId) =>
             set((state) => ({
                 selectedDishIds: [
                     ...new Set([...state.selectedDishIds, dishId]),
@@ -44,7 +54,7 @@ const useDishStore = create(
             })),
 
         // Deselect a dish
-        deselectDish: (dishId) =>
+        deselectDishById: (dishId) =>
             set((state) => ({
                 selectedDishIds: state.selectedDishIds.filter(
                     (id) => id !== dishId
@@ -52,12 +62,12 @@ const useDishStore = create(
             })),
 
         // Toggle dish selection
-        toggleDishSelection: (dishId) => {
+        toggleDishSelectionById: (dishId) => {
             const { selectedDishIds } = get();
             if (selectedDishIds.includes(dishId)) {
-                get().deselectDish(dishId);
+                get().deselectDishById(dishId);
             } else {
-                get().selectDish(dishId);
+                get().selectDishById(dishId);
             }
         },
 
@@ -68,6 +78,12 @@ const useDishStore = create(
         getSelectedDishes: () => {
             const { dishes, selectedDishIds } = get();
             return dishes.filter((dish) => selectedDishIds.includes(dish._id));
+        },
+
+        clearAllDishFields: () => {
+            const { clearSelectedDishes, setDishes } = get();
+            setDishes([]);
+            clearSelectedDishes();
         },
     }))
 );

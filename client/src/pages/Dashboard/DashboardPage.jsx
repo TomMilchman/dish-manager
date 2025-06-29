@@ -7,9 +7,10 @@ import useIngredientStore from "../../store/useIngredientStore";
 import { getAllDishesFromServer } from "../../api/dishes.js";
 import { getAllIngredientsFromServer } from "../../api/ingredients.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
+import DishCard from "../../components/DishCard/DishCard.jsx";
 
 function Dashboard() {
-    const { setDishes } = useDishStore();
+    const { setDishes, dishes } = useDishStore();
     const { setIngredients } = useIngredientStore();
 
     const {
@@ -19,6 +20,7 @@ function Dashboard() {
     } = useQuery({
         queryKey: ["dishes"],
         queryFn: getAllDishesFromServer,
+        retry: true,
     });
 
     const {
@@ -28,6 +30,7 @@ function Dashboard() {
     } = useQuery({
         queryKey: ["ingredients"],
         queryFn: getAllIngredientsFromServer,
+        retry: true,
     });
 
     // Sync data into Zustand after query success
@@ -35,12 +38,14 @@ function Dashboard() {
         if (dishesSuccess && dishesData) {
             setDishes(dishesData.dishes);
         }
+        console.log(dishesData);
     }, [dishesSuccess, dishesData, setDishes]);
 
     useEffect(() => {
         if (ingredientsSuccess && ingredientsData) {
             setIngredients(ingredientsData.ingredients);
         }
+        console.log(ingredientsData);
     }, [ingredientsSuccess, ingredientsData, setIngredients]);
 
     if (dishesLoading || ingredientsLoading) {
@@ -48,11 +53,15 @@ function Dashboard() {
     }
 
     return (
-        <div className="dashboard">
+        <div className="dashboard__container">
             <TopBar />
-            <div className="main-content">
-                <div className="dish-panel"></div>
-                <div className="summary-panel"></div>
+            <div className="dashboard__main-content">
+                <div className="dashboard__dish-cards-panel">
+                    {dishes.map((dish) => (
+                        <DishCard key={dish._id} dishId={dish._id} />
+                    ))}
+                </div>
+                <div className="dashboard__summary-panel"></div>
             </div>
         </div>
     );

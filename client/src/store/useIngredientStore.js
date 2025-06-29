@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 const useIngredientStore = create(
-    devtools((set) => ({
+    devtools((set, get) => ({
         ingredients: [],
         selectedIngredients: [{ ingredientId: "", amount: 0 }], // [{ingredientId: String, amount: Number},...]
         setIngredients: (ingredients) => set({ ingredients }),
@@ -35,6 +35,11 @@ const useIngredientStore = create(
             }),
         clearSelectedIngredients: () =>
             set({ selectedIngredients: [{ ingredientId: "", amount: 0 }] }),
+        clearAllIngredientFields: () => {
+            const { setIngredients, clearSelectedIngredients } = get();
+            setIngredients([]);
+            clearSelectedIngredients();
+        },
     }))
 );
 

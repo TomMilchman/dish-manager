@@ -60,6 +60,16 @@ async function createUserDish(req, res) {
         });
     }
 
+    if (name.length > 30) {
+        logWarning(
+            "create user dish",
+            `User ${userId} tried to create a dish with name exceeding allowed name length.`
+        );
+        return res
+            .status(400)
+            .json({ message: "Dish name is too long (max characters is 30)" });
+    }
+
     try {
         const existingDish = await Dish.findOne({ name });
 
@@ -141,7 +151,9 @@ async function getDishes(req, res) {
 
             logInfo("get all dishes", `Admin retrieved all dishes.`);
         } else {
-            dishes = await Dish.find({ owner: userId }).populate("ingredients");
+            dishes = await Dish.find({ owner: userId }).populate(
+                "ingredients.ingredient"
+            );
 
             if (dishes.length === 0) {
                 logInfo(
@@ -211,7 +223,7 @@ async function getUserDishById(req, res) {
             dish = await Dish.findById(dishId)
                 .where("owner")
                 .equals(userId)
-                .populate("ingredients");
+                .populate("ingredients.ingredient");
         }
 
         if (!dish) {
