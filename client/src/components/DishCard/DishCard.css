@@ -9,7 +9,20 @@
     transition: transform 0.2s ease-in-out;
     cursor: pointer;
     color: #a32e03;
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.3);
+    gap: 0.5rem;
+}
+
+.dish-card__dish-name {
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+.dish-card__divider {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    margin: 0;
+    margin-bottom: 0.3rem;
 }
 
 .dish-card__button-control-container {
@@ -21,6 +34,12 @@
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
+}
+
+.dish-card__button-control-container .dish-card-hover-btn {
+    background: none;
+    border: none;
+    color: #a32e03;
 }
 
 .dish-card__container:hover {

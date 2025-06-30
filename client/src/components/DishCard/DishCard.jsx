@@ -68,7 +68,7 @@ export default function DishCard({ dishId, index }) {
                             e.stopPropagation();
                             deleteDishMutation.mutate(dishId);
                         }}
-                        className={"dish-delete-btn"}
+                        className={"dish-card-hover-btn"}
                         title={"Delete Dish"}
                         disabled={deleteDishMutation.isPending}
                     >
@@ -77,6 +77,7 @@ export default function DishCard({ dishId, index }) {
                 </div>
             )}
             <h3 className="dish-card__dish-name">{dish.name}</h3>
+            <hr className="dish-card__divider" />
             <ul className="dish-card__ingredient-list">
                 {dish.ingredients?.map((ingredientObj) => (
                     <li key={`${dishId}-${ingredientObj.ingredient.name}`}>
