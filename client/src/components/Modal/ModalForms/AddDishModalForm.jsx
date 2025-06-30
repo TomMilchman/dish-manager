@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
-import { handleSubmit } from "../../../utils/formHandlers";
-import IngredientInputRow from "../IngredientInputRow/IngredientInputRow";
-import useIngredientStore from "../../../store/useIngredientStore";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
+import "./ModalForms.css";
+import IngredientInputRow from "../IngredientInputRow/IngredientInputRow";
+
+import { handleSubmit } from "../../../utils/formHandlers";
 import { addDishToServer } from "../../../api/dishes";
+
+import useIngredientStore from "../../../store/useIngredientStore";
 import useDishStore from "../../../store/useDishStore";
 import useModalStore from "../../../store/useModalStore";
 
@@ -45,19 +49,21 @@ export default function AddDishForm() {
     return (
         <div className="add-dish__container">
             <h2>Add New Dish</h2>
-            <button
-                onClick={() => addIngredientRow()}
-                className="add-dish__add-row-btn"
-                disabled={selectedIngredients.length === ingredients.length}
-            >
-                Add Row
-            </button>
-            <button
-                onClick={() => clearSelectedIngredients()}
-                className="add-dish__clear-rows-btn"
-            >
-                Clear Rows
-            </button>
+            <div className="add-dish__row-controls">
+                <button
+                    onClick={() => addIngredientRow()}
+                    className="add-dish__add-row-btn"
+                    disabled={selectedIngredients.length === ingredients.length}
+                >
+                    Add Row
+                </button>
+                <button
+                    onClick={() => clearSelectedIngredients()}
+                    className="add-dish__clear-rows-btn"
+                >
+                    Clear Rows
+                </button>
+            </div>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -84,15 +90,19 @@ export default function AddDishForm() {
                 }}
                 className="add-dish__form"
             >
-                <label htmlFor="dish-name-input">Name:</label>
+                <div className="add-dish__name-container">
+                    <label htmlFor="dish-name-input">Name:</label>
 
-                <input
-                    className="add-dish__name-input"
-                    id="dish-name-input"
-                    type="text"
-                    placeholder="Dish Name"
-                    onChange={(e) => setDishName(e.target.value)}
-                />
+                    <input
+                        className="add-dish__name-input"
+                        id="dish-name-input"
+                        type="text"
+                        placeholder="Dish Name"
+                        onChange={(e) => setDishName(e.target.value)}
+                        required
+                    />
+                </div>
+                <hr className="add-dish__divider" />
                 <IngredientInputRow
                     key={0}
                     rowIndex={0}
@@ -110,7 +120,11 @@ export default function AddDishForm() {
                     />
                 ))}
 
-                <button type="submit" disabled={addDishMutation.isPending}>
+                <button
+                    className="add-dish__form-submit-btn"
+                    type="submit"
+                    disabled={addDishMutation.isPending}
+                >
                     Save
                 </button>
             </form>

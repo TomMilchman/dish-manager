@@ -10,14 +10,16 @@
     display: flex;
     align-items: start;
     justify-content: center;
+
+    overflow-y: auto;
 }
 
 .modal__content {
     background: white;
     padding: 2rem;
     margin-top: 20vh;
+    min-width: 20%;
     max-width: 500px;
-    width: 90%;
     height: auto;
     border-radius: 10px;
     position: relative;

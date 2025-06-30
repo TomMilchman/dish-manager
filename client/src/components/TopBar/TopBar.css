@@ -35,6 +35,6 @@
     gap: 0.5vw;
 }
 
-.top-bar__buttons-container .icon-button {
-    flex: 1;
+.top-bar__buttons-container .logout-btn {
+    background-color: #ff392e;
 }
