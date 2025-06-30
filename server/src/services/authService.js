@@ -31,7 +31,7 @@ const generateJWTTokens = (userId, rememberMe, role = "user") => {
         { userId, role },
         process.env.REFRESH_SECRET,
         {
-            expiresIn: rememberMe ? "30d" : "1d",
+            expiresIn: rememberMe ? "30d" : "15m",
         }
     );
 

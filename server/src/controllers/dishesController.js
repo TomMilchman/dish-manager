@@ -45,31 +45,6 @@ async function createUserDish(req, res) {
     const userId = req.user.userId;
     const { name, ingredients } = req.body;
 
-    if (
-        typeof name !== "string" ||
-        name.trim() === "" ||
-        !Array.isArray(ingredients) ||
-        ingredients.length === 0
-    ) {
-        logWarning(
-            "create user dish",
-            `User ${userId} tried to create dish with invalid or missing arguments.`
-        );
-        return res.status(400).json({
-            message: "Dish must have a name and at least one ingredient.",
-        });
-    }
-
-    if (name.length > 24) {
-        logWarning(
-            "create user dish",
-            `User ${userId} tried to create a dish with name exceeding allowed name length.`
-        );
-        return res
-            .status(400)
-            .json({ message: "Dish name is too long (max characters is 30)" });
-    }
-
     try {
         const existingDish = await Dish.findOne({ name });
 

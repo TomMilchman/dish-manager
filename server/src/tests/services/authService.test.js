@@ -41,7 +41,7 @@ describe("generateJWTTokens", () => {
         expect(jwt.sign).toHaveBeenCalledWith(
             { userId: "user123", role: "user" },
             "refreshsecret",
-            { expiresIn: "1d" }
+            { expiresIn: "15m" }
         );
 
         expect(tokens).toEqual({

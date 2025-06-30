@@ -1,13 +1,23 @@
 const express = require("express");
+const router = express.Router();
+
+// Controllers
 const dishesController = require("../controllers/dishesController");
 const ingredientsController = require("../controllers/ingredientsController");
+
+// Middlewares
 const {
     authenticateTokenMiddleware,
 } = require("../middlewares/authenticateTokenMiddleware");
 const {
     authorizeAdminMiddleware,
 } = require("../middlewares/authorizeAdminMiddleware");
-const router = express.Router();
+const { validatePart } = require("../middlewares/inputValidationMiddleware");
+
+// Schemas
+const sharedSchemas = require("../schemas/sharedSchemas");
+const ingredientsSchemas = require("../schemas/ingredientsSchemas");
+const dishesSchemas = require("../schemas/dishesSchemas");
 
 // Apply token authentication to all routes below
 router.use(authenticateTokenMiddleware);
@@ -15,20 +25,46 @@ router.use(authenticateTokenMiddleware);
 // ---------------------------- DISHES ROUTES ----------------------------
 router
     .route("/dishes")
-    .post(dishesController.createUserDish)
-    .get(dishesController.getDishes);
+    .post(
+        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
+        validatePart(dishesSchemas.createUserDishSchema, "body"),
+        dishesController.createUserDish
+    )
+    .get(
+        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
+        dishesController.getDishes
+    );
 
 router
     .route("/dishes/:dishId")
-    .get(dishesController.getUserDishById)
-    .put(dishesController.updateDish)
-    .delete(dishesController.deleteDish);
+    .get(
+        validatePart(dishesSchemas.dishIdSchema, "params"),
+        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
+        dishesController.getUserDishById
+    )
+    .put(
+        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
+        validatePart(dishesSchemas.dishIdSchema, "params"),
+        validatePart(dishesSchemas.updateDishSchema, "body"),
+        dishesController.updateDish
+    )
+    .delete(
+        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
+        validatePart(dishesSchemas.dishIdSchema, "params"),
+        dishesController.deleteDish
+    );
 
 // ------------------------- INGREDIENTS ROUTES --------------------------
 // Accessible by all authenticated users
-router.get("/ingredients", ingredientsController.getAllIngredients);
+router.get(
+    "/ingredients",
+    validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
+    ingredientsController.getAllIngredients
+);
 router.get(
     "/ingredients/:ingredientId",
+    validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
+    validatePart(ingredientsSchemas.ingredientIdSchema, "params"),
     ingredientsController.getIngredientById
 );
 
@@ -36,12 +72,22 @@ router.get(
 router.post(
     "/ingredients",
     authorizeAdminMiddleware,
+    validatePart(ingredientsSchemas.createIngredientSchema, "body"),
     ingredientsController.createIngredient
 );
 
 router
     .route("/ingredients/:ingredientId")
-    .put(authorizeAdminMiddleware, ingredientsController.updateIngredient)
-    .delete(authorizeAdminMiddleware, ingredientsController.deleteIngredient);
+    .put(
+        authorizeAdminMiddleware,
+        validatePart(ingredientsSchemas.ingredientIdSchema, "params"),
+        validatePart(ingredientsSchemas.updateIngredientSchema, "body"),
+        ingredientsController.updateIngredient
+    )
+    .delete(
+        authorizeAdminMiddleware,
+        validatePart(ingredientsSchemas.ingredientIdSchema, "params"),
+        ingredientsController.deleteIngredient
+    );
 
 module.exports = router;

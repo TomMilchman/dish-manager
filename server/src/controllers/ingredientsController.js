@@ -12,13 +12,6 @@ async function createIngredient(req, res) {
     const { name, unitType, pricePerUnit, pricePer100g, pricePerLiter } =
         req.body;
 
-    // Validate required fields
-    if (!name || !unitType) {
-        return res
-            .status(400)
-            .json({ message: "Name and unitType are required." });
-    }
-
     if (!["unit", "gram", "liter"].includes(unitType)) {
         return res.status(400).json({
             message: "Invalid unitType. Must be 'unit', 'gram', or 'liter'.",
@@ -27,30 +20,15 @@ async function createIngredient(req, res) {
 
     let priceField;
 
-    if (unitType === "unit") {
-        if (typeof pricePerUnit !== "number") {
-            return res
-                .status(400)
-                .json({ message: "pricePerUnit is required for unit type." });
-        }
-
-        priceField = { pricePerUnit };
-    } else if (unitType === "gram") {
-        if (typeof pricePer100g !== "number") {
-            return res
-                .status(400)
-                .json({ message: "pricePer100g is required for gram type." });
-        }
-
-        priceField = { pricePer100g };
-    } else if (unitType === "liter") {
-        if (typeof pricePerLiter !== "number") {
-            return res
-                .status(400)
-                .json({ message: "pricePerLiter is required for liter type." });
-        }
-
-        priceField = { pricePerLiter };
+    switch (unitType) {
+        case "unit":
+            priceField = { pricePerUnit };
+            break;
+        case "gram":
+            priceField = { pricePer100g };
+            break;
+        case "liter":
+            priceField = { pricePerLiter };
     }
 
     try {
@@ -108,7 +86,7 @@ async function getAllIngredients(req, res) {
  */
 async function getIngredientById(req, res) {
     const { userId } = req.user;
-    const { ingredientId } = req.params.ingredientId;
+    const { ingredientId } = req.params;
 
     try {
         const ingredient = await Ingredient.findById(ingredientId);
