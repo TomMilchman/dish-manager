@@ -18,6 +18,7 @@ import { getAllIngredientsFromServer } from "../../api/ingredients.js";
 import TopBar from "../../components/TopBar/TopBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 import DishCard from "../../components/DishCard/DishCard.jsx";
+import SummaryPanel from "../../components/SummaryPanel/SummaryPanel.jsx";
 
 export default function DashboardPage() {
     const { setDishes, dishes } = useDishStore();
@@ -31,7 +32,6 @@ export default function DashboardPage() {
     } = useQuery({
         queryKey: ["dishes"],
         queryFn: getAllDishesFromServer,
-        retry: true,
     });
 
     const {
@@ -41,7 +41,6 @@ export default function DashboardPage() {
     } = useQuery({
         queryKey: ["ingredients"],
         queryFn: getAllIngredientsFromServer,
-        retry: true,
     });
 
     // Sync data into Zustand after query success
@@ -75,7 +74,9 @@ export default function DashboardPage() {
                         <DishCard key={index} dishId={dish._id} index={index} />
                     ))}
                 </div>
-                <div className="dashboard__summary-panel"></div>
+                <div className="dashboard__summary-panel">
+                    <SummaryPanel />
+                </div>
             </div>
         </div>
     );
