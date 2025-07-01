@@ -20,9 +20,9 @@ import { getAllIngredientsFromServer } from "../../api/ingredients.js";
 import TopBar from "../../components/TopBar/TopBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 import DishCard from "../../components/DishCard/DishCard.jsx";
-import AddDishForm from "../../components/Modal/ModalForms/AddDishModalForm.jsx";
+import DishFormModal from "../../components/Modal/ModalForms/DishFormModal.jsx";
 
-export default function Dashboard() {
+export default function DashboardPage() {
     const { setDishes, dishes, clearSelectedDishes } = useDishStore();
     const { setIngredients } = useIngredientStore();
     const openModal = useModalStore((state) => state.openModal);
@@ -71,7 +71,10 @@ export default function Dashboard() {
                 <button
                     className="dashboard-btn add-dish-btn"
                     title="Add Dish"
-                    onClick={() => openModal(<AddDishForm />)}
+                    onClick={() => {
+                        useDishStore.getState().clearDishToEdit();
+                        openModal(<DishFormModal />);
+                    }}
                 >
                     <FaPlus /> Add Dish
                 </button>
@@ -85,7 +88,7 @@ export default function Dashboard() {
             </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
-                    {dishes.map((dish, index) => (
+                    {dishes?.map((dish, index) => (
                         <DishCard key={index} dishId={dish._id} index={index} />
                     ))}
                 </div>

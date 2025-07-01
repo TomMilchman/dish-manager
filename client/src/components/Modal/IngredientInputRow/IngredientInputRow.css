@@ -31,6 +31,10 @@
     margin-bottom: 1rem;
 }
 
+.ingredient-input-row__amount-input {
+    width: 20%;
+}
+
 .ingredient-input-row__divider {
     border: none;
     border-top: 1px solid rgba(0, 0, 0, 0.2);

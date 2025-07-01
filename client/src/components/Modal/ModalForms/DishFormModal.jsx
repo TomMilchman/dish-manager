@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -6,34 +6,64 @@ import "./ModalForms.css";
 import IngredientInputRow from "../IngredientInputRow/IngredientInputRow";
 
 import { handleSubmit } from "../../../utils/formHandlers";
-import { addDishToServer } from "../../../api/dishes";
+import { addDishToServer, updateDishInServer } from "../../../api/dishes";
 
 import useIngredientStore from "../../../store/useIngredientStore";
 import useDishStore from "../../../store/useDishStore";
 import useModalStore from "../../../store/useModalStore";
 
-export default function AddDishForm() {
-    const [dishName, setDishName] = useState("");
+export default function DishFormModal() {
+    const { dishToEdit, clearDishToEdit } = useDishStore();
+    const { closeModal } = useModalStore();
     const {
         ingredients,
         selectedIngredients,
+        setSelectedIngredients,
         removeSelectedIngredientAtIndex,
         addIngredientRow,
         clearSelectedIngredients,
     } = useIngredientStore();
-    const { closeModal } = useModalStore();
 
-    const addDishMutation = useMutation({
-        mutationFn: addDishToServer,
-        onSuccess: (data) => {
-            const dish = data.dish;
-            useDishStore.getState().addDish(dish);
+    const [dishName, setDishName] = useState("");
+    const isEdit = Boolean(dishToEdit);
+    const [originalIngredients] = useState(dishToEdit?.ingredients || []);
+
+    useEffect(() => {
+        if (dishToEdit) {
+            setDishName(dishToEdit.name);
+
+            const formatted = dishToEdit.ingredients.map(
+                ({ ingredient, amount }) => ({
+                    ingredientId: ingredient._id || ingredient, // handle both populated and raw IDs
+                    amount,
+                })
+            );
+            setSelectedIngredients(formatted);
+        } else {
             clearSelectedIngredients();
-            setDishName("");
+        }
+    }, [clearSelectedIngredients, dishToEdit, setSelectedIngredients]);
+
+    const onSuccessHandler = (data) => {
+        const dish = data.dish;
+
+        if (isEdit) {
+            useDishStore.getState().updateDish(dish);
+            toast.success("Successfully updated dish!");
+        } else {
+            useDishStore.getState().addDish(dish);
             toast.success("Successfully created a new dish!");
-            console.info(`Created a new dish ${dish.name}`);
-            closeModal();
-        },
+        }
+
+        clearSelectedIngredients();
+        setDishName("");
+        clearDishToEdit();
+        closeModal();
+    };
+
+    const mutation = useMutation({
+        mutationFn: isEdit ? updateDishInServer : addDishToServer,
+        onSuccess: onSuccessHandler,
     });
 
     function renameKeyImmutable(obj, oldKey, newKey) {
@@ -47,22 +77,42 @@ export default function AddDishForm() {
         );
 
     return (
-        <div className="add-dish__container">
-            <h2>Add New Dish</h2>
-            <div className="add-dish__row-controls">
+        <div className="dish-modal__container">
+            <h2>{isEdit ? "Edit Dish" : "Add New Dish"}</h2>
+            <div className="dish-modal__row-controls">
                 <button
                     onClick={() => addIngredientRow()}
-                    className="add-dish__add-row-btn"
+                    className="dish-modal__add-row-btn"
                     disabled={selectedIngredients.length === ingredients.length}
                 >
                     Add Row
                 </button>
                 <button
                     onClick={() => clearSelectedIngredients()}
-                    className="add-dish__clear-rows-btn"
+                    className="dish-modal__clear-rows-btn"
                 >
                     Clear Rows
                 </button>
+                {isEdit && (
+                    <button
+                        type="button"
+                        className="dish-modal__revert-btn"
+                        onClick={() => {
+                            setDishName(dishToEdit.name);
+                            setSelectedIngredients(
+                                originalIngredients.map(
+                                    ({ ingredient, amount }) => ({
+                                        ingredientId:
+                                            ingredient._id || ingredient,
+                                        amount,
+                                    })
+                                )
+                            );
+                        }}
+                    >
+                        Revert Changes
+                    </button>
+                )}
             </div>
             <form
                 onSubmit={(e) => {
@@ -72,13 +122,11 @@ export default function AddDishForm() {
                         toast.error(
                             "Invalid input, please fill in all fields."
                         );
-                        console.error("Invalid input for Add Dish form.");
                         return;
                     }
 
-                    handleSubmit(e, addDishMutation, {
+                    const payload = {
                         name: dishName,
-                        // Dish creation route in server expects the field ingredient inside each array object
                         ingredients: selectedIngredients.map((obj) =>
                             renameKeyImmutable(
                                 obj,
@@ -86,23 +134,33 @@ export default function AddDishForm() {
                                 "ingredient"
                             )
                         ),
-                    });
+                    };
+
+                    if (isEdit) {
+                        handleSubmit(e, mutation, {
+                            id: dishToEdit._id,
+                            updates: payload,
+                        });
+                    } else {
+                        handleSubmit(e, mutation, payload);
+                    }
                 }}
-                className="add-dish__form"
+                className="dish-modal__form"
             >
-                <div className="add-dish__name-container">
+                <div className="dish-modal__name-container">
                     <label htmlFor="dish-name-input">Name:</label>
 
                     <input
-                        className="add-dish__name-input"
+                        className="dish-modal__name-input"
                         id="dish-name-input"
                         type="text"
                         placeholder="Dish Name"
+                        value={dishName}
                         onChange={(e) => setDishName(e.target.value)}
                         required
                     />
                 </div>
-                <hr className="add-dish__divider" />
+                <hr className="dish-modal__divider" />
                 <IngredientInputRow
                     key={0}
                     rowIndex={0}
@@ -121,9 +179,9 @@ export default function AddDishForm() {
                 ))}
 
                 <button
-                    className="add-dish__form-submit-btn"
+                    className="dish-modal__form-submit-btn"
                     type="submit"
-                    disabled={addDishMutation.isPending}
+                    disabled={mutation.isPending}
                 >
                     Save
                 </button>

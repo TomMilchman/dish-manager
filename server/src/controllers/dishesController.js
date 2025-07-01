@@ -46,7 +46,7 @@ async function createUserDish(req, res) {
     const { name, ingredients } = req.body;
 
     try {
-        const existingDish = await Dish.findOne({ name });
+        const existingDish = await Dish.findOne({ name, owner: userId });
 
         if (existingDish) {
             logWarning(
@@ -261,25 +261,58 @@ async function updateDish(req, res) {
     const role = req.user.role;
 
     try {
+        // Check if user owns the dish or is admin
         const dish = await Dish.findById(dishId);
 
         if (!dish) {
+            logWarning(
+                "UPDATE DISH",
+                `User ID ${userId} tried to update a non-existing dish ID ${dishId}`
+            );
             return res.status(404).json({ message: "Dish not found." });
         }
 
         if (dish.owner.toString() !== userId && role !== "admin") {
+            logWarning(
+                "UPDATE DISH",
+                `User ID ${userId} tried to update a dish not owned by them: ${dishId}`
+            );
             return res.status(403).json({ message: "Access denied." });
         }
 
-        Object.assign(dish, req.body);
-        await dish.save();
+        // Prepare the update payload
+        const updates = {
+            name: req.body.name,
+            ingredients: req.body.ingredients,
+        };
 
+        // Check that dish doesn't have a duplicate name
+        const dishWithSameName = await Dish.findOne()
+            .where("name")
+            .equals(req.body.name)
+            .where("owner")
+            .equals(userId)
+            .where("_id")
+            .ne(dishId);
+
+        if (dishWithSameName) {
+            return res.status(409).json({
+                message:
+                    "A dish with the same name already exists for this user.",
+            });
+        }
+
+        await Dish.updateOne({ _id: dishId }, { $set: updates });
+
+        // Fetch updated dish to return
+        const updatedDish = await Dish.findById(dishId).populate(
+            "ingredients.ingredient"
+        );
         logInfo(
             "UPDATE DISH",
             `Dish ${dish.name} (ID ${dishId}) updated by user ID ${userId} (${role})`
         );
-
-        res.status(200).json({ dish });
+        res.status(200).json({ dish: updatedDish });
     } catch (err) {
         logError("UPDATE DISH", `Error updating dish ID ${dishId}: ${err}`);
         res.status(500).json({ message: "Internal server error." });

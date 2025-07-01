@@ -8,6 +8,7 @@ coverage
 build
 
 # misc
+.vscode
 .qodo
 .DS_Store
 .env.local

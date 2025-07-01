@@ -33,6 +33,8 @@ const useIngredientStore = create(
                             : [{ ingredientId: "", amount: 0 }],
                 };
             }),
+        setSelectedIngredients: (ingredients) =>
+            set({ selectedIngredients: ingredients }),
         clearSelectedIngredients: () =>
             set({ selectedIngredients: [{ ingredientId: "", amount: 0 }] }),
         clearAllIngredientFields: () => {

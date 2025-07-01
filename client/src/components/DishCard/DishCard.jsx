@@ -3,6 +3,7 @@ import "./DishCard.css";
 
 // State Management
 import useDishStore from "../../store/useDishStore";
+import useModalStore from "../../store/useModalStore";
 
 // React Packages
 import { useState } from "react";
@@ -13,9 +14,17 @@ import { FaTrash, FaPencil } from "react-icons/fa6";
 // API
 import { deleteDishFromServer } from "../../api/dishes";
 
+// Components
+import DishFormModal from "../Modal/ModalForms/DishFormModal";
+
 export default function DishCard({ dishId, index }) {
-    const { getDishById, toggleDishSelectionById, isDishIdInSelectedDishIds } =
-        useDishStore();
+    const {
+        getDishById,
+        toggleDishSelectionById,
+        isDishIdInSelectedDishIds,
+        setDishToEdit,
+    } = useDishStore();
+    const { openModal } = useModalStore();
     const dish = getDishById(dishId);
     const isSelected = isDishIdInSelectedDishIds(dishId);
     const [isHovered, setIsHovered] = useState(false);
@@ -66,6 +75,8 @@ export default function DishCard({ dishId, index }) {
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
+                            setDishToEdit(dish);
+                            openModal(<DishFormModal />);
                         }}
                         className={"dish-card-hover-btn"}
                         title={"Edit Dish"}

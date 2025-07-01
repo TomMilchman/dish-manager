@@ -63,6 +63,7 @@ export default function IngredientInputRow({
                 <div className="ingredient-input-row__amount-input-container">
                     <input
                         id={`amount-input-${rowIndex}`}
+                        className="ingredient-input-row__amount-input"
                         type="number"
                         required
                         min={0}
@@ -73,7 +74,9 @@ export default function IngredientInputRow({
                     />
 
                     <label>
-                        {getIngredientUnitType(currentIngredient.ingredientId)}
+                        {`${getIngredientUnitType(
+                            currentIngredient.ingredientId
+                        )}(s)`}
                     </label>
                 </div>
             </div>
@@ -81,6 +84,7 @@ export default function IngredientInputRow({
             <button
                 onClick={onDelete}
                 className="ingredient-input-row__delete-btn"
+                title="Delete Ingredient"
                 type="button"
                 disabled={rowIndex === 0}
             >

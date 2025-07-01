@@ -9,6 +9,9 @@ const useDishStore = create(
         // IDs of selected dishes (for summary view)
         selectedDishIds: [],
 
+        // The dish that is currently being edited in the update form
+        dishToEdit: null,
+
         // Set the entire dishes list
         setDishes: (dishes) => {
             set({ dishes });
@@ -28,7 +31,9 @@ const useDishStore = create(
 
         // Add a new dish to the list
         addDish: (dish) =>
-            set((state) => ({ dishes: [...state.dishes, dish] })),
+            set((state) => ({
+                dishes: [...(state.dishes || []), dish],
+            })),
 
         // Update an existing dish
         updateDish: (updatedDish) =>
@@ -81,6 +86,12 @@ const useDishStore = create(
             const { dishes, selectedDishIds } = get();
             return dishes.filter((dish) => selectedDishIds.includes(dish._id));
         },
+
+        // Set the currently edited dish
+        setDishToEdit: (dish) => set({ dishToEdit: dish }),
+
+        // Clears the currently edited dish
+        clearDishToEdit: () => set({ dishToEdit: null }),
 
         clearAllDishFields: () => {
             const { clearSelectedDishes, setDishes } = get();

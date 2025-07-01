@@ -10,7 +10,11 @@ export default function ModalContainer() {
     return (
         <div className="modal">
             <div className="modal__content">
-                <button className="modal__close-button" onClick={closeModal}>
+                <button
+                    className="modal__close-button"
+                    title="Close"
+                    onClick={closeModal}
+                >
                     <FaX />
                 </button>
                 {content}

@@ -1,39 +1,42 @@
 /* Add Dish Modal -----------------------------------------------------------*/
 
-.add-dish__container {
+.dish-modal__container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.add-dish__form {
+.dish-modal__form {
+    max-height: 80vh;
+    width: 25vw;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    overflow-y: auto;
 }
 
-.add-dish__row-controls {
+.dish-modal__row-controls {
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
-.add-dish__name-container {
+.dish-modal__name-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.add-dish__divider {
+.dish-modal__divider {
     border: none;
     border-top: 1px solid rgba(0, 0, 0, 0.2);
     margin: 0;
     margin-top: 0.3rem;
     margin-bottom: 0.3rem;
-    width: 100%;
+    width: 50%;
     height: 1px;
 }
