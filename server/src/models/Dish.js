@@ -4,7 +4,6 @@ const dishSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
         maxLength: 24,
     },
     ingredients: [
