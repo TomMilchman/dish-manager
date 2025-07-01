@@ -9,6 +9,33 @@
     box-sizing: border-box;
 }
 
+.top-bar-btn {
+    background-color: #fd5e19;
+    color: white;
+    font-family: "Baloo2", sans-serif;
+    font-size: 24px;
+    font-weight: normal;
+    border-radius: 8px;
+    border: none;
+    padding: 0.2rem 1rem;
+    cursor: pointer;
+    height: 3rem;
+    width: auto;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.25rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.top-bar__logo-and-left-buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
 .top-bar__logo-container {
     display: flex;
     align-items: center;
@@ -28,13 +55,24 @@
     user-select: none;
 }
 
-.top-bar__buttons-container {
+.top-bar__left-buttons-container {
+    margin-left: 2rem;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.add-dish-btn {
+    background-color: #2b9341;
+}
+
+.top-bar__right-buttons-container {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5vw;
 }
 
-.top-bar__buttons-container .logout-btn {
+.top-bar__right-buttons-container .logout-btn {
     background-color: #ff392e;
 }

@@ -24,6 +24,15 @@ body {
     font-family: "Baloo2";
 }
 
+h1,
+h2,
+h3,
+h4,
+hr {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 .App {
     text-align: center;
 }

@@ -8,38 +8,17 @@
     flex-direction: column;
 }
 
-.dashboard-btn {
-    background-color: #fd5e19;
-    color: white;
-    font-family: "Baloo2", sans-serif;
-    font-size: 24px;
-    font-weight: normal;
-    border-radius: 8px;
-    border: none;
-    padding: 0.2rem 1rem;
-    cursor: pointer;
-    height: 3rem;
-    width: auto;
-
-    display: flex;
-    flex-direction: row;
-    gap: 0.25rem;
-    align-items: center;
-    justify-content: center;
-}
-
 /* Dish Card Panel-------------------------------------------------------- */
-
-.dashboard__dish-cards-controls {
-    margin-top: 1rem;
-    margin-left: 2rem;
+.dashboard__top-container {
     display: flex;
-    flex-direction: row;
-    gap: 1rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
 }
 
-.add-dish-btn {
-    background-color: #2b9341;
+.dashboard__username-header {
+    color: white;
+    margin: 0;
 }
 
 .dashboard__main-content {

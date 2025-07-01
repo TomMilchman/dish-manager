@@ -1,16 +1,14 @@
 // External libraries
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FaPlus } from "react-icons/fa6";
-import { MdOutlinePlaylistRemove } from "react-icons/md";
 
 // Styles
 import "./DashboardPage.css";
 
 // State management
 import useDishStore from "../../store/useDishStore";
-import useModalStore from "../../store/useModalStore";
 import useIngredientStore from "../../store/useIngredientStore";
+import useAuthStore from "../../store/useAuthStore.js";
 
 // API
 import { getAllDishesFromServer } from "../../api/dishes.js";
@@ -20,12 +18,11 @@ import { getAllIngredientsFromServer } from "../../api/ingredients.js";
 import TopBar from "../../components/TopBar/TopBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 import DishCard from "../../components/DishCard/DishCard.jsx";
-import DishFormModal from "../../components/Modal/ModalForms/DishFormModal.jsx";
 
 export default function DashboardPage() {
-    const { setDishes, dishes, clearSelectedDishes } = useDishStore();
+    const { setDishes, dishes } = useDishStore();
+    const { username } = useAuthStore();
     const { setIngredients } = useIngredientStore();
-    const openModal = useModalStore((state) => state.openModal);
 
     const {
         data: dishesData,
@@ -67,24 +64,10 @@ export default function DashboardPage() {
     return (
         <div className="dashboard__container">
             <TopBar />
-            <div className="dashboard__dish-cards-controls">
-                <button
-                    className="dashboard-btn add-dish-btn"
-                    title="Add Dish"
-                    onClick={() => {
-                        useDishStore.getState().clearDishToEdit();
-                        openModal(<DishFormModal />);
-                    }}
-                >
-                    <FaPlus /> Add Dish
-                </button>
-                <button
-                    className="dashboard-btn clear-card-selection-btn"
-                    title="Clear Selection"
-                    onClick={() => clearSelectedDishes()}
-                >
-                    <MdOutlinePlaylistRemove /> Clear Selection
-                </button>
+            <div className="dashboard__top-container">
+                <h1 className="dashboard__username-header">
+                    {username}'s Dashboard
+                </h1>
             </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
