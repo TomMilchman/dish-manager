@@ -24,14 +24,14 @@ const generateJWTTokens = (userId, rememberMe, role = "user") => {
     }
 
     const accessToken = jwt.sign({ userId, role }, process.env.JWT_SECRET, {
-        expiresIn: rememberMe ? "7d" : "15m",
+        expiresIn: "15m",
     });
 
     const refreshToken = jwt.sign(
         { userId, role },
         process.env.REFRESH_SECRET,
         {
-            expiresIn: rememberMe ? "30d" : "15m",
+            expiresIn: rememberMe ? "30d" : "1d",
         }
     );
 

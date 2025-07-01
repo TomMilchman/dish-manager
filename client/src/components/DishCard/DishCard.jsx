@@ -8,7 +8,7 @@ import useDishStore from "../../store/useDishStore";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { FaTrash } from "react-icons/fa6";
+import { FaTrash, FaPencil } from "react-icons/fa6";
 
 // API
 import { deleteDishFromServer } from "../../api/dishes";
@@ -63,6 +63,15 @@ export default function DishCard({ dishId, index }) {
         >
             {isHovered && (
                 <div className="dish-card__button-control-container">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                        className={"dish-card-hover-btn"}
+                        title={"Edit Dish"}
+                    >
+                        <FaPencil />
+                    </button>
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
