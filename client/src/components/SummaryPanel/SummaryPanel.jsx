@@ -3,13 +3,12 @@ import { useMemo } from "react";
 import useDishStore from "../../store/useDishStore";
 
 export default function SummaryPanel() {
+    const dishesMap = useDishStore((state) => state.dishesById);
     const selectedDishIds = useDishStore((state) => state.selectedDishIds);
-    const dishes = useDishStore((state) => state.dishes);
 
-    const selectedDishes = useMemo(
-        () => dishes.filter((d) => selectedDishIds.includes(d._id)),
-        [dishes, selectedDishIds]
-    );
+    const selectedDishes = useMemo(() => {
+        return selectedDishIds.map((id) => dishesMap[id]).filter(Boolean);
+    }, [dishesMap, selectedDishIds]);
 
     const aggregatedIngredients = useMemo(() => {
         const map = new Map();
@@ -64,8 +63,8 @@ export default function SummaryPanel() {
                             </tr>
                         </thead>
                         <tbody>
-                            {aggregatedIngredients.map((ing) => (
-                                <tr key={ing.id}>
+                            {aggregatedIngredients.map((ing, idx) => (
+                                <tr key={`${ing.id}-${idx}`}>
                                     <td>{ing.name}</td>
                                     <td>
                                         {ing.amount} {ing.unitType}(s)
@@ -91,7 +90,7 @@ export default function SummaryPanel() {
                 )}
             </div>
             <div className="summary-panel__total-cost-container">
-                <h2>Total Cost: ${totalCost}</h2>
+                <h2>Sum Total: ${totalCost}</h2>
             </div>
         </div>
     );

@@ -44,7 +44,11 @@ export default function DishCard({ dishId, index }) {
         }
     }
 
-    // TODO: Aggregate all mutations to the same file
+    const unitSuffix = {
+        gram: "G",
+        liter: "L",
+    };
+
     const deleteDishMutation = useMutation({
         mutationFn: deleteDishFromServer,
         onSuccess: (data) => {
@@ -101,7 +105,10 @@ export default function DishCard({ dishId, index }) {
             <ul className="dish-card__ingredient-list">
                 {dish.ingredients?.map((ingredientObj) => (
                     <li key={`${dishId}-${ingredientObj.ingredient.name}`}>
-                        {ingredientObj.ingredient.name}
+                        {ingredientObj.ingredient.name} x{" "}
+                        {`${ingredientObj.amount}${
+                            unitSuffix[ingredientObj.ingredient.unitType] || ""
+                        }`}
                     </li>
                 ))}
             </ul>

@@ -1,5 +1,6 @@
 import "./IngredientInputRow.css";
 import useIngredientStore from "../../../store/useIngredientStore";
+import { getPriceForIngredient } from "../../../utils/dishUtils";
 import { FaTrash } from "react-icons/fa";
 
 export default function IngredientInputRow({
@@ -11,6 +12,7 @@ export default function IngredientInputRow({
         ingredients: allIngredients,
         selectedIngredients,
         updateSelectedIngredientAtIndex,
+        getIngredientById,
     } = useIngredientStore();
 
     const handleFieldChange = (field, value) => {
@@ -80,6 +82,14 @@ export default function IngredientInputRow({
                     </label>
                 </div>
             </div>
+            {currentIngredient.ingredientId && (
+                <label>
+                    Base Price: $
+                    {getPriceForIngredient(
+                        getIngredientById(currentIngredient.ingredientId)
+                    )}
+                </label>
+            )}
 
             <button
                 onClick={onDelete}

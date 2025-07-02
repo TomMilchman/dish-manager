@@ -21,7 +21,7 @@ import DishCard from "../../components/DishCard/DishCard.jsx";
 import SummaryPanel from "../../components/SummaryPanel/SummaryPanel.jsx";
 
 export default function DashboardPage() {
-    const { setDishes, dishes } = useDishStore();
+    const { setDishes, dishesById } = useDishStore();
     const { username } = useAuthStore();
     const { setIngredients } = useIngredientStore();
 
@@ -70,7 +70,7 @@ export default function DashboardPage() {
             </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
-                    {dishes?.map((dish, index) => (
+                    {Object.values(dishesById)?.map((dish, index) => (
                         <DishCard key={index} dishId={dish._id} index={index} />
                     ))}
                 </div>

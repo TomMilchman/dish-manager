@@ -4,7 +4,7 @@ import { devtools } from "zustand/middleware";
 const useDishStore = create(
     devtools((set, get) => ({
         // All fetched dishes from the server
-        dishes: [],
+        dishesById: {}, // object: { [id]: dish }
 
         // IDs of selected dishes (for summary view)
         selectedDishIds: [],
@@ -12,45 +12,42 @@ const useDishStore = create(
         // The dish that is currently being edited in the update form
         dishToEdit: null,
 
-        // Set the entire dishes list
-        setDishes: (dishes) => {
-            set({ dishes });
+        setDishes: (dishesArray) => {
+            const dishesMap = dishesArray.reduce((acc, dish) => {
+                acc[dish._id] = dish;
+                return acc;
+            }, {});
+            set({ dishesById: dishesMap });
         },
 
-        // Returns the dish object according to ID
         getDishById: (dishId) => {
-            const { dishes } = get();
-            return dishes.find((dish) => dish._id === dishId);
+            const { dishesById } = get();
+            return dishesById[dishId];
         },
 
-        // Returns whether dish ID is in selected dishes or not
-        isDishIdInSelectedDishIds: (dishId) => {
-            const { selectedDishIds } = get();
-            return selectedDishIds.includes(dishId);
-        },
-
-        // Add a new dish to the list
         addDish: (dish) =>
             set((state) => ({
-                dishes: [...(state.dishes || []), dish],
+                dishesById: { ...state.dishesById, [dish._id]: dish },
             })),
 
-        // Update an existing dish
         updateDish: (updatedDish) =>
             set((state) => ({
-                dishes: state.dishes.map((dish) =>
-                    dish._id === updatedDish._id ? updatedDish : dish
-                ),
+                dishesById: {
+                    ...state.dishesById,
+                    [updatedDish._id]: updatedDish,
+                },
             })),
 
-        // Delete a dish by ID
         deleteDishById: (dishId) =>
-            set((state) => ({
-                dishes: state.dishes.filter((dish) => dish._id !== dishId),
-                selectedDishIds: state.selectedDishIds.filter(
-                    (id) => id !== dishId
-                ),
-            })),
+            set((state) => {
+                const { [dishId]: _, ...rest } = state.dishesById;
+                return { dishesById: rest };
+            }),
+
+        getSelectedDishes: () => {
+            const { dishesById, selectedDishIds } = get();
+            return selectedDishIds.map((id) => dishesById[id]).filter(Boolean);
+        },
 
         // Select a dish
         selectDishById: (dishId) =>
@@ -78,14 +75,14 @@ const useDishStore = create(
             }
         },
 
+        // Returns whether dish ID is in selected dishes or not
+        isDishIdInSelectedDishIds: (dishId) => {
+            const { selectedDishIds } = get();
+            return selectedDishIds.includes(dishId);
+        },
+
         // Clear all selections
         clearSelectedDishes: () => set({ selectedDishIds: [] }),
-
-        // Get selected dish objects
-        getSelectedDishes: () => {
-            const { dishes, selectedDishIds } = get();
-            return dishes.filter((dish) => selectedDishIds.includes(dish._id));
-        },
 
         // Set the currently edited dish
         setDishToEdit: (dish) => set({ dishToEdit: dish }),
