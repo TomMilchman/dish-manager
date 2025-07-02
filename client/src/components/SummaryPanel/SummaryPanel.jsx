@@ -1,3 +1,4 @@
+import "./SummaryPanel.css";
 import { useMemo } from "react";
 import useDishStore from "../../store/useDishStore";
 
@@ -46,45 +47,48 @@ export default function SummaryPanel() {
         }, 0);
     }, [aggregatedIngredients]);
 
-    if (selectedDishes.length === 0) {
-        return <p>No Dishes Selected</p>;
-    }
-
     return (
         <div className="summary-panel__container">
             <div className="summary-panel__aggregated-ingredients-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ingredient</th>
-                            <th>Amount</th>
-                            <th>Cost</th>
-                            <th>Total Cost</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {aggregatedIngredients.map((ing) => (
-                            <tr key={ing.id}>
-                                <td>{ing.name}</td>
-                                <td>
-                                    {ing.amount} {ing.unitType}(s)
-                                </td>
-                                <td>
-                                    {ing.unitType === "unit"
-                                        ? `$${ing.price}/unit`
-                                        : ing.unitType === "liter"
-                                        ? `$${ing.price}/liter`
-                                        : `$${ing.price}/100g`}
-                                </td>
-                                <td>
-                                    {ing.unitType === "gram"
-                                        ? `$${(ing.amount / 100) * ing.price}`
-                                        : `$${ing.amount * ing.price}`}
-                                </td>
+                <h1>Summary Panel</h1>
+                {selectedDishes.length === 0 ? (
+                    <p>No Dishes Selected</p>
+                ) : (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ingredient</th>
+                                <th>Amount</th>
+                                <th>Cost</th>
+                                <th>Total Cost</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {aggregatedIngredients.map((ing) => (
+                                <tr key={ing.id}>
+                                    <td>{ing.name}</td>
+                                    <td>
+                                        {ing.amount} {ing.unitType}(s)
+                                    </td>
+                                    <td>
+                                        {ing.unitType === "unit"
+                                            ? `$${ing.price}/unit`
+                                            : ing.unitType === "liter"
+                                            ? `$${ing.price}/liter`
+                                            : `$${ing.price}/100g`}
+                                    </td>
+                                    <td>
+                                        {ing.unitType === "gram"
+                                            ? `$${
+                                                  (ing.amount / 100) * ing.price
+                                              }`
+                                            : `$${ing.amount * ing.price}`}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
             <div className="summary-panel__total-cost-container">
                 <h2>Total Cost: ${totalCost}</h2>

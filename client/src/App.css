@@ -21,7 +21,7 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: "Baloo2";
+    font-family: "Baloo2", sans-serif;
 }
 
 h1,
