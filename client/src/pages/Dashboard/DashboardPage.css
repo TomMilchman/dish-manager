@@ -9,19 +9,8 @@
 }
 
 /* Dish Card Panel-------------------------------------------------------- */
-.dashboard__top-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-}
-
-.dashboard__username-header {
-    color: white;
-    margin: 0;
-}
-
 .dashboard__main-content {
+    margin-top: 2rem;
     display: flex;
     flex-direction: row;
     height: 100vh;

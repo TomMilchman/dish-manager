@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { useNavigate, Link } from "react-router";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router";
-import { handleSubmitWithMatchedPasswords } from "../../utils/formHandlers";
-import { handleChange } from "../../utils/formHandlers";
+import { toast } from "react-toastify";
+
+import { registerUser } from "../../api/auth";
 import useAuthStore from "../../store/useAuthStore";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { registerUser } from "../../api/auth";
+import {
+    handleChange,
+    handleSubmitWithMatchedPasswords,
+} from "../../utils/formHandlers";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -23,7 +26,6 @@ export default function Register() {
     const registerUserMutation = useMutation({
         mutationFn: registerUser,
         onSuccess: (data) => {
-            useAuthStore.getState().setUser(data.username);
             useAuthStore.getState().setAccessToken(data.accessToken);
             toast.success("Registration successful!");
             console.log("User registration successful!");

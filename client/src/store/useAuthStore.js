@@ -8,8 +8,10 @@ const useAuthStore = create(
     persist(
         (set) => ({
             username: "",
+            role: "",
             accessToken: null,
-            setUser: (username) => set({ username }),
+            setUsername: (username) => set({ username }),
+            setRole: (role) => set({ role }),
             setAccessToken: (accessToken) => set({ accessToken }),
             logout: () => {
                 set({ user: null, accessToken: null });
@@ -20,6 +22,9 @@ const useAuthStore = create(
         }),
         {
             name: "auth-storage",
+            partialize: (state) => ({
+                accessToken: state.accessToken,
+            }),
         }
     )
 );

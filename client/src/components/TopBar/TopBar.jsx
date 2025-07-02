@@ -68,6 +68,9 @@ export default function TopBar() {
                 </div>
             </div>
             <div className="top-bar__right-buttons-container">
+                <h2 className="top-bar__username">
+                    Hi, {useAuthStore.getState().username}
+                </h2>
                 <button
                     onClick={logoutMutation.mutate}
                     className="top-bar-btn logout-btn"

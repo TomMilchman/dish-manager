@@ -76,3 +76,7 @@
 .top-bar__right-buttons-container .logout-btn {
     background-color: #ff392e;
 }
+
+.top-bar__username {
+    color: white;
+}

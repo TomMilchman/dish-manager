@@ -10,11 +10,13 @@ const jwt = require("jsonwebtoken");
  * Generates JWT access and refresh tokens for a user.
  *
  * @param {string} userId - The unique identifier of the user
+ * @param {string} username - The user's username
  * @param {boolean} rememberMe - Whether the user chose "remember me" (affects token lifespan)
+ * @param {"user" | "admin"} role - The user's role, either "user" or "admin"
  * @returns {Tokens} An object containing the access and refresh tokens
  */
 // TODO: Remove default role of user and check that all fields are inserted
-const generateJWTTokens = (userId, rememberMe, role = "user") => {
+const generateJWTTokens = (userId, username, rememberMe, role = "user") => {
     if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
         throw new Error("Missing JWT secret(s).");
     }
@@ -23,12 +25,16 @@ const generateJWTTokens = (userId, rememberMe, role = "user") => {
         throw new Error("No user id provided.");
     }
 
-    const accessToken = jwt.sign({ userId, role }, process.env.JWT_SECRET, {
-        expiresIn: "15m",
-    });
+    const accessToken = jwt.sign(
+        { userId, username, role },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "15m",
+        }
+    );
 
     const refreshToken = jwt.sign(
-        { userId, role },
+        { userId, username, role },
         process.env.REFRESH_SECRET,
         {
             expiresIn: rememberMe ? "30d" : "1d",

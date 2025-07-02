@@ -8,7 +8,6 @@ import "./DashboardPage.css";
 // State management
 import useDishStore from "../../store/useDishStore";
 import useIngredientStore from "../../store/useIngredientStore";
-import useAuthStore from "../../store/useAuthStore.js";
 
 // API
 import { getAllDishesFromServer } from "../../api/dishes.js";
@@ -22,7 +21,6 @@ import SummaryPanel from "../../components/SummaryPanel/SummaryPanel.jsx";
 
 export default function DashboardPage() {
     const { setDishes, dishesById } = useDishStore();
-    const { username } = useAuthStore();
     const { setIngredients } = useIngredientStore();
 
     const {
@@ -63,11 +61,6 @@ export default function DashboardPage() {
     return (
         <div className="dashboard__container">
             <TopBar />
-            <div className="dashboard__top-container">
-                <h1 className="dashboard__username-header">
-                    {username}'s Dashboard
-                </h1>
-            </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
                     {Object.values(dishesById)?.map((dish, index) => (

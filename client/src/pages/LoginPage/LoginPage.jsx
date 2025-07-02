@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { useNavigate, Link } from "react-router";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router";
-import { handleSubmit, handleChange } from "../../utils/formHandlers";
+import { toast } from "react-toastify";
+
+import { loginUser } from "../../api/auth";
 import useAuthStore from "../../store/useAuthStore";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { loginUser } from "../../api/auth";
+import { handleSubmit, handleChange } from "../../utils/formHandlers";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -19,7 +20,6 @@ export default function Login() {
     const loginUserMutation = useMutation({
         mutationFn: loginUser,
         onSuccess: (data) => {
-            useAuthStore.getState().setUser(data.username);
             useAuthStore.getState().setAccessToken(data.accessToken);
             toast.success("Login successful!");
             console.log("User login successful!");

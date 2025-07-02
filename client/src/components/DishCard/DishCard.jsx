@@ -4,6 +4,7 @@ import "./DishCard.css";
 // State Management
 import useDishStore from "../../store/useDishStore";
 import useModalStore from "../../store/useModalStore";
+import useAuthStore from "../../store/useAuthStore";
 
 // React Packages
 import { useState } from "react";
@@ -45,7 +46,7 @@ export default function DishCard({ dishId, index }) {
     }
 
     const unitSuffix = {
-        gram: "G",
+        gram: "g",
         liter: "L",
     };
 
@@ -100,18 +101,33 @@ export default function DishCard({ dishId, index }) {
                     </button>
                 </div>
             )}
-            <h3 className="dish-card__dish-name">{dish.name}</h3>
-            <hr className="dish-card__divider" />
-            <ul className="dish-card__ingredient-list">
-                {dish.ingredients?.map((ingredientObj) => (
-                    <li key={`${dishId}-${ingredientObj.ingredient.name}`}>
-                        {ingredientObj.ingredient.name} x{" "}
-                        {`${ingredientObj.amount}${
-                            unitSuffix[ingredientObj.ingredient.unitType] || ""
-                        }`}
-                    </li>
-                ))}
-            </ul>
+            <div className="dish-card__content">
+                <div className="dish-card__dish-info">
+                    <h3 className="dish-card__dish-name">{dish.name}</h3>
+                    <hr className="dish-card__divider" />
+                    <ul className="dish-card__ingredient-list">
+                        {dish.ingredients?.map((ingredientObj) => (
+                            <li
+                                key={`${dishId}-${ingredientObj.ingredient.name}`}
+                            >
+                                {ingredientObj.ingredient.name} x{" "}
+                                {`${ingredientObj.amount}${
+                                    unitSuffix[
+                                        ingredientObj.ingredient.unitType
+                                    ] || ""
+                                }`}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="dish-card__owner-information">
+                    {useAuthStore.getState().role === "admin" && (
+                        <label className="dish-card__owner">
+                            Owner: {dish.owner.username}
+                        </label>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

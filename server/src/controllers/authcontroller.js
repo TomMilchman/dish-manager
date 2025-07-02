@@ -58,6 +58,7 @@ async function login(req, res) {
 
         const { accessToken, refreshToken } = authService.generateJWTTokens(
             user._id,
+            user.username,
             rememberMe,
             user.role
         ); // TODO: Add role test case to login tests
@@ -72,7 +73,7 @@ async function login(req, res) {
             "login",
             `Login successful for ${usernameOrEmail}, tokens issued.`
         );
-        res.json({ username: user.username, accessToken });
+        res.json({ accessToken });
     } catch (err) {
         logger.logError(
             "login",
@@ -137,6 +138,7 @@ async function register(req, res) {
         // Generate tokens
         const { accessToken, refreshToken } = authService.generateJWTTokens(
             createdUser._id,
+            createdUser.username,
             rememberMe,
             createdUser.role // TODO: Add role test case to register tests
         );
@@ -157,7 +159,6 @@ async function register(req, res) {
         });
 
         res.status(201).json({
-            username: createdUser.username,
             accessToken,
         });
     } catch (err) {
@@ -214,9 +215,13 @@ function refresh(req, res) {
         const payload = jwt.verify(token, process.env.REFRESH_SECRET);
 
         const newAccessToken = jwt.sign(
-            { userId: payload.userId, role: payload.role },
+            {
+                userId: payload.userId,
+                username: payload.username,
+                role: payload.role,
+            },
             process.env.JWT_SECRET,
-            { expiresIn: payload.rememberMe ? "7d" : "15m" }
+            { expiresIn: "15m" }
         );
 
         logger.logInfo(
