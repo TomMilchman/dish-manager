@@ -1,5 +1,8 @@
 const Joi = require("joi");
 const { requiredStringRule } = require("./sharedSchemas");
+const { Tags } = require("../constants/enums");
+
+const tagArraySchema = Joi.string().valid(...Object.values(Tags));
 
 exports.createIngredientSchema = Joi.object({
     name: requiredStringRule,
@@ -19,6 +22,8 @@ exports.createIngredientSchema = Joi.object({
         then: Joi.required(),
         otherwise: Joi.forbidden(),
     }),
+    tags: Joi.array().items(tagArraySchema),
+    // TODO: add tags to ingredient creation process
 });
 
 exports.ingredientIdSchema = Joi.object({

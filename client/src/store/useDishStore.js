@@ -13,7 +13,7 @@ const useDishStore = create(
         dishToEdit: null,
 
         setDishes: (dishesArray) => {
-            const dishesMap = dishesArray.reduce((acc, dish) => {
+            const dishesMap = (dishesArray || []).reduce((acc, dish) => {
                 acc[dish._id] = dish;
                 return acc;
             }, {});

@@ -42,7 +42,7 @@ exports.logoutSchema = Joi.object({
 });
 
 exports.refreshSchema = Joi.object({
-    refreshToken: requiredStringRule,
+    refreshToken: Joi.string(),
 });
 
 exports.forgotPasswordSchema = Joi.object({

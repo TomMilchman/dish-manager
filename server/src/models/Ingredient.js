@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Tags } = require("../constants/enums");
 
 const ingredientSchema = new mongoose.Schema({
     name: {
@@ -30,6 +31,15 @@ const ingredientSchema = new mongoose.Schema({
             return this.unitType === "liter";
         },
     },
+    imageUrl: {
+        type: String,
+    },
+    tags: [
+        {
+            type: String,
+            enum: Object.values(Tags),
+        },
+    ],
 });
 
 const Ingredient = mongoose.model("Ingredient", ingredientSchema);

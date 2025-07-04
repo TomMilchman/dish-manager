@@ -2,29 +2,18 @@ import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import useAuthStore from "../store/useAuthStore";
-import { getUserCredentialsFromAccessToken } from "../utils/tokenDecoder";
 import LoadingSpinner from "./LoadingSpinner/LoadingSpinner";
 
 export default function ProtectedRoute() {
+    const setAuth = useAuthStore((state) => state.setAuth);
     const { isLoading, isError } = useAuth();
 
     useEffect(() => {
-        try {
-            const { username, role } = getUserCredentialsFromAccessToken();
-            useAuthStore.getState().setUsername(username);
-            useAuthStore.getState().setRole(role);
-        } catch (error) {
-            useAuthStore.getState().logout();
-        }
-    }, []);
+        setAuth();
+    }, [setAuth]);
 
-    if (isError) {
-        return <Navigate to={"/login"} replace />;
-    }
-
-    if (isLoading) {
-        return <LoadingSpinner />;
-    }
+    if (isLoading) return <LoadingSpinner />;
+    if (isError) return <Navigate to="/login" replace />;
 
     return <Outlet />;
 }

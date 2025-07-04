@@ -53,6 +53,32 @@
     color: #a32e03;
 }
 
+.dish-card__favorite-btn {
+    position: absolute;
+    background: none;
+    border: none;
+    color: #a32e03;
+    bottom: 8px;
+    left: 8px;
+    font-size: 1rem;
+    opacity: 0;
+    z-index: 1;
+}
+
+.dish-card__container:hover .dish-card__favorite-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dish-card__favorite-btn.selected {
+    opacity: 1 !important;
+    pointer-events: auto;
+}
+
+.dish-card__favorite-btn svg {
+    transition: color 0.2s ease;
+}
+
 .dish-card__container:hover {
     transform: scale(1.1);
 }
@@ -127,6 +153,8 @@ li {
 .dish-card__owner-information {
     display: flex;
     justify-content: center;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .dish-card__owner {

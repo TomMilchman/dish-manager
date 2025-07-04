@@ -18,6 +18,11 @@ export const updateDishInServer = async ({ id, updates }) => {
     return res.data;
 };
 
+export const toggleIsFavoriteInServer = async (id) => {
+    const res = await api.patch(`/api/dishes/${id}/toggle-favorite`);
+    return res.data;
+};
+
 // Delete a dish
 export const deleteDishFromServer = async (id) => {
     const res = await api.delete(`/api/dishes/${id}`);

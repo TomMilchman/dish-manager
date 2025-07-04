@@ -3,15 +3,26 @@ import { persist } from "zustand/middleware";
 import useDishStore from "./useDishStore";
 import useIngredientStore from "./useIngredientStore";
 import { queryClient } from "../api/queryClient";
+import { getUserCredentialsFromAccessToken } from "../utils/tokenDecoder";
 
 const useAuthStore = create(
     persist(
         (set) => ({
-            username: "",
-            role: "",
+            username: null,
+            role: null,
             accessToken: null,
-            setUsername: (username) => set({ username }),
-            setRole: (role) => set({ role }),
+            setAuth: () => {
+                try {
+                    const { username, role } =
+                        getUserCredentialsFromAccessToken(); // reads from localStorage
+                    set({ username, role });
+                } catch {
+                    set({
+                        username: null,
+                        role: null,
+                    });
+                }
+            },
             setAccessToken: (accessToken) => set({ accessToken }),
             logout: () => {
                 set({ user: null, accessToken: null });

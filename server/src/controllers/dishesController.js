@@ -43,7 +43,7 @@ const { logInfo, logError, logWarning } = require("../utils/logger");
  */
 async function createUserDish(req, res) {
     const userId = req.user.userId;
-    const { name, ingredients } = req.body;
+    const { name, ingredients, cardColor } = req.body;
 
     try {
         const existingDish = await Dish.findOne({ name, owner: userId });
@@ -62,6 +62,8 @@ async function createUserDish(req, res) {
             name,
             ingredients,
             owner: userId,
+            isFavorite: false,
+            // TODO: Add custom card color
         });
         const newDish = await Dish.findById(createdDish._id).populate(
             "ingredients.ingredient"
@@ -126,9 +128,9 @@ async function getDishes(req, res) {
 
             logInfo("get all dishes", `Admin retrieved all dishes.`);
         } else {
-            dishes = await Dish.find({ owner: userId }).populate(
-                "ingredients.ingredient"
-            );
+            dishes = await Dish.find({ owner: userId })
+                .populate("ingredients.ingredient")
+                .populate("owner", "username");
 
             if (dishes.length === 0) {
                 logInfo(
@@ -320,6 +322,84 @@ async function updateDish(req, res) {
 }
 
 /**
+ * Toggles the `isFavorite` status of a dish by ID if it belongs to the authenticated user,
+ * or allows toggling if the user is an admin.
+ *
+ * Request Body: none.
+ *
+ * Response on success (200 OK):
+ * {
+ *   dish: {
+ *     _id: string,
+ *     name: string,
+ *     isFavorite: boolean,
+ *     ingredients: [
+ *       {
+ *         ingredient: {
+ *           _id: string,
+ *           name: string,
+ *           unitType: string,
+ *           One of pricePerUnit, pricePer100g, or pricePerLiter (Number)
+ *           ...
+ *         },
+ *         amount: number
+ *       }
+ *     ],
+ *     owner: string (user ObjectId),
+ *     __v: number
+ *   }
+ * }
+ *
+ * @param {import("express").Request} req - Express request object. Expects `dishId` in params.
+ * @param {import("express").Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+async function toggleIsFavorite(req, res) {
+    const { dishId } = req.params;
+    const userId = req.user.userId;
+
+    try {
+        const dish = await Dish.findById(dishId);
+
+        if (!dish) {
+            logWarning(
+                "TOGGLE FAVORITE",
+                `User ID ${userId} tried to toggle favorite for non-existing dish ID ${dishId}`
+            );
+            return res.status(404).json({ message: "Dish not found." });
+        }
+
+        if (dish.owner.toString() !== userId) {
+            logWarning(
+                "TOGGLE FAVORITE",
+                `User ID ${userId} tried to toggle favorite on a dish not owned by them: ${dishId}`
+            );
+            return res.status(403).json({ message: "Access denied." });
+        }
+
+        dish.isFavorite = !dish.isFavorite;
+        await dish.save();
+
+        const updatedDish = await Dish.findById(dishId)
+            .populate("ingredients.ingredient")
+            .populate("owner", "username");
+
+        logInfo(
+            "TOGGLE FAVORITE",
+            `Dish ${dish.name} (ID ${dishId}) favorite toggled to ${dish.isFavorite} by user ID ${userId}`
+        );
+
+        res.status(200).json({ dish: updatedDish });
+    } catch (err) {
+        logError(
+            "TOGGLE FAVORITE",
+            `Error toggling favorite on dish ID ${dishId}: ${err}`
+        );
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+/**
  * Deletes a dish by ID if it belongs to the authenticated user,
  * or allows deletion if the user is an admin.
  *
@@ -372,5 +452,6 @@ module.exports = {
     getDishes,
     getUserDishById,
     updateDish,
+    toggleIsFavorite,
     deleteDish,
 };

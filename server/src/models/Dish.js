@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Colors } = require("../constants/enums");
 
 const dishSchema = new mongoose.Schema({
     name: {
@@ -23,6 +24,15 @@ const dishSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
+    },
+    isFavorite: {
+        type: Boolean,
+        default: false,
+    },
+    cardColor: {
+        type: String,
+        enum: Object.values(Colors),
+        default: "white",
     },
 });
 

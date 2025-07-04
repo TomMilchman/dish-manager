@@ -19,60 +19,73 @@ const sharedSchemas = require("../schemas/sharedSchemas");
 const ingredientsSchemas = require("../schemas/ingredientsSchemas");
 const dishesSchemas = require("../schemas/dishesSchemas");
 
-// Apply token authentication to all routes below
+// -------------------------- Middleware Shortcuts --------------------------
+
+const validateUser = validatePart(sharedSchemas.userIdAndRoleSchema, "user");
+
+// Dishes
+const validateDishId = validatePart(dishesSchemas.dishIdSchema, "params");
+const validateCreateDish = validatePart(
+    dishesSchemas.createUserDishSchema,
+    "body"
+);
+const validateUpdateDish = validatePart(dishesSchemas.updateDishSchema, "body");
+
+// Ingredients
+const validateIngredientId = validatePart(
+    ingredientsSchemas.ingredientIdSchema,
+    "params"
+);
+const validateCreateIngredient = validatePart(
+    ingredientsSchemas.createIngredientSchema,
+    "body"
+);
+const validateUpdateIngredient = validatePart(
+    ingredientsSchemas.updateIngredientSchema,
+    "body"
+);
+
+// --------------------------- Global Middleware ----------------------------
+
+// Authenticated access for all routes
 router.use(authenticateTokenMiddleware);
+router.use(validateUser); // all routes expect a validated user
 
 // ---------------------------- DISHES ROUTES ----------------------------
+
 router
     .route("/dishes")
-    .post(
-        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
-        validatePart(dishesSchemas.createUserDishSchema, "body"),
-        dishesController.createUserDish
-    )
-    .get(
-        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
-        dishesController.getDishes
-    );
+    .post(validateCreateDish, dishesController.createUserDish)
+    .get(dishesController.getDishes);
 
 router
     .route("/dishes/:dishId")
-    .get(
-        validatePart(dishesSchemas.dishIdSchema, "params"),
-        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
-        dishesController.getUserDishById
-    )
-    .put(
-        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
-        validatePart(dishesSchemas.dishIdSchema, "params"),
-        validatePart(dishesSchemas.updateDishSchema, "body"),
-        dishesController.updateDish
-    )
-    .delete(
-        validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
-        validatePart(dishesSchemas.dishIdSchema, "params"),
-        dishesController.deleteDish
-    );
+    .get(validateDishId, dishesController.getUserDishById)
+    .put(validateDishId, validateUpdateDish, dishesController.updateDish)
+    .delete(validateDishId, dishesController.deleteDish);
+
+router.patch(
+    "/dishes/:dishId/toggle-favorite",
+    validateDishId,
+    dishesController.toggleIsFavorite
+);
 
 // ------------------------- INGREDIENTS ROUTES --------------------------
+
 // Accessible by all authenticated users
-router.get(
-    "/ingredients",
-    validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
-    ingredientsController.getAllIngredients
-);
+router.get("/ingredients", ingredientsController.getAllIngredients);
+
 router.get(
     "/ingredients/:ingredientId",
-    validatePart(sharedSchemas.userIdAndRoleSchema, "user"),
-    validatePart(ingredientsSchemas.ingredientIdSchema, "params"),
+    validateIngredientId,
     ingredientsController.getIngredientById
 );
 
-// Admin-only routes for modifying ingredients
+// Admin-only routes
 router.post(
     "/ingredients",
     authorizeAdminMiddleware,
-    validatePart(ingredientsSchemas.createIngredientSchema, "body"),
+    validateCreateIngredient,
     ingredientsController.createIngredient
 );
 
@@ -80,13 +93,13 @@ router
     .route("/ingredients/:ingredientId")
     .put(
         authorizeAdminMiddleware,
-        validatePart(ingredientsSchemas.ingredientIdSchema, "params"),
-        validatePart(ingredientsSchemas.updateIngredientSchema, "body"),
+        validateIngredientId,
+        validateUpdateIngredient,
         ingredientsController.updateIngredient
     )
     .delete(
         authorizeAdminMiddleware,
-        validatePart(ingredientsSchemas.ingredientIdSchema, "params"),
+        validateIngredientId,
         ingredientsController.deleteIngredient
     );
 
