@@ -1,0 +1,18 @@
+.filter-bar__container {
+    background-color: #f557082f;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 0.5rem 0 0.5rem 1rem;
+}
+
+.filter-bar__search-tags {
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+}
+
+.filter-bar__tag label {
+    text-transform: capitalize;
+}

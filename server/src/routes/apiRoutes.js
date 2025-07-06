@@ -61,7 +61,7 @@ router
 router
     .route("/dishes/:dishId")
     .get(validateDishId, dishesController.getUserDishById)
-    .put(validateDishId, validateUpdateDish, dishesController.updateDish)
+    .patch(validateDishId, validateUpdateDish, dishesController.updateDish)
     .delete(validateDishId, dishesController.deleteDish);
 
 router.patch(
@@ -81,6 +81,8 @@ router.get(
     ingredientsController.getIngredientById
 );
 
+router.get("/tags", ingredientsController.getAllTags);
+
 // Admin-only routes
 router.post(
     "/ingredients",
@@ -91,7 +93,7 @@ router.post(
 
 router
     .route("/ingredients/:ingredientId")
-    .put(
+    .patch(
         authorizeAdminMiddleware,
         validateIngredientId,
         validateUpdateIngredient,

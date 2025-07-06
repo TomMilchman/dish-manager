@@ -1,5 +1,6 @@
 const Ingredient = require("../models/Ingredient");
 const { logInfo, logError } = require("../utils/logger");
+const { Tags } = require("../constants/enums");
 
 /**
  * Creates a new ingredient and saves it to the database.
@@ -177,10 +178,26 @@ async function deleteIngredient(req, res) {
     }
 }
 
+/**
+ * Retrieves all ingredient tags for the authenticated user and sends them in the response.
+ *
+ * @async
+ * @function getAllTags
+ * @param {import('express').Request} req - Express request object, containing the authenticated user's information.
+ * @param {import('express').Response} res - Express response object, used to send the tags as a JSON response.
+ * @returns {Promise<void>} Sends a JSON response with an array of ingredient tags.
+ */
+async function getAllTags(req, res) {
+    const { userId } = req.user;
+    logInfo("get all tags", `Obtained ingredient tags for user ID ${userId}`);
+    res.status(200).json({ tags: Object.values(Tags) });
+}
+
 module.exports = {
     createIngredient,
     getAllIngredients,
     getIngredientById,
     updateIngredient,
     deleteIngredient,
+    getAllTags,
 };

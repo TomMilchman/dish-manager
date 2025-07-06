@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
 import useDishStore from "./useDishStore";
 import useIngredientStore from "./useIngredientStore";
+import useFilterStore from "./useFilterStore";
+
 import { queryClient } from "../api/queryClient";
 import { getUserCredentialsFromAccessToken } from "../utils/tokenDecoder";
 
@@ -28,6 +31,7 @@ const useAuthStore = create(
                 set({ user: null, accessToken: null });
                 useDishStore.getState().clearAllDishFields();
                 useIngredientStore.getState().clearAllIngredientFields();
+                useFilterStore.getState().clearAllFilterFields();
                 queryClient.clear();
             },
         }),

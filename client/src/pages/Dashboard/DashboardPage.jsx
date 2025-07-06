@@ -1,5 +1,5 @@
+import { useEffect, useRef, useMemo } from "react";
 // External libraries
-import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 // Styles
@@ -8,63 +8,109 @@ import "./DashboardPage.css";
 // State management
 import useDishStore from "../../store/useDishStore";
 import useIngredientStore from "../../store/useIngredientStore";
+import useFilterStore from "../../store/useFilterStore.js";
 
 // API
 import { getAllDishesFromServer } from "../../api/dishes.js";
-import { getAllIngredientsFromServer } from "../../api/ingredients.js";
+import {
+    getAllIngredientsFromServer,
+    getAllTagsFromServer,
+} from "../../api/ingredients.js";
 
 // Components
 import TopBar from "../../components/TopBar/TopBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.jsx";
 import DishCard from "../../components/DishCard/DishCard.jsx";
 import SummaryPanel from "../../components/SummaryPanel/SummaryPanel.jsx";
+import FilterBar from "../../components/FilterBar/FilterBar.jsx";
 
 export default function DashboardPage() {
-    const { setDishes, dishesById } = useDishStore();
+    const { setDishes, dishesById, setSelectedDishIds, selectedDishIds } =
+        useDishStore();
     const { setIngredients } = useIngredientStore();
+    const { setTags, showFavoritesOnly, searchQuery } = useFilterStore();
 
-    const {
-        data: dishesData,
-        isLoading: dishesLoading,
-        isSuccess: dishesSuccess,
-    } = useQuery({
+    const filteredDishes = useMemo(
+        () =>
+            Object.values(dishesById)?.filter((dish) => {
+                const nameMatch = dish.name
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase());
+                const favoriteMatch = showFavoritesOnly
+                    ? dish.isFavorite
+                    : true;
+
+                return nameMatch && favoriteMatch;
+            }),
+        [dishesById, searchQuery, showFavoritesOnly]
+    );
+
+    const validSelectedDishIds = useMemo(() => {
+        const filteredIds = new Set(filteredDishes.map((dish) => dish._id));
+        return selectedDishIds.filter((id) => filteredIds.has(id));
+    }, [filteredDishes, selectedDishIds]);
+
+    useEffect(() => {
+        if (
+            validSelectedDishIds.length !== selectedDishIds.length ||
+            !validSelectedDishIds.every((id, i) => id === selectedDishIds[i])
+        ) {
+            setSelectedDishIds(validSelectedDishIds);
+        }
+    }, [validSelectedDishIds, selectedDishIds, setSelectedDishIds]);
+
+    function useSyncQueryToStore({ queryKey, queryFn, selectData, onSuccess }) {
+        const hasSyncedRef = useRef(false);
+
+        const { data, isLoading, isSuccess } = useQuery({ queryKey, queryFn });
+
+        useEffect(() => {
+            if (isSuccess && data && !hasSyncedRef.current) {
+                onSuccess(selectData(data));
+                hasSyncedRef.current = true;
+            }
+        }, [isSuccess, data, onSuccess, selectData]);
+
+        return { isLoading };
+    }
+
+    const { isLoading: dishesLoading } = useSyncQueryToStore({
         queryKey: ["dishes"],
         queryFn: getAllDishesFromServer,
+        selectData: (data) => data.dishes,
+        onSuccess: setDishes,
     });
 
-    const {
-        data: ingredientsData,
-        isLoading: ingredientsLoading,
-        isSuccess: ingredientsSuccess,
-    } = useQuery({
+    const { isLoading: ingredientsLoading } = useSyncQueryToStore({
         queryKey: ["ingredients"],
         queryFn: getAllIngredientsFromServer,
+        selectData: (data) => data.ingredients,
+        onSuccess: setIngredients,
     });
 
-    // Sync data into Zustand after query success
-    useEffect(() => {
-        if (dishesSuccess && dishesData) {
-            setDishes(dishesData.dishes);
-        }
-    }, [dishesSuccess, dishesData, setDishes]);
+    const { isLoading: tagsLoading } = useSyncQueryToStore({
+        queryKey: ["tags"],
+        queryFn: getAllTagsFromServer,
+        selectData: (data) => data.tags,
+        onSuccess: setTags,
+    });
 
-    useEffect(() => {
-        if (ingredientsSuccess && ingredientsData) {
-            setIngredients(ingredientsData.ingredients);
-        }
-    }, [ingredientsSuccess, ingredientsData, setIngredients]);
-
-    if (dishesLoading || ingredientsLoading) {
+    if (dishesLoading || ingredientsLoading || tagsLoading) {
         return <LoadingSpinner />;
     }
 
     return (
         <div className="dashboard__container">
             <TopBar />
+            <FilterBar />
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
-                    {Object.values(dishesById)?.map((dish, index) => (
-                        <DishCard key={index} dishId={dish._id} index={index} />
+                    {filteredDishes?.map((dish, index) => (
+                        <DishCard
+                            key={dish._id}
+                            dishId={dish._id}
+                            index={index}
+                        />
                     ))}
                 </div>
                 <div className="dashboard__summary-panel">

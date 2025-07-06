@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -12,8 +12,19 @@ import useIngredientStore from "../../../store/useIngredientStore";
 import useDishStore from "../../../store/useDishStore";
 import useModalStore from "../../../store/useModalStore";
 
+function renameKeyImmutable(obj, oldKey, newKey) {
+    const { [oldKey]: oldValue, ...rest } = obj;
+    return { ...rest, [newKey]: oldValue };
+}
+
+function validateInput(selectedIngredients) {
+    return !selectedIngredients.some(
+        ({ ingredientId, amount }) => ingredientId === "" || amount <= 0
+    );
+}
+
 export default function DishFormModal() {
-    const { dishToEdit, clearDishToEdit } = useDishStore();
+    const { dishToEdit, clearDishToEdit, addDish, updateDish } = useDishStore();
     const { closeModal } = useModalStore();
     const {
         ingredients,
@@ -26,7 +37,10 @@ export default function DishFormModal() {
 
     const [dishName, setDishName] = useState("");
     const isEdit = Boolean(dishToEdit);
-    const [originalIngredients] = useState(dishToEdit?.ingredients || []);
+    const originalIngredients = useMemo(
+        () => dishToEdit?.ingredients || [],
+        [dishToEdit]
+    );
 
     useEffect(() => {
         if (dishToEdit) {
@@ -48,10 +62,10 @@ export default function DishFormModal() {
         const dish = data.dish;
 
         if (isEdit) {
-            useDishStore.getState().updateDish(dish);
+            updateDish(dish);
             toast.success("Successfully updated dish!");
         } else {
-            useDishStore.getState().addDish(dish);
+            addDish(dish);
             toast.success("Successfully created a new dish!");
         }
 
@@ -65,16 +79,6 @@ export default function DishFormModal() {
         mutationFn: isEdit ? updateDishInServer : addDishToServer,
         onSuccess: onSuccessHandler,
     });
-
-    function renameKeyImmutable(obj, oldKey, newKey) {
-        const { [oldKey]: oldValue, ...rest } = obj;
-        return { ...rest, [newKey]: oldValue };
-    }
-
-    const validateInput = () =>
-        !selectedIngredients.some(
-            ({ ingredientId, amount }) => ingredientId === "" || amount <= 0
-        );
 
     return (
         <div className="dish-modal__container">
@@ -118,7 +122,7 @@ export default function DishFormModal() {
                 onSubmit={(e) => {
                     e.preventDefault();
 
-                    if (!validateInput()) {
+                    if (!validateInput(selectedIngredients)) {
                         toast.error(
                             "Invalid input, please fill in all fields."
                         );

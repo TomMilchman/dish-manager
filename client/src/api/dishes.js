@@ -14,7 +14,7 @@ export const addDishToServer = async (dishData) => {
 
 // Update a dish
 export const updateDishInServer = async ({ id, updates }) => {
-    const res = await api.put(`/api/dishes/${id}`, updates);
+    const res = await api.patch(`/api/dishes/${id}`, updates);
     return res.data;
 };
 

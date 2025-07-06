@@ -1,7 +1,7 @@
 const Tags = {
-    VEGETARIAN: "vegetarian",
     MEAT: "meat",
     DAIRY: "dairy",
+    VEGETARIAN: "vegetarian",
     VEGAN: "vegan",
 };
 

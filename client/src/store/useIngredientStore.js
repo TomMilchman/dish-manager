@@ -17,7 +17,6 @@ const useIngredientStore = create(
             const state = get();
             return state.ingredients.find((ing) => ing._id === ingredientId);
         },
-
         updateSelectedIngredientAtIndex: (index, updatedRow) =>
             set((state) => {
                 const copiedSelectedIngredients = [

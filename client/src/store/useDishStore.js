@@ -75,6 +75,8 @@ const useDishStore = create(
             }
         },
 
+        setSelectedDishIds: (ids) => set({ selectedDishIds: ids }),
+
         // Returns whether dish ID is in selected dishes or not
         isDishIdInSelectedDishIds: (dishId) => {
             const { selectedDishIds } = get();

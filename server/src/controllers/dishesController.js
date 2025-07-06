@@ -14,6 +14,7 @@ const { logInfo, logError, logWarning } = require("../utils/logger");
  *     },
  *     ...
  *   ]
+ * - cardColor: string (optional) – Card color for the dish (must be one of the allowed Colors enum values; default: "white").
  *
  * Response on success (201 Created):
  * {
@@ -25,14 +26,19 @@ const { logInfo, logError, logWarning } = require("../utils/logger");
  *         ingredient: {
  *           _id: string,
  *           name: string,
- *           unitType: string,
- *           One of pricePerUnit, pricePer100g, or pricePerLiter (Number)
- *           ...
+ *           unitType: "unit" | "gram" | "liter",
+ *           pricePerUnit?: number,    // present if unitType is "unit"
+ *           pricePer100g?: number,    // present if unitType is "gram"
+ *           pricePerLiter?: number,   // present if unitType is "liter"
+ *           imageUrl?: string,
+ *           tags?: string[],
  *         },
  *         amount: number
  *       }
  *     ],
  *     owner: string (user ObjectId),
+ *     isFavorite: boolean,
+ *     cardColor: string,
  *     __v: number
  *   }
  * }
@@ -101,14 +107,19 @@ async function createUserDish(req, res) {
  *         ingredient: {
  *           _id: string,
  *           name: string,
- *           unitType: string,
- *           One of pricePerUnit, pricePer100g, or pricePerLiter (Number)
- *           ...
+ *           unitType: "unit" | "gram" | "liter",
+ *           pricePerUnit?: number,    // present if unitType is "unit"
+ *           pricePer100g?: number,    // present if unitType is "gram"
+ *           pricePerLiter?: number,   // present if unitType is "liter"
+ *           imageUrl?: string,
+ *           tags?: string[],
  *         },
  *         amount: number
  *       }
  *     ],
  *     owner: string (user ObjectId),
+ *     isFavorite: boolean,
+ *     cardColor: string,
  *     __v: number
  *    },
  *    ...
@@ -124,7 +135,7 @@ async function getDishes(req, res) {
         if (role === "admin") {
             dishes = await Dish.find()
                 .populate("ingredients.ingredient")
-                .populate("owner", "username email");
+                .populate("owner", "username");
 
             logInfo("get all dishes", `Admin retrieved all dishes.`);
         } else {
@@ -166,17 +177,21 @@ async function getDishes(req, res) {
  *     name: string,
  *     ingredients: [
  *       {
- *         ingredient: {
- *           _id: string,
+ *         _id: string,
  *           name: string,
- *           unitType: string,
- *           One of pricePerUnit, pricePer100g, or pricePerLiter (Number)
- *           ...
+ *           unitType: "unit" | "gram" | "liter",
+ *           pricePerUnit?: number,    // present if unitType is "unit"
+ *           pricePer100g?: number,    // present if unitType is "gram"
+ *           pricePerLiter?: number,   // present if unitType is "liter"
+ *           imageUrl?: string,
+ *           tags?: string[],
  *         },
  *         amount: number
  *       }
  *     ],
  *     owner: string (user ObjectId),
+ *     isFavorite: boolean,
+ *     cardColor: string,
  *     __v: number
  *   }
  * }
@@ -241,14 +256,19 @@ async function getUserDishById(req, res) {
  *         ingredient: {
  *           _id: string,
  *           name: string,
- *           unitType: string,
- *           One of pricePerUnit, pricePer100g, or pricePerLiter (Number)
- *           ...
+ *           unitType: "unit" | "gram" | "liter",
+ *           pricePerUnit?: number,    // present if unitType is "unit"
+ *           pricePer100g?: number,    // present if unitType is "gram"
+ *           pricePerLiter?: number,   // present if unitType is "liter"
+ *           imageUrl?: string,
+ *           tags?: string[],
  *         },
  *         amount: number
  *       }
  *     ],
  *     owner: string (user ObjectId),
+ *     isFavorite: boolean,
+ *     cardColor: string,
  *     __v: number
  *   }
  * }
@@ -289,11 +309,13 @@ async function updateDish(req, res) {
         };
 
         // Check that dish doesn't have a duplicate name
+        const targetOwnerId = dish.owner.toString();
+
         const dishWithSameName = await Dish.findOne()
             .where("name")
             .equals(req.body.name)
             .where("owner")
-            .equals(userId)
+            .equals(targetOwnerId)
             .where("_id")
             .ne(dishId);
 
@@ -307,9 +329,9 @@ async function updateDish(req, res) {
         await Dish.updateOne({ _id: dishId }, { $set: updates });
 
         // Fetch updated dish to return
-        const updatedDish = await Dish.findById(dishId).populate(
-            "ingredients.ingredient"
-        );
+        const updatedDish = await Dish.findById(dishId)
+            .populate("ingredients.ingredient")
+            .populate("owner", "username");
         logInfo(
             "UPDATE DISH",
             `Dish ${dish.name} (ID ${dishId}) updated by user ID ${userId} (${role})`
@@ -333,14 +355,17 @@ async function updateDish(req, res) {
  *     _id: string,
  *     name: string,
  *     isFavorite: boolean,
+ *     cardColor: string,
  *     ingredients: [
  *       {
- *         ingredient: {
- *           _id: string,
+ *         _id: string,
  *           name: string,
- *           unitType: string,
- *           One of pricePerUnit, pricePer100g, or pricePerLiter (Number)
- *           ...
+ *           unitType: "unit" | "gram" | "liter",
+ *           pricePerUnit?: number,    // present if unitType is "unit"
+ *           pricePer100g?: number,    // present if unitType is "gram"
+ *           pricePerLiter?: number,   // present if unitType is "liter"
+ *           imageUrl?: string,
+ *           tags?: string[],
  *         },
  *         amount: number
  *       }
@@ -405,7 +430,8 @@ async function toggleIsFavorite(req, res) {
  *
  * Response on success (200 OK):
  * {
- *   message: "Dish successfully deleted."
+ *   id: string,         // The ObjectId of the deleted dish
+ *   name: string        // The name of the deleted dish
  * }
  *
  * @param {import("express").Request} req - Express request object. Expects `id` in route params.

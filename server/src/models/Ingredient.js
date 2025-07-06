@@ -12,6 +12,7 @@ const ingredientSchema = new mongoose.Schema({
         type: String,
         enum: ["unit", "gram", "liter"],
         required: true,
+        lowercase: true,
     },
     pricePerUnit: {
         type: Number,
@@ -38,6 +39,7 @@ const ingredientSchema = new mongoose.Schema({
         {
             type: String,
             enum: Object.values(Tags),
+            lowercase: true,
         },
     ],
 });

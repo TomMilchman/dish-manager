@@ -33,7 +33,7 @@ function App() {
                     ))()}
                 />
             </Routes>
-            <ToastContainer />
+            <ToastContainer position="top-center" />
         </BrowserRouter>
     );
 }
