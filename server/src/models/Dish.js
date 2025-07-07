@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const { Colors } = require("../constants/enums");
+const { COLORS } = require("../constants/enums");
+const { TagDefinitions } = require("../constants/tagDefinitions");
 
 const dishSchema = new mongoose.Schema({
     name: {
@@ -31,9 +32,16 @@ const dishSchema = new mongoose.Schema({
     },
     cardColor: {
         type: String,
-        enum: Object.values(Colors),
+        enum: Object.values(COLORS),
         default: "white",
     },
+    tags: [
+        {
+            type: String,
+            enum: TagDefinitions.map(({ tag }) => tag),
+            default: [],
+        },
+    ],
 });
 
 const Dish = mongoose.model("Dish", dishSchema);

@@ -7,7 +7,7 @@ export default function SummaryPanel() {
     const selectedDishIds = useDishStore((state) => state.selectedDishIds);
 
     const selectedDishes = useMemo(() => {
-        return selectedDishIds.map((id) => dishesMap[id]).filter(Boolean);
+        return Array.from(selectedDishIds).map((id) => dishesMap[id]).filter(Boolean);
     }, [dishesMap, selectedDishIds]);
 
     const aggregatedIngredients = useMemo(() => {

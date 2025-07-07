@@ -1,11 +1,4 @@
-const Tags = {
-    MEAT: "meat",
-    DAIRY: "dairy",
-    VEGETARIAN: "vegetarian",
-    VEGAN: "vegan",
-};
-
-const Colors = {
+const COLORS = {
     YELLOW: "yellow",
     BAIGE: "baige",
     ORANGE: "orange",
@@ -13,7 +6,6 @@ const Colors = {
     WHITE: "white",
 };
 
-Object.freeze(Tags);
-Object.freeze(Colors);
+Object.freeze(COLORS);
 
-module.exports = { Tags, Colors };
+module.exports = { COLORS };

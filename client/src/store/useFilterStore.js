@@ -5,37 +5,48 @@ import { devtools } from "zustand/middleware";
 const useFilterStore = create(
     devtools((set, get) => ({
         tags: [],
-        selectedTags: [],
+        selectedTags: new Set(),
         searchQuery: "",
         showFavoritesOnly: false,
 
-        setSearchQuery: (query) => {
-            set({ searchQuery: query });
-        },
+        setSearchQuery: (query) => set({ searchQuery: query }),
+
         setTags: (tags) => set({ tags }),
-        toggleSelectedTag: (tag) => {
-            set((state) => ({
-                selectedTags: state.selectedTags.includes(tag)
-                    ? state.selectedTags.filter((t) => t !== tag)
-                    : [...state.selectedTags, tag],
-            }));
-        },
-        clearSelectedTags: () => set({ selectedTags: [] }),
-        setShowFavoritesOnly: (value) => {
-            set({ showFavoritesOnly: value });
-        },
-        clearAllFilterFields: () => {
+
+        toggleSelectedTag: (tag) =>
+            set((state) => {
+                const newSet = new Set(state.selectedTags);
+                if (newSet.has(tag)) {
+                    newSet.delete(tag);
+                } else {
+                    newSet.add(tag);
+                }
+                return { selectedTags: newSet };
+            }),
+
+        clearSelectedTags: () => set({ selectedTags: new Set() }),
+
+        clearSearchQuery: () => set({ searchQuery: "" }),
+
+        setShowFavoritesOnly: (value) => set({ showFavoritesOnly: value }),
+
+        clearSelectedFilters: () => {
             const {
                 clearSelectedTags,
-                setTags,
-                setSearchQuery,
+                clearSearchQuery,
                 setShowFavoritesOnly,
             } = get();
 
             clearSelectedTags();
-            setTags([]);
-            setSearchQuery("");
+            clearSearchQuery("");
             setShowFavoritesOnly(false);
+        },
+
+        clearAllFilterFields: () => {
+            const { setTags, clearSelectedFilters } = get();
+
+            clearSelectedFilters();
+            setTags([]);
         },
     }))
 );

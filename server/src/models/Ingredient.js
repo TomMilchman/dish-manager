@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Tags } = require("../constants/enums");
+const { TagDefinitions } = require("../constants/tagDefinitions");
 
 const ingredientSchema = new mongoose.Schema({
     name: {
@@ -38,7 +38,7 @@ const ingredientSchema = new mongoose.Schema({
     tags: [
         {
             type: String,
-            enum: Object.values(Tags),
+            enum: TagDefinitions.map(({ tag }) => tag),
             lowercase: true,
         },
     ],

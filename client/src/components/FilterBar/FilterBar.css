@@ -7,6 +7,11 @@
     padding: 0.5rem 0 0.5rem 1rem;
 }
 
+.filter-bar__name-search {
+    display: flex;
+    flex-direction: row;
+}
+
 .filter-bar__search-tags {
     display: flex;
     flex-direction: row;
@@ -15,4 +20,18 @@
 
 .filter-bar__tag label {
     text-transform: capitalize;
+}
+
+.filter-bar__btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-bar__btn:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }

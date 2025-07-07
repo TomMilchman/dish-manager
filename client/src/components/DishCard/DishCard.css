@@ -12,21 +12,37 @@
 }
 
 .dish-card__content {
-    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    height: 100%;
 }
 
 .dish-card__dish-info {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.2rem;
 }
 
 .dish-card__dish-name {
     margin-top: 1rem;
     margin-bottom: 0;
+}
+
+.dish-card__tags-container {
+    position: relative;
+    overflow-x: auto;
+    top: -4px;
+    display: flex;
+    gap: 0.8rem;
+}
+
+.dish-card__tag {
+    background-color: #a32e03;
+    color: white;
+    padding: 0.1rem 0.3rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
 }
 
 .dish-card__divider {
@@ -143,11 +159,15 @@ li {
 .dish-card__dish-name {
     margin-top: 0.1rem;
     overflow-x: hidden;
+    flex: 3;
 }
 
 .dish-card__ingredient-list {
     overflow-y: auto;
     transform: translate(0, -20px);
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    height: 100px;
 }
 
 .dish-card__owner-information {

@@ -1,6 +1,6 @@
 const Joi = require("joi");
-const { requiredStringRule } = require("./sharedSchemas");
-const { Colors } = require("../constants/enums");
+const { requiredStringRule, tagsSchema } = require("./sharedSchemas");
+const { COLORS } = require("../constants/enums");
 
 const dishNameRule = Joi.string().max(24);
 
@@ -17,8 +17,9 @@ const ingredientsArrayRule = Joi.array()
 exports.createUserDishSchema = Joi.object({
     name: dishNameRule.required(),
     ingredients: ingredientsArrayRule.required(),
-    isFavorite: Joi.boolean(),
-    cardColor: Joi.string().valid(...Object.values(Colors)),
+    cardColor: Joi.string()
+        .valid(...Object.values(COLORS))
+        .default("white"),
 });
 
 exports.updateDishSchema = Joi.object({

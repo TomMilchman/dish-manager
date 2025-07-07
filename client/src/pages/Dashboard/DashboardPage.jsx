@@ -28,32 +28,40 @@ export default function DashboardPage() {
     const { setDishes, dishesById, setSelectedDishIds, selectedDishIds } =
         useDishStore();
     const { setIngredients } = useIngredientStore();
-    const { setTags, showFavoritesOnly, searchQuery } = useFilterStore();
+    const { setTags, selectedTags, showFavoritesOnly, searchQuery } =
+        useFilterStore();
 
     const filteredDishes = useMemo(
         () =>
             Object.values(dishesById)?.filter((dish) => {
                 const nameMatch = dish.name
                     .toLowerCase()
-                    .includes(searchQuery.toLowerCase());
+                    .includes(searchQuery.trim().toLowerCase());
+                const tagsMatch =
+                    selectedTags.size === 0
+                        ? true
+                        : dish.tags?.some((tag) => selectedTags.has(tag));
                 const favoriteMatch = showFavoritesOnly
                     ? dish.isFavorite
                     : true;
 
-                return nameMatch && favoriteMatch;
+                return nameMatch && tagsMatch && favoriteMatch;
             }),
-        [dishesById, searchQuery, showFavoritesOnly]
+        [dishesById, selectedTags, searchQuery, showFavoritesOnly]
     );
 
     const validSelectedDishIds = useMemo(() => {
         const filteredIds = new Set(filteredDishes.map((dish) => dish._id));
-        return selectedDishIds.filter((id) => filteredIds.has(id));
+        return Array.from(selectedDishIds).filter((id) => filteredIds.has(id));
     }, [filteredDishes, selectedDishIds]);
 
     useEffect(() => {
         if (
-            validSelectedDishIds.length !== selectedDishIds.length ||
-            !validSelectedDishIds.every((id, i) => id === selectedDishIds[i])
+            validSelectedDishIds.length !==
+                Array.from(selectedDishIds).length ||
+            !validSelectedDishIds.every(
+                (id, i) => id === Array.from(selectedDishIds)[i]
+            )
         ) {
             setSelectedDishIds(validSelectedDishIds);
         }

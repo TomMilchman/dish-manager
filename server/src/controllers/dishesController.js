@@ -1,5 +1,7 @@
 const Dish = require("../models/Dish");
+const Ingredient = require("../models/Ingredient");
 const { logInfo, logError, logWarning } = require("../utils/logger");
+const dishUtils = require("../utils/dishUtils");
 
 /**
  * Creates a new dish for the authenticated user and saves it to the database.
@@ -14,7 +16,7 @@ const { logInfo, logError, logWarning } = require("../utils/logger");
  *     },
  *     ...
  *   ]
- * - cardColor: string (optional) – Card color for the dish (must be one of the allowed Colors enum values; default: "white").
+ * - cardColor: string (optional) – Card color for the dish (must be one of the allowed values; default: "white").
  *
  * Response on success (201 Created):
  * {
@@ -27,18 +29,19 @@ const { logInfo, logError, logWarning } = require("../utils/logger");
  *           _id: string,
  *           name: string,
  *           unitType: "unit" | "gram" | "liter",
- *           pricePerUnit?: number,    // present if unitType is "unit"
- *           pricePer100g?: number,    // present if unitType is "gram"
- *           pricePerLiter?: number,   // present if unitType is "liter"
+ *           pricePerUnit?: number,
+ *           pricePer100g?: number,
+ *           pricePerLiter?: number,
  *           imageUrl?: string,
  *           tags?: string[],
  *         },
  *         amount: number
  *       }
  *     ],
- *     owner: string (user ObjectId),
+ *     owner: string,
  *     isFavorite: boolean,
  *     cardColor: string,
+ *     tags: string[],
  *     __v: number
  *   }
  * }
@@ -49,44 +52,68 @@ const { logInfo, logError, logWarning } = require("../utils/logger");
  */
 async function createUserDish(req, res) {
     const userId = req.user.userId;
-    const { name, ingredients, cardColor } = req.body;
+    const { name, ingredients, cardColor = "white" } = req.body;
 
     try {
-        const existingDish = await Dish.findOne({ name, owner: userId });
-
-        if (existingDish) {
+        const isDuplicate = await dishUtils.isDuplicateDishName({
+            name,
+            ownerId: userId,
+        });
+        if (isDuplicate) {
             logWarning(
                 "create user dish",
-                `User ${userId} tried to create dish ${name}, which already exists in DB.`
+                `User ${userId} tried to create dish "${name}", which already exists.`
             );
-            return res.status(400).json({
-                message: "Dish with exact name already exists.",
-            });
+            return res
+                .status(409)
+                .json({ message: "Dish name already exists." });
         }
 
+        // Validate ingredient IDs
+        const ingredientDocs = await dishUtils.validateIngredientIds(
+            ingredients.map((i) => i.ingredient)
+        );
+        if (!ingredientDocs) {
+            logWarning(
+                "create user dish",
+                `User ${userId} provided invalid ingredient IDs.`
+            );
+            return res
+                .status(400)
+                .json({ message: "Invalid ingredient(s) provided." });
+        }
+
+        // Derive dish-level tags from ingredient tags
+        const resolvedTags =
+            dishUtils.resolveTagsFromIngredients(ingredientDocs);
+
+        // Validate cardColor
+        const finalColor = dishUtils.validateCardColor(cardColor);
+
+        // Create dish
         const createdDish = await Dish.create({
             name,
             ingredients,
             owner: userId,
             isFavorite: false,
-            // TODO: Add custom card color
+            cardColor: finalColor,
+            tags: resolvedTags,
         });
-        const newDish = await Dish.findById(createdDish._id).populate(
-            "ingredients.ingredient"
-        );
+
+        const newDish = await Dish.findById(createdDish._id)
+            .populate("ingredients.ingredient")
+            .populate("owner", "username");
 
         logInfo(
             "create user dish",
-            `User ID ${userId} created new dish "${name}" (ID: ${newDish._id})`
+            `User ${userId} created dish "${name}" (ID: ${newDish._id})`
         );
 
-        res.status(201).json({
-            dish: newDish,
-        });
+        res.status(201).json({ dish: newDish });
     } catch (err) {
         logError(
             "create user dish",
-            `Error creating dish for user ID ${userId}: ${err}`
+            `Error creating dish for user ${userId}: ${err}`
         );
         res.status(500).json({ message: "Internal server error." });
     }
@@ -269,6 +296,7 @@ async function getUserDishById(req, res) {
  *     owner: string (user ObjectId),
  *     isFavorite: boolean,
  *     cardColor: string,
+ *     tags?: string[]
  *     __v: number
  *   }
  * }
@@ -279,66 +307,93 @@ async function getUserDishById(req, res) {
  */
 async function updateDish(req, res) {
     const { dishId } = req.params;
-    const userId = req.user.userId;
-    const role = req.user.role;
+    const { userId, role } = req.user;
+    const { name, ingredients, cardColor } = req.body;
 
     try {
-        // Check if user owns the dish or is admin
         const dish = await Dish.findById(dishId);
 
         if (!dish) {
             logWarning(
                 "UPDATE DISH",
-                `User ID ${userId} tried to update a non-existing dish ID ${dishId}`
+                `User ${userId} tried to update non-existent dish ${dishId}`
             );
             return res.status(404).json({ message: "Dish not found." });
         }
 
-        if (dish.owner.toString() !== userId && role !== "admin") {
+        const isOwner = dish.owner.toString() === userId;
+        const isAdmin = role === "admin";
+
+        if (!isOwner && !isAdmin) {
             logWarning(
                 "UPDATE DISH",
-                `User ID ${userId} tried to update a dish not owned by them: ${dishId}`
+                `User ${userId} attempted to update unauthorized dish ${dishId}`
             );
             return res.status(403).json({ message: "Access denied." });
         }
 
-        // Prepare the update payload
-        const updates = {
-            name: req.body.name,
-            ingredients: req.body.ingredients,
-        };
-
-        // Check that dish doesn't have a duplicate name
         const targetOwnerId = dish.owner.toString();
+        const isDuplicate = await dishUtils.isDuplicateDishName({
+            name,
+            ownerId: targetOwnerId,
+            excludeId: dishId,
+        });
 
-        const dishWithSameName = await Dish.findOne()
-            .where("name")
-            .equals(req.body.name)
-            .where("owner")
-            .equals(targetOwnerId)
-            .where("_id")
-            .ne(dishId);
-
-        if (dishWithSameName) {
-            return res.status(409).json({
-                message:
-                    "A dish with the same name already exists for this user.",
-            });
+        if (isDuplicate) {
+            logWarning(
+                "UPDATE DISH",
+                `User ID ${userId} attempted to update dish to an already existing dish name.`
+            );
+            return res
+                .status(409)
+                .json({ message: "A dish with this name already exists." });
         }
 
-        await Dish.updateOne({ _id: dishId }, { $set: updates });
+        const ingredientDocs = await dishUtils.validateIngredientIds(
+            ingredients.map((i) => i.ingredient)
+        );
 
-        // Fetch updated dish to return
+        if (!ingredientDocs) {
+            logWarning(
+                "UPDATE DISH",
+                `User ID ${userId} provided invalid ingredient IDs.`
+            );
+            return res
+                .status(400)
+                .json({ message: "Invalid ingredient(s) provided." });
+        }
+
+        const resolvedTags =
+            dishUtils.resolveTagsFromIngredients(ingredientDocs);
+        const finalColor = dishUtils.validateCardColor(
+            cardColor,
+            dish.cardColor
+        );
+
+        await Dish.updateOne(
+            { _id: dishId },
+            {
+                $set: {
+                    name,
+                    ingredients,
+                    tags: resolvedTags,
+                    cardColor: finalColor,
+                },
+            }
+        );
+
         const updatedDish = await Dish.findById(dishId)
             .populate("ingredients.ingredient")
             .populate("owner", "username");
+
         logInfo(
             "UPDATE DISH",
-            `Dish ${dish.name} (ID ${dishId}) updated by user ID ${userId} (${role})`
+            `Dish "${dish.name}" (${dishId}) updated by user ${userId} (${role})`
         );
+
         res.status(200).json({ dish: updatedDish });
     } catch (err) {
-        logError("UPDATE DISH", `Error updating dish ID ${dishId}: ${err}`);
+        logError("UPDATE DISH", `Error updating dish ${dishId}: ${err}`);
         res.status(500).json({ message: "Internal server error." });
     }
 }

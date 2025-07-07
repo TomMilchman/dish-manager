@@ -1,6 +1,6 @@
 const Ingredient = require("../models/Ingredient");
 const { logInfo, logError } = require("../utils/logger");
-const { Tags } = require("../constants/enums");
+const { TagDefinitions } = require("../constants/tagDefinitions");
 
 /**
  * Creates a new ingredient and saves it to the database.
@@ -190,7 +190,7 @@ async function deleteIngredient(req, res) {
 async function getAllTags(req, res) {
     const { userId } = req.user;
     logInfo("get all tags", `Obtained ingredient tags for user ID ${userId}`);
-    res.status(200).json({ tags: Object.values(Tags) });
+    res.status(200).json({ tags: TagDefinitions.map(({ tag }) => tag) });
 }
 
 module.exports = {

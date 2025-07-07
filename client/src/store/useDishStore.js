@@ -7,7 +7,7 @@ const useDishStore = create(
         dishesById: {}, // object: { [id]: dish }
 
         // IDs of selected dishes (for summary view)
-        selectedDishIds: [],
+        selectedDishIds: new Set(),
 
         // The dish that is currently being edited in the update form
         dishToEdit: null,
@@ -46,45 +46,48 @@ const useDishStore = create(
 
         getSelectedDishes: () => {
             const { dishesById, selectedDishIds } = get();
-            return selectedDishIds.map((id) => dishesById[id]).filter(Boolean);
+            return Array.from(selectedDishIds)
+                .map((id) => dishesById[id])
+                .filter(Boolean);
         },
 
         // Select a dish
         selectDishById: (dishId) =>
             set((state) => ({
-                selectedDishIds: [
-                    ...new Set([...state.selectedDishIds, dishId]),
-                ],
+                selectedDishIds: new Set(state.selectedDishIds).add(dishId),
             })),
 
         // Deselect a dish
         deselectDishById: (dishId) =>
-            set((state) => ({
-                selectedDishIds: state.selectedDishIds.filter(
-                    (id) => id !== dishId
-                ),
-            })),
+            set((state) => {
+                const newSet = new Set(state.selectedDishIds);
+                newSet.delete(dishId);
+                return { selectedDishIds: newSet };
+            }),
 
         // Toggle dish selection
-        toggleDishSelectionById: (dishId) => {
-            const { selectedDishIds } = get();
-            if (selectedDishIds.includes(dishId)) {
-                get().deselectDishById(dishId);
-            } else {
-                get().selectDishById(dishId);
-            }
-        },
+        toggleDishSelectionById: (dishId) =>
+            set((state) => {
+                const newSet = new Set(state.selectedDishIds);
 
-        setSelectedDishIds: (ids) => set({ selectedDishIds: ids }),
+                if (newSet.has(dishId)) {
+                    newSet.delete(dishId);
+                } else {
+                    newSet.add(dishId);
+                }
+                return { selectedDishIds: newSet };
+            }),
+
+        setSelectedDishIds: (ids) => set({ selectedDishIds: new Set(ids) }),
 
         // Returns whether dish ID is in selected dishes or not
         isDishIdInSelectedDishIds: (dishId) => {
             const { selectedDishIds } = get();
-            return selectedDishIds.includes(dishId);
+            return selectedDishIds.has(dishId);
         },
 
         // Clear all selections
-        clearSelectedDishes: () => set({ selectedDishIds: [] }),
+        clearSelectedDishes: () => set({ selectedDishIds: new Set() }),
 
         // Set the currently edited dish
         setDishToEdit: (dish) => set({ dishToEdit: dish }),

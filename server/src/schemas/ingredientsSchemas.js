@@ -1,8 +1,12 @@
 const Joi = require("joi");
+const { TagDefinitions } = require("../constants/tagDefinitions");
 const { requiredStringRule } = require("./sharedSchemas");
-const { Tags } = require("../constants/enums");
 
-const tagArraySchema = Joi.string().valid(...Object.values(Tags));
+const tagArraySchema = Joi.string().valid(
+    ...TagDefinitions.map(({ tag }) => tag)
+);
+
+const tagsSchema = Joi.array().items(tagArraySchema).default([]);
 
 exports.createIngredientSchema = Joi.object({
     name: requiredStringRule,
@@ -22,8 +26,7 @@ exports.createIngredientSchema = Joi.object({
         then: Joi.required(),
         otherwise: Joi.forbidden(),
     }),
-    tags: Joi.array().items(tagArraySchema),
-    // TODO: add tags to ingredient creation process
+    tags: tagsSchema,
 });
 
 exports.ingredientIdSchema = Joi.object({

@@ -139,6 +139,16 @@ export default function DishCard({ dishId, index }) {
             <div className="dish-card__content">
                 <div className="dish-card__dish-info">
                     <h3 className="dish-card__dish-name">{dish.name}</h3>
+                    <div className="dish-card__tags-container">
+                        {dish.tags?.map((tag) => (
+                            <div
+                                className="dish-card__tag"
+                                key={`${dish.name}-${tag}`}
+                            >
+                                {tag}
+                            </div>
+                        ))}
+                    </div>
                     <hr className="dish-card__divider" />
                     <ul className="dish-card__ingredient-list">
                         {dish.ingredients?.map((ingredientObj) => (
