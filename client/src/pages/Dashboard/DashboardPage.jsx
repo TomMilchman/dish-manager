@@ -6,16 +6,19 @@ import { useQuery } from "@tanstack/react-query";
 import "./DashboardPage.css";
 
 // State management
+import useAuthStore from "../../store/useAuthStore.js";
 import useDishStore from "../../store/useDishStore";
 import useIngredientStore from "../../store/useIngredientStore";
 import useFilterStore from "../../store/useFilterStore.js";
+import useMetaStore from "../../store/useMetaStore.js";
 
 // API
-import { getAllDishesFromServer } from "../../api/dishes.js";
+import { getAllDishesFromServer } from "../../api/dishApi.js";
+import { getAllIngredientsFromServer } from "../../api/ingredientApi.js";
 import {
-    getAllIngredientsFromServer,
     getAllTagsFromServer,
-} from "../../api/ingredients.js";
+    getColorMapFromServer,
+} from "../../api/generalApi.js";
 
 // Components
 import TopBar from "../../components/TopBar/TopBar";
@@ -28,8 +31,17 @@ export default function DashboardPage() {
     const { setDishes, dishesById, setSelectedDishIds, selectedDishIds } =
         useDishStore();
     const { setIngredients } = useIngredientStore();
-    const { setTags, selectedTags, showFavoritesOnly, searchQuery } =
-        useFilterStore();
+    const {
+        setTags,
+        selectedTags,
+        showFavoritesOnly,
+        showUserOnly,
+        searchQuery,
+    } = useFilterStore();
+    const { setColorMap } = useMetaStore();
+
+    const username = useAuthStore((state) => state.username);
+    const role = useAuthStore((state) => state.role);
 
     const filteredDishes = useMemo(
         () =>
@@ -41,13 +53,25 @@ export default function DashboardPage() {
                     selectedTags.size === 0
                         ? true
                         : dish.tags?.some((tag) => selectedTags.has(tag));
+                const userOnlyMatch =
+                    showUserOnly && role === "admin"
+                        ? dish.owner.username === username
+                        : true;
                 const favoriteMatch = showFavoritesOnly
                     ? dish.isFavorite
                     : true;
 
-                return nameMatch && tagsMatch && favoriteMatch;
+                return nameMatch && tagsMatch && favoriteMatch && userOnlyMatch;
             }),
-        [dishesById, selectedTags, searchQuery, showFavoritesOnly]
+        [
+            dishesById,
+            searchQuery,
+            selectedTags,
+            showUserOnly,
+            role,
+            username,
+            showFavoritesOnly,
+        ]
     );
 
     const validSelectedDishIds = useMemo(() => {
@@ -82,28 +106,41 @@ export default function DashboardPage() {
         return { isLoading };
     }
 
-    const { isLoading: dishesLoading } = useSyncQueryToStore({
+    const dishesQuery = useSyncQueryToStore({
         queryKey: ["dishes"],
         queryFn: getAllDishesFromServer,
         selectData: (data) => data.dishes,
         onSuccess: setDishes,
     });
 
-    const { isLoading: ingredientsLoading } = useSyncQueryToStore({
+    const ingredientsQuery = useSyncQueryToStore({
         queryKey: ["ingredients"],
         queryFn: getAllIngredientsFromServer,
         selectData: (data) => data.ingredients,
         onSuccess: setIngredients,
     });
 
-    const { isLoading: tagsLoading } = useSyncQueryToStore({
+    const tagsQuery = useSyncQueryToStore({
         queryKey: ["tags"],
         queryFn: getAllTagsFromServer,
         selectData: (data) => data.tags,
         onSuccess: setTags,
     });
 
-    if (dishesLoading || ingredientsLoading || tagsLoading) {
+    const colorsQuery = useSyncQueryToStore({
+        queryKey: ["colors"],
+        queryFn: getColorMapFromServer,
+        selectData: (data) => data.colorMap,
+        onSuccess: setColorMap,
+    });
+
+    const isLoading =
+        dishesQuery.isLoading ||
+        ingredientsQuery.isLoading ||
+        tagsQuery.isLoading ||
+        colorsQuery.isLoading;
+
+    if (isLoading) {
         return <LoadingSpinner />;
     }
 
@@ -113,12 +150,8 @@ export default function DashboardPage() {
             <FilterBar />
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
-                    {filteredDishes?.map((dish, index) => (
-                        <DishCard
-                            key={dish._id}
-                            dishId={dish._id}
-                            index={index}
-                        />
+                    {filteredDishes?.map((dish) => (
+                        <DishCard key={dish._id} dishId={dish._id} />
                     ))}
                 </div>
                 <div className="dashboard__summary-panel">

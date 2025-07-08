@@ -140,22 +140,6 @@ li {
     user-select: none;
 }
 
-.dish-card__container.color-yellow {
-    background-color: #ffd465;
-}
-
-.dish-card__container.color-baige {
-    background-color: #ffc5a4;
-}
-
-.dish-card__container.color-orange {
-    background-color: #fe9738;
-}
-
-.dish-card__container.color-light-green {
-    background-color: #e7e596;
-}
-
 .dish-card__dish-name {
     margin-top: 0.1rem;
     overflow-x: hidden;

@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import "./FilterBar.css";
 
+import { useState, useEffect } from "react";
 import { FaArrowRotateLeft, FaXmark } from "react-icons/fa6";
 
-import "./FilterBar.css";
 import useFilterStore from "../../store/useFilterStore";
+import useAuthStore from "../../store/useAuthStore";
 
 export default function FilterBar() {
     const {
@@ -15,8 +16,11 @@ export default function FilterBar() {
         clearSearchQuery,
         setSearchQuery,
         toggleSelectedTag,
+        showUserOnly,
+        setShowUserOnly,
         clearSelectedFilters,
     } = useFilterStore();
+    const { role } = useAuthStore();
     const [localInput, setLocalInput] = useState("");
 
     useEffect(() => {
@@ -62,6 +66,18 @@ export default function FilterBar() {
                         Favorites
                     </label>
                 </div>
+                {role === "admin" && (
+                    <div className="filter-bar__tag" key={"user-only"}>
+                        <input
+                            type="checkbox"
+                            className="filter-bar__checkbox"
+                            id={"user-only-checkbox"}
+                            checked={showUserOnly}
+                            onChange={(e) => setShowUserOnly(e.target.checked)}
+                        />
+                        <label htmlFor="user-only-checkbox">User Only</label>
+                    </div>
+                )}
                 {tags?.map((tag) => (
                     <div className="filter-bar__tag" key={tag}>
                         <input

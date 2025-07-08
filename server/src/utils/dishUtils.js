@@ -1,6 +1,6 @@
 const Dish = require("../models/Dish");
 const Ingredient = require("../models/Ingredient");
-const { COLORS } = require("../constants/enums");
+const { COLOR_MAP } = require("../constants/colorMap");
 const { resolveTags } = require("../utils/resolveTags");
 
 exports.validateIngredientIds = async (ingredientIds) => {
@@ -33,5 +33,5 @@ exports.isDuplicateDishName = async ({ name, ownerId, excludeId = null }) => {
 };
 
 exports.validateCardColor = (inputColor, fallback = "white") => {
-    return Object.values(COLORS).includes(inputColor) ? inputColor : fallback;
+    return Object.keys(COLOR_MAP).includes(inputColor) ? inputColor : fallback;
 };

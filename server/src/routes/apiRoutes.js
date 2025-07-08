@@ -4,6 +4,7 @@ const router = express.Router();
 // Controllers
 const dishesController = require("../controllers/dishesController");
 const ingredientsController = require("../controllers/ingredientsController");
+const metaController = require("../controllers/metaController");
 
 // Middlewares
 const {
@@ -81,8 +82,6 @@ router.get(
     ingredientsController.getIngredientById
 );
 
-router.get("/tags", ingredientsController.getAllTags);
-
 // Admin-only routes
 router.post(
     "/ingredients",
@@ -106,3 +105,8 @@ router
     );
 
 module.exports = router;
+
+//------------------------- GENERAL ROUTES --------------------------
+
+router.get("/tags", metaController.getAllTags);
+router.get("/colors", metaController.getColorMap);

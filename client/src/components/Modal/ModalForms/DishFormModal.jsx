@@ -1,12 +1,14 @@
+import "./ModalForms.css";
+
 import { useState, useEffect, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import "./ModalForms.css";
 import IngredientInputRow from "../IngredientInputRow/IngredientInputRow";
+import ColorPicker from "../../ColorPicker";
 
 import { handleSubmit } from "../../../utils/formHandlers";
-import { addDishToServer, updateDishInServer } from "../../../api/dishes";
+import { addDishToServer, updateDishInServer } from "../../../api/dishApi";
 
 import useIngredientStore from "../../../store/useIngredientStore";
 import useDishStore from "../../../store/useDishStore";
@@ -24,7 +26,7 @@ function validateInput(selectedIngredients) {
 }
 
 export default function DishFormModal() {
-    const { dishToEdit, clearDishToEdit, addDish, updateDish } = useDishStore();
+    const { clearDishToEdit, addDish, updateDish } = useDishStore();
     const { closeModal } = useModalStore();
     const {
         ingredients,
@@ -34,8 +36,10 @@ export default function DishFormModal() {
         addIngredientRow,
         clearSelectedIngredients,
     } = useIngredientStore();
+    const dishToEdit = useDishStore((state) => state.dishToEdit);
 
     const [dishName, setDishName] = useState("");
+    const [cardColor, setCardColor] = useState("white");
     const isEdit = Boolean(dishToEdit);
     const originalIngredients = useMemo(
         () => dishToEdit?.ingredients || [],
@@ -45,6 +49,7 @@ export default function DishFormModal() {
     useEffect(() => {
         if (dishToEdit) {
             setDishName(dishToEdit.name);
+            setCardColor(dishToEdit.cardColor);
 
             const formatted = dishToEdit.ingredients.map(
                 ({ ingredient, amount }) => ({
@@ -103,6 +108,7 @@ export default function DishFormModal() {
                         className="dish-modal__revert-btn"
                         onClick={() => {
                             setDishName(dishToEdit.name);
+                            setCardColor(dishToEdit.cardColor);
                             setSelectedIngredients(
                                 originalIngredients.map(
                                     ({ ingredient, amount }) => ({
@@ -131,6 +137,7 @@ export default function DishFormModal() {
 
                     const payload = {
                         name: dishName,
+                        cardColor,
                         ingredients: selectedIngredients.map((obj) =>
                             renameKeyImmutable(
                                 obj,
@@ -164,6 +171,10 @@ export default function DishFormModal() {
                         required
                     />
                 </div>
+                <ColorPicker
+                    color={cardColor}
+                    onChange={(newColor) => setCardColor(newColor)}
+                />
                 <hr className="dish-modal__divider" />
                 <IngredientInputRow
                     key={0}

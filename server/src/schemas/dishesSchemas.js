@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const { requiredStringRule, tagsSchema } = require("./sharedSchemas");
-const { COLORS } = require("../constants/enums");
+const { COLOR_MAP } = require("../constants/colorMap");
 
 const dishNameRule = Joi.string().max(24);
 
@@ -14,17 +14,20 @@ const ingredientsArrayRule = Joi.array()
     .required()
     .unique("ingredient");
 
+const cardColorRule = Joi.string()
+    .valid(...Object.keys(COLOR_MAP))
+    .default("white");
+
 exports.createUserDishSchema = Joi.object({
     name: dishNameRule.required(),
     ingredients: ingredientsArrayRule.required(),
-    cardColor: Joi.string()
-        .valid(...Object.values(COLORS))
-        .default("white"),
+    cardColor: cardColorRule,
 });
 
 exports.updateDishSchema = Joi.object({
     name: dishNameRule,
     ingredients: ingredientsArrayRule,
+    cardColor: cardColorRule,
 })
     .or("name", "ingredients")
     .min(1);
