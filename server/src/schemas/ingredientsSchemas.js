@@ -8,31 +8,24 @@ const tagArraySchema = Joi.string().valid(
 
 const tagsSchema = Joi.array().items(tagArraySchema).default([]);
 
-exports.createIngredientSchema = Joi.object({
+const baseIngredientFields = {
     name: requiredStringRule,
-    unitType: Joi.string().valid("unit", "gram", "liter").required(),
-    pricePerUnit: Joi.number().when("unitType", {
-        is: "unit",
-        then: Joi.required(),
-        otherwise: Joi.forbidden(),
-    }),
-    pricePer100g: Joi.number().when("unitType", {
-        is: "gram",
-        then: Joi.required(),
-        otherwise: Joi.forbidden(),
-    }),
-    pricePerLiter: Joi.number().when("unitType", {
-        is: "liter",
-        then: Joi.required(),
-        otherwise: Joi.forbidden(),
-    }),
+    unitType: Joi.string().valid("unit", "gram", "liter"),
+    price: Joi.number().min(1),
+    imageUrl: Joi.string().allow(""),
     tags: tagsSchema,
+};
+
+exports.createIngredientSchema = Joi.object({
+    ...baseIngredientFields,
+    unitType: baseIngredientFields.unitType.required(),
+    price: baseIngredientFields.price.required(),
 });
 
 exports.ingredientIdSchema = Joi.object({
     ingredientId: requiredStringRule,
 });
 
-exports.updateIngredientSchema = Joi.object({
-    updates: Joi.object().min(1).required(),
-});
+exports.updateIngredientSchema = Joi.object(baseIngredientFields)
+    .min(1)
+    .required();

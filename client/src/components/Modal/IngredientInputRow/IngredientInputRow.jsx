@@ -9,7 +9,7 @@ export default function IngredientInputRow({
     onDelete,
 }) {
     const {
-        ingredients: allIngredients,
+        ingredientsById: allIngredients,
         selectedIngredients,
         updateSelectedIngredientAtIndex,
         getIngredientById,
@@ -23,7 +23,7 @@ export default function IngredientInputRow({
     };
 
     const getIngredientUnitType = (ingredientId) =>
-        allIngredients.find((ing) => ing._id === ingredientId)?.unitType || "";
+        allIngredients[ingredientId]?.unitType || "";
 
     return (
         <div className="ingredient-input-row__container">
@@ -43,7 +43,7 @@ export default function IngredientInputRow({
                     <option value="" disabled>
                         Select ingredient
                     </option>
-                    {allIngredients
+                    {Object.values(allIngredients)
                         .filter(
                             (ing) =>
                                 !selectedIngredients.some(

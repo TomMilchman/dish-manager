@@ -3,9 +3,22 @@ import { devtools } from "zustand/middleware";
 
 const useIngredientStore = create(
     devtools((set, get) => ({
-        ingredients: [],
+        ingredientsById: {}, // Map of ingredientId to ingredient object
         selectedIngredients: [{ ingredientId: "", amount: 0 }], // [{ingredientId: String, amount: Number},...]
-        setIngredients: (ingredients) => set({ ingredients }),
+        setIngredients: (ingredients) => {
+            const ingredientsById = ingredients.reduce((acc, ingredient) => {
+                acc[ingredient._id] = ingredient;
+                return acc;
+            }, {});
+            set({ ingredientsById });
+        },
+        addOrUpdateIngredient: (ingredient) =>
+            set((state) => ({
+                ingredientsById: {
+                    ...state.ingredientsById,
+                    [ingredient._id]: ingredient,
+                },
+            })),
         addIngredientRow: () =>
             set((state) => ({
                 selectedIngredients: [
@@ -15,7 +28,7 @@ const useIngredientStore = create(
             })),
         getIngredientById: (ingredientId) => {
             const state = get();
-            return state.ingredients.find((ing) => ing._id === ingredientId);
+            return state.ingredientsById[ingredientId];
         },
         updateSelectedIngredientAtIndex: (index, updatedRow) =>
             set((state) => {

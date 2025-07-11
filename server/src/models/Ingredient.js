@@ -32,9 +32,6 @@ const ingredientSchema = new mongoose.Schema({
             return this.unitType === "liter";
         },
     },
-    imageUrl: {
-        type: String,
-    },
     tags: [
         {
             type: String,
@@ -42,6 +39,10 @@ const ingredientSchema = new mongoose.Schema({
             lowercase: true,
         },
     ],
+    imageUrl: {
+        type: String,
+        default: "",
+    },
 });
 
 const Ingredient = mongoose.model("Ingredient", ingredientSchema);

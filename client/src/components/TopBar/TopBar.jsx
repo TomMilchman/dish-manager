@@ -17,12 +17,14 @@ import useDishStore from "../../store/useDishStore.js";
 // Components
 import DishFormModal from "../../components/Modal/ModalForms/DishFormModal.jsx";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import IngredientFormModal from "../Modal/ModalForms/IngredientFormModal.jsx";
 
 // API
 import { logout } from "../../api/auth";
 
 export default function TopBar() {
     const openModal = useModalStore((state) => state.openModal);
+    const role = useAuthStore((state) => state.role);
     const { clearSelectedDishes } = useDishStore();
     const navigate = useNavigate();
 
@@ -58,6 +60,30 @@ export default function TopBar() {
                     >
                         <FaPlus /> Add Dish
                     </button>
+                    {role === "admin" && (
+                        <>
+                            <button
+                                className="top-bar-btn"
+                                onClick={() => {
+                                    openModal(<IngredientFormModal />);
+                                }}
+                            >
+                                <FaPlus />
+                                Add Ingredient
+                            </button>
+                            <button
+                                className="top-bar-btn"
+                                onClick={() => {
+                                    openModal(
+                                        <IngredientFormModal isEdit={true} />
+                                    );
+                                }}
+                            >
+                                <FaPlus />
+                                Edit Ingredient
+                            </button>
+                        </>
+                    )}
                     <button
                         className="top-bar-btn clear-card-selection-btn"
                         title="Clear Selection"

@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     handleSubmitWithMatchedPasswords,
-    handleChange,
+    handleFormChange,
 } from "../../utils/formHandlers";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { resetPassword } from "../../api/auth";
@@ -54,7 +54,7 @@ export default function ResetPassword() {
                     name="password"
                     placeholder="New Password"
                     value={formData.password}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    onChange={(e) => handleFormChange(e, formData, setFormData)}
                     required
                 />
                 <input

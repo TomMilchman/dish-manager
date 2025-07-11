@@ -66,7 +66,7 @@ export default function DishCard({ dishId }) {
     });
 
     return (
-        <Tilt glareMaxOpacity={0} tiltMaxAngleX={10} tiltMaxAngleY={10}>
+        <Tilt glareMaxOpacity={0} tiltMaxAngleX={3} tiltMaxAngleY={3}>
             <div
                 className={`dish-card__container ${
                     isSelected ? "selected" : ""

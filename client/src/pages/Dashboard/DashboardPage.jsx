@@ -18,7 +18,7 @@ import { getAllIngredientsFromServer } from "../../api/ingredientApi.js";
 import {
     getAllTagsFromServer,
     getColorMapFromServer,
-} from "../../api/generalApi.js";
+} from "../../api/metaApi.js";
 
 // Components
 import TopBar from "../../components/TopBar/TopBar";

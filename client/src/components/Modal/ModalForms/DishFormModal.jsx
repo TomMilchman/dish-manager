@@ -29,7 +29,7 @@ export default function DishFormModal() {
     const { clearDishToEdit, addDish, updateDish } = useDishStore();
     const { closeModal } = useModalStore();
     const {
-        ingredients,
+        ingredientsById,
         selectedIngredients,
         setSelectedIngredients,
         removeSelectedIngredientAtIndex,
@@ -86,26 +86,29 @@ export default function DishFormModal() {
     });
 
     return (
-        <div className="dish-modal__container">
+        <div className="modal__container">
             <h2>{isEdit ? "Edit Dish" : "Add New Dish"}</h2>
-            <div className="dish-modal__row-controls">
+            <div className="modal__row-controls">
                 <button
                     onClick={() => addIngredientRow()}
-                    className="dish-modal__add-row-btn"
-                    disabled={selectedIngredients.length === ingredients.length}
+                    className="modal__add-row-btn"
+                    disabled={
+                        selectedIngredients.length ===
+                        Object.keys(ingredientsById).length
+                    }
                 >
                     Add Row
                 </button>
                 <button
                     onClick={() => clearSelectedIngredients()}
-                    className="dish-modal__clear-rows-btn"
+                    className="modal__clear-rows-btn"
                 >
                     Clear Rows
                 </button>
                 {isEdit && (
                     <button
                         type="button"
-                        className="dish-modal__revert-btn"
+                        className="modal__revert-btn"
                         onClick={() => {
                             setDishName(dishToEdit.name);
                             setCardColor(dishToEdit.cardColor);
@@ -156,13 +159,13 @@ export default function DishFormModal() {
                         handleSubmit(e, mutation, payload);
                     }
                 }}
-                className="dish-modal__form"
+                className="modal__form"
             >
-                <div className="dish-modal__name-container">
-                    <label htmlFor="dish-name-input">Name:</label>
+                <div className="modal__name-container">
+                    <label htmlFor="name-input">Name:</label>
 
                     <input
-                        className="dish-modal__name-input"
+                        className="modal__name-input"
                         id="dish-name-input"
                         type="text"
                         placeholder="Dish Name"
@@ -175,7 +178,7 @@ export default function DishFormModal() {
                     color={cardColor}
                     onChange={(newColor) => setCardColor(newColor)}
                 />
-                <hr className="dish-modal__divider" />
+                <hr className="modal__divider" />
                 <IngredientInputRow
                     key={0}
                     rowIndex={0}
@@ -194,7 +197,7 @@ export default function DishFormModal() {
                 ))}
 
                 <button
-                    className="dish-modal__form-submit-btn"
+                    className="modal__form-submit-btn"
                     type="submit"
                     disabled={mutation.isPending}
                 >

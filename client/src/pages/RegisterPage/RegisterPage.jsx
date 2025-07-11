@@ -7,7 +7,7 @@ import { registerUser } from "../../api/auth";
 import useAuthStore from "../../store/useAuthStore";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import {
-    handleChange,
+    handleFormChange,
     handleSubmitWithMatchedPasswords,
 } from "../../utils/formHandlers";
 
@@ -52,7 +52,7 @@ export default function Register() {
                     name="username"
                     placeholder="Username"
                     value={formData.username}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    onChange={(e) => handleFormChange(e, formData, setFormData)}
                     required
                 />
 
@@ -61,7 +61,7 @@ export default function Register() {
                     name="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    onChange={(e) => handleFormChange(e, formData, setFormData)}
                     required
                 />
 
@@ -70,7 +70,7 @@ export default function Register() {
                     name="password"
                     placeholder="Password"
                     value={formData.password}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    onChange={(e) => handleFormChange(e, formData, setFormData)}
                     required
                 />
 

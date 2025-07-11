@@ -1,13 +1,13 @@
 /* Add Dish Modal -----------------------------------------------------------*/
 
-.dish-modal__container {
+.modal__container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.dish-modal__form {
+.modal__form {
     max-height: 80vh;
     width: 25vw;
     display: flex;
@@ -17,21 +17,21 @@
     overflow-y: auto;
 }
 
-.dish-modal__row-controls {
+.modal__row-controls {
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
-.dish-modal__name-container {
+.modal__name-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.dish-modal__divider {
+.modal__divider {
     border: none;
     border-top: 1px solid rgba(0, 0, 0, 0.2);
     margin: 0;

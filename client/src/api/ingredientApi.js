@@ -1,7 +1,8 @@
-import api from "./axios";
+import { get, post, patch } from "../utils/apiHelper";
+const INGREDIENTS_ENDPOINT = "/api/ingredients";
 
-// Fetches all ingredients existing in the DB
-export const getAllIngredientsFromServer = async () => {
-    const res = await api.get("/api/ingredients");
-    return res.data;
-};
+export const getAllIngredientsFromServer = () => get(INGREDIENTS_ENDPOINT);
+export const addIngredientToServer = (ingData) =>
+    post(INGREDIENTS_ENDPOINT, ingData);
+export const updateIngredientInServer = ({ id, updates }) =>
+    patch(`${INGREDIENTS_ENDPOINT}/${id}`, updates);

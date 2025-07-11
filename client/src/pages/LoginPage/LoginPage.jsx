@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { loginUser } from "../../api/auth";
 import useAuthStore from "../../store/useAuthStore";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { handleSubmit, handleChange } from "../../utils/formHandlers";
+import { handleSubmit, handleFormChange } from "../../utils/formHandlers";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function Login() {
                     name="usernameOrEmail"
                     placeholder="Username or email"
                     value={formData.usernameOrEmail}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    onChange={(e) => handleFormChange(e, formData, setFormData)}
                     required
                 />
 
@@ -48,7 +48,7 @@ export default function Login() {
                     name="password"
                     placeholder="Password"
                     value={formData.password}
-                    onChange={(e) => handleChange(e, formData, setFormData)}
+                    onChange={(e) => handleFormChange(e, formData, setFormData)}
                     required
                 />
 

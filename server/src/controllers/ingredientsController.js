@@ -1,19 +1,34 @@
 const Ingredient = require("../models/Ingredient");
-const { logInfo, logError } = require("../utils/logger");
+const { logInfo, logError, logWarning } = require("../utils/logger");
 const { TagDefinitions } = require("../constants/tagDefinitions");
 
 /**
  * Creates a new ingredient and saves it to the database.
  *
- * @param {import("express").Request} req - Express request object. Expects `name`, `unitType`, and one of the price fields in `req.body`.
+ * @param {import("express").Request} req - Express request object. Expects `name`, `unitType`, and `price` in `req.body`.
  * @param {import("express").Response} res - Express response object.
  * @returns {Promise<void>}
  */
 async function createIngredient(req, res) {
-    const { name, unitType, pricePerUnit, pricePer100g, pricePerLiter } =
-        req.body;
+    const { name, unitType, price, tags, imageUrl } = req.body;
+
+    const existingIngredient = await Ingredient.findOne({ name });
+
+    if (existingIngredient) {
+        logWarning(
+            "create ingredient",
+            `Admin tried to create an ingredient that already exists: ${name}`
+        );
+        return res.status(409).json({
+            message: "An ingredient with the same name already exists.",
+        });
+    }
 
     if (!["unit", "gram", "liter"].includes(unitType)) {
+        logWarning(
+            "create ingredient",
+            `Admin tried to create an ingredient with a unit type that doesn't exist: ${unitType}`
+        );
         return res.status(400).json({
             message: "Invalid unitType. Must be 'unit', 'gram', or 'liter'.",
         });
@@ -23,13 +38,13 @@ async function createIngredient(req, res) {
 
     switch (unitType) {
         case "unit":
-            priceField = { pricePerUnit };
+            priceField = { pricePerUnit: price };
             break;
         case "gram":
-            priceField = { pricePer100g };
+            priceField = { pricePer100g: price };
             break;
         case "liter":
-            priceField = { pricePerLiter };
+            priceField = { pricePerLiter: price };
     }
 
     try {
@@ -37,12 +52,13 @@ async function createIngredient(req, res) {
             name,
             unitType,
             ...priceField,
+            tags,
+            imageUrl,
         });
 
         logInfo("create ingredient", `New ingredient "${name}" added.`);
 
         res.status(201).json({
-            message: `Ingredient "${name}" has been created.`,
             ingredient: newIngredient,
         });
     } catch (err) {
@@ -119,11 +135,11 @@ async function getIngredientById(req, res) {
  */
 async function updateIngredient(req, res) {
     try {
-        const { ingredietnId } = req.params;
+        const { ingredientId } = req.params;
         const updates = req.body;
 
         const ingredient = await Ingredient.findByIdAndUpdate(
-            ingredietnId,
+            ingredientId,
             updates,
             {
                 new: true,
@@ -137,7 +153,7 @@ async function updateIngredient(req, res) {
 
         logInfo(
             "update ingredient",
-            `Updated ingredient ${ingredient.name} (ID ${dishId})`
+            `Updated ingredient ${ingredient.name} (ID ${ingredientId})`
         );
         res.status(200).json({ ingredient });
     } catch (err) {
