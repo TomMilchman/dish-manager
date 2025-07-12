@@ -55,7 +55,8 @@ export default function DashboardPage() {
                         : dish.tags?.some((tag) => selectedTags.has(tag));
                 const userOnlyMatch =
                     showUserOnly && role === "admin"
-                        ? dish.owner.username === username
+                        ? dish.owner.username.toLowerCase() ===
+                          username.toLowerCase()
                         : true;
                 const favoriteMatch = showFavoritesOnly
                     ? dish.isFavorite

@@ -30,11 +30,12 @@ async function login(req, res) {
 
     try {
         logger.logInfo("login", `Attempting login for: ${usernameOrEmail}`);
+        const lowerCasedUsernameOrEmail = usernameOrEmail.toLowerCase();
 
         const user = await User.findOne({
             $or: [
-                { username: usernameOrEmail },
-                { email: usernameOrEmail.toLowerCase() },
+                { usernameLower: lowerCasedUsernameOrEmail },
+                { email: lowerCasedUsernameOrEmail },
             ],
         });
 
@@ -105,9 +106,11 @@ async function register(req, res) {
     const { username, email, password, rememberMe } = req.body;
 
     try {
+        const usernameLower = username.toLowerCase();
+
         // Check if user exists by username or email
         const existingUser = await User.findOne({
-            $or: [{ username }, { email }],
+            $or: [{ usernameLower }, { email }],
         });
 
         if (existingUser) {
@@ -126,6 +129,7 @@ async function register(req, res) {
         // Create the user
         const createdUser = await User.create({
             username,
+            usernameLower,
             email,
             password: hashedPassword,
         });

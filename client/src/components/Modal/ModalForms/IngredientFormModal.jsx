@@ -15,8 +15,7 @@ import { handleFormChange, handleSubmit } from "../../../utils/formHandlers";
 import { getPriceForIngredient } from "../../../utils/dishUtils";
 
 export default function IngredientFormModal({ isEdit }) {
-    const { addOrUpdateIngredient, updateIngredient, getIngredientById } =
-        useIngredientStore();
+    const { addOrUpdateIngredient, getIngredientById } = useIngredientStore();
     const ingredientsById = useIngredientStore(
         (state) => state.ingredientsById
     );

@@ -114,7 +114,8 @@ export default function DishCard({ dishId }) {
                         </div>
                     </>
                 )}
-                {dish.owner.username === username && (
+                {dish.owner.username.toLowerCase() ===
+                    username.toLowerCase() && (
                     <button
                         className={`dish-card__favorite-btn${
                             dish.isFavorite ? " selected" : ""
