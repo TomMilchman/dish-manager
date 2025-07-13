@@ -151,9 +151,27 @@ export default function DashboardPage() {
             <FilterBar />
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
-                    {filteredDishes?.map((dish) => (
-                        <DishCard key={dish._id} dishId={dish._id} />
-                    ))}
+                    {Object.values(dishesById).length <= 0 ? (
+                        <div className="dashboard__dish-card-zero-dishes">
+                            <div className="dashboard__dish-card-zero-dishes-text">
+                                <h2>No Dishes Found</h2>
+                                <p>
+                                    Press on the <span>Add Dish</span> button at
+                                    the top to create a dish!
+                                </p>
+                            </div>
+                            <img
+                                alt="No Dishes"
+                                src="/DishManagerTray.png"
+                            ></img>
+                        </div>
+                    ) : (
+                        <div className="dashboard__dish-card-grid">
+                            {filteredDishes?.map((dish) => (
+                                <DishCard key={dish._id} dishId={dish._id} />
+                            ))}
+                        </div>
+                    )}
                 </div>
                 <div className="dashboard__summary-panel">
                     <SummaryPanel />

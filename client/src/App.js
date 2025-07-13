@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import RegisterPage from "./pages/RegisterPage/RegisterPage";
-import ForgotPassword from "./pages/ForgotPasswordPage/ForgotPasswordPage";
-import ResetPassword from "./pages/ResetPasswordPage/ResetPasswordPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPassword from "./pages/ForgotPasswordPage";
+import ResetPassword from "./pages/ResetPasswordPage";
 import Dashboard from "./pages/Dashboard/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
