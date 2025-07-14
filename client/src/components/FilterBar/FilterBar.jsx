@@ -67,19 +67,28 @@ export default function FilterBar() {
                     </label>
                 </div>
                 {role === "admin" && (
-                    <div className="filter-bar__tag" key={"user-only"}>
+                    <label
+                        className="filter-bar__tag"
+                        htmlFor="user-only-checkbox"
+                        key="user-only"
+                    >
                         <input
                             type="checkbox"
                             className="filter-bar__checkbox"
-                            id={"user-only-checkbox"}
+                            id="user-only-checkbox"
                             checked={showUserOnly}
                             onChange={(e) => setShowUserOnly(e.target.checked)}
                         />
-                        <label htmlFor="user-only-checkbox">User Only</label>
-                    </div>
+                        <span>User Only</span>
+                    </label>
                 )}
+
                 {tags?.map((tag) => (
-                    <div className="filter-bar__tag" key={tag}>
+                    <label
+                        className="filter-bar__tag"
+                        htmlFor={`${tag}-checkbox`}
+                        key={tag}
+                    >
                         <input
                             type="checkbox"
                             className="filter-bar__checkbox"
@@ -87,8 +96,8 @@ export default function FilterBar() {
                             checked={selectedTags.has(tag)}
                             onChange={() => toggleSelectedTag(tag)}
                         />
-                        <label htmlFor={`${tag}-checkbox`}>{tag}</label>
-                    </div>
+                        <span>{tag}</span>
+                    </label>
                 ))}
                 <button
                     onClick={() => clearSelectedFilters()}

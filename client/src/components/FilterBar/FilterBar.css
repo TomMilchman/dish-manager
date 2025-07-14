@@ -14,8 +14,73 @@
 
 .filter-bar__search-tags {
     display: flex;
+    align-items: center;
     flex-direction: row;
     gap: 0.3rem;
+    padding: 0.2rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 100%;
+    flex-wrap: nowrap;
+}
+
+.filter-bar__search-tags > .filter-bar__tag {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.filter-bar__tag {
+    display: flex;
+    align-items: center;
+    background-color: #ffe7d3;
+    border: 1px solid #ff8836;
+    border-radius: 999px; /* pill shape */
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+    color: #333;
+    white-space: nowrap;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+.filter-bar__tag:hover {
+    background-color: #ffbb8a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-bar__tag input[type="checkbox"] {
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.filter-bar__tag label {
+    cursor: pointer;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.search-bar {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background-color: #ffffffdd;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 200px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.search-bar::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.search-bar:focus {
+    border-color: #ff8836;
+    box-shadow: 0 0 0 3px rgba(255, 136, 54, 0.25);
 }
 
 .filter-bar__tag label {

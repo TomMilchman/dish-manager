@@ -173,8 +173,13 @@ export default function DashboardPage() {
                         </div>
                     )}
                 </div>
-                <div className="dashboard__summary-panel">
-                    <SummaryPanel />
+                <div className="dashboard__right-side">
+                    <div className="dashboard__summary-panel">
+                        <SummaryPanel />
+                    </div>
+                    <div className="dashboard__bottom-banner">
+                        <img alt="banner" src="DishManagerBanner.png"></img>
+                    </div>
                 </div>
             </div>
         </div>

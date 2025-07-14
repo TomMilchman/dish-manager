@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "@redux-devtools/extension": "^3.3.0",
+        "@szhsin/react-menu": "^4.4.1",
         "@tanstack/react-query": "^5.80.10",
         "@testing-library/dom": "^10.4.0",
         "framer-motion": "^12.23.0",

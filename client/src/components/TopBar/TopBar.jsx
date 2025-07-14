@@ -1,11 +1,13 @@
 // Styling
 import "./TopBar.css";
+import "@szhsin/react-menu/dist/index.css";
 
 // External Dependencies
+import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { FaPowerOff } from "react-icons/fa6";
+import { FaPowerOff, FaBars } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa6";
 import { MdOutlinePlaylistRemove } from "react-icons/md";
 
@@ -38,6 +40,77 @@ export default function TopBar() {
         },
     });
 
+    const menuItems = [
+        {
+            label: "Add Dish",
+            icon: <FaPlus />,
+            onClick: () => {
+                useDishStore.getState().clearDishToEdit();
+                openModal(<DishFormModal />);
+            },
+            adminOnly: false,
+        },
+        {
+            label: "Add Ingredient",
+            icon: <FaPlus />,
+            onClick: () => openModal(<IngredientFormModal />),
+            adminOnly: true,
+        },
+        {
+            label: "Edit Ingredient",
+            icon: <FaPlus />,
+            onClick: () => openModal(<IngredientFormModal isEdit={true} />),
+            adminOnly: true,
+        },
+        {
+            label: "Clear Selection",
+            icon: <MdOutlinePlaylistRemove />,
+            onClick: () => clearSelectedDishes(),
+            adminOnly: false,
+        },
+        {
+            label: "Log Out",
+            icon: <FaPowerOff />,
+            onClick: logoutMutation.mutate,
+            adminOnly: false,
+        },
+    ];
+
+    function renderMenu(mode) {
+        return menuItems
+            .filter((item) => !item.adminOnly || role === "admin")
+            .map((item, index) => {
+                const content = (
+                    <>
+                        {item.icon} {item.label}
+                    </>
+                );
+
+                return mode === "float" ? (
+                    <MenuItem
+                        key={index}
+                        className={`menu-item  ${item.label
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}-menu-item`}
+                        onClick={item.onClick}
+                    >
+                        {content}
+                    </MenuItem>
+                ) : (
+                    <button
+                        key={index}
+                        className={`top-bar-btn ${item.label
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}-btn`}
+                        title={item.label}
+                        onClick={item.onClick}
+                    >
+                        {content}
+                    </button>
+                );
+            });
+    }
+
     return (
         <div className="top-bar__container">
             <div className="top-bar__logo-and-left-buttons-container">
@@ -49,61 +122,33 @@ export default function TopBar() {
                     />
                     <h1 className="top-bar__title">DISH MANAGER</h1>
                 </div>
-                <div className="top-bar__left-buttons-container">
-                    <button
-                        className="top-bar-btn add-dish-btn"
-                        title="Add Dish"
-                        onClick={() => {
-                            useDishStore.getState().clearDishToEdit();
-                            openModal(<DishFormModal />);
-                        }}
-                    >
-                        <FaPlus /> Add Dish
-                    </button>
-                    {role === "admin" && (
-                        <>
-                            <button
-                                className="top-bar-btn"
-                                onClick={() => {
-                                    openModal(<IngredientFormModal />);
-                                }}
+                <div className="top-bar__menu-options">
+                    <Menu
+                        menuButton={
+                            <MenuButton
+                                className={`top-bar-btn top-bar__float-menu ${
+                                    role === "admin" ? "is-admin" : "not-admin"
+                                }`}
                             >
-                                <FaPlus />
-                                Add Ingredient
-                            </button>
-                            <button
-                                className="top-bar-btn"
-                                onClick={() => {
-                                    openModal(
-                                        <IngredientFormModal isEdit={true} />
-                                    );
-                                }}
-                            >
-                                <FaPlus />
-                                Edit Ingredient
-                            </button>
-                        </>
-                    )}
-                    <button
-                        className="top-bar-btn clear-card-selection-btn"
-                        title="Clear Selection"
-                        onClick={() => clearSelectedDishes()}
+                                <FaBars />
+                            </MenuButton>
+                        }
                     >
-                        <MdOutlinePlaylistRemove /> Clear Selection
-                    </button>
+                        {renderMenu("float")}
+                    </Menu>
+                    <div
+                        className={`top-bar__left-buttons-container ${
+                            role === "admin" ? "is-admin" : "not-admin"
+                        }`}
+                    >
+                        {renderMenu("inline")}
+                    </div>
                 </div>
             </div>
-            <div className="top-bar__right-buttons-container">
+            <div className="top-bar__right-container">
                 <h2 className="top-bar__username">
                     Hi, {useAuthStore.getState().username}
                 </h2>
-                <button
-                    onClick={logoutMutation.mutate}
-                    className="top-bar-btn logout-btn"
-                    title="Log Out"
-                >
-                    <FaPowerOff />
-                </button>
             </div>
             {logoutMutation.isPending && <LoadingSpinner />}
         </div>

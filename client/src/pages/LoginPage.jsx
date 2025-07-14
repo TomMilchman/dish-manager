@@ -66,6 +66,9 @@ export default function Login() {
                             type="checkbox"
                             name="rememberMe"
                             id="rememberMe"
+                            onChange={(e) =>
+                                handleFormChange(e, formData, setFormData)
+                            }
                             value={formData.rememberMe}
                         />
                         <label htmlFor="rememberMe">Remember Me</label>
