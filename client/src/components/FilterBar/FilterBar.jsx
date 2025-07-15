@@ -99,14 +99,14 @@ export default function FilterBar() {
                         <span>{tag}</span>
                     </label>
                 ))}
-                <button
-                    onClick={() => clearSelectedFilters()}
-                    className="filter-bar__btn"
-                    title="Remove Filters"
-                >
-                    <FaArrowRotateLeft />
-                </button>
             </div>
+            <button
+                onClick={() => clearSelectedFilters()}
+                className="filter-bar__btn"
+                title="Remove Filters"
+            >
+                <FaArrowRotateLeft />
+            </button>
         </div>
     );
 }

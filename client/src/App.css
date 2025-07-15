@@ -31,6 +31,10 @@ body {
     font-family: "Baloo2", sans-serif;
 }
 
+body {
+    background: linear-gradient(180deg, #ffba67, #f37a2f);
+}
+
 /* Scrollbar width */
 ::-webkit-scrollbar {
     width: 12px;
@@ -146,14 +150,7 @@ button:active {
     object-fit: contain;
 }
 
-.custom-toast {
-    background-color: #2b9348;
-    color: #fff;
+.Toastify__toast.custom-toast {
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.custom-toast-body {
-    font-size: 1rem;
-    font-family: "Inter", sans-serif;
 }

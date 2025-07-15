@@ -174,10 +174,12 @@ export default function DishFormModal() {
                         required
                     />
                 </div>
-                <ColorPicker
-                    color={cardColor}
-                    onChange={(newColor) => setCardColor(newColor)}
-                />
+                <div className="modal__color-picker-container">
+                    <ColorPicker
+                        color={cardColor}
+                        onChange={(newColor) => setCardColor(newColor)}
+                    />
+                </div>
                 <hr className="modal__divider" />
                 <IngredientInputRow
                     key={0}

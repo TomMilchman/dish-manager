@@ -39,13 +39,15 @@ export default function SummaryPanel() {
     }, [selectedDishes]);
 
     const totalCost = useMemo(() => {
-        return aggregatedIngredients.reduce((sum, ing) => {
-            const cost =
-                ing.unitType === "gram"
-                    ? (ing.amount / 100) * ing.price
-                    : ing.amount * ing.price;
-            return sum + cost;
-        }, 0);
+        return aggregatedIngredients
+            .reduce((sum, ing) => {
+                const cost =
+                    ing.unitType === "gram"
+                        ? (ing.amount / 100) * ing.price
+                        : ing.amount * ing.price;
+                return sum + cost;
+            }, 0)
+            .toFixed(2);
     }, [aggregatedIngredients]);
 
     return (
@@ -80,10 +82,13 @@ export default function SummaryPanel() {
                                     </td>
                                     <td>
                                         {ing.unitType === "gram"
-                                            ? `$${
-                                                  (ing.amount / 100) * ing.price
-                                              }`
-                                            : `$${ing.amount * ing.price}`}
+                                            ? `$${(
+                                                  (ing.amount / 100) *
+                                                  ing.price
+                                              ).toFixed(2)}`
+                                            : `$${(
+                                                  ing.amount * ing.price
+                                              ).toFixed(2)}`}
                                     </td>
                                 </tr>
                             ))}

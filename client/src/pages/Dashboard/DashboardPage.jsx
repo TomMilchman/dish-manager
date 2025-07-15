@@ -1,6 +1,7 @@
-import { useEffect, useRef, useMemo } from "react";
 // External libraries
+import { useEffect, useRef, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { FaAngleDoubleDown, FaAngleDoubleUp } from "react-icons/fa";
 
 // Styles
 import "./DashboardPage.css";
@@ -42,6 +43,8 @@ export default function DashboardPage() {
 
     const username = useAuthStore((state) => state.username);
     const role = useAuthStore((state) => state.role);
+
+    const [showFilters, setShowFilters] = useState(false);
 
     const filteredDishes = useMemo(
         () =>
@@ -148,7 +151,16 @@ export default function DashboardPage() {
     return (
         <div className="dashboard__container">
             <TopBar />
-            <FilterBar />
+            <div>
+                {showFilters && <FilterBar />}
+                <button
+                    className="filter-toggle-btn"
+                    onClick={() => setShowFilters((prev) => !prev)}
+                >
+                    {showFilters ? <FaAngleDoubleUp /> : <FaAngleDoubleDown />}
+                    {showFilters ? "Hide Filters" : "Show Filters"}
+                </button>
+            </div>
             <div className="dashboard__main-content">
                 <div className="dashboard__dish-cards-panel">
                     {Object.values(dishesById).length <= 0 ? (

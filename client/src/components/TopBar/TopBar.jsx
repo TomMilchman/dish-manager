@@ -145,11 +145,6 @@ export default function TopBar() {
                     </div>
                 </div>
             </div>
-            <div className="top-bar__right-container">
-                <h2 className="top-bar__username">
-                    Hi, {useAuthStore.getState().username}
-                </h2>
-            </div>
             {logoutMutation.isPending && <LoadingSpinner />}
         </div>
     );

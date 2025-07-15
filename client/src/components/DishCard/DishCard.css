@@ -184,3 +184,8 @@ li {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #e06600;
 }
+
+@media (max-width: 622px) {
+    .dish-card__container {
+    }
+}

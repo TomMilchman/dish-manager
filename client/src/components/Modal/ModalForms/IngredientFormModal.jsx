@@ -171,6 +171,7 @@ export default function IngredientFormModal({ isEdit }) {
                         <label htmlFor="price-input">Base price:</label>
                         <input
                             type="number"
+                            step={0.01}
                             id="price-input"
                             name="price"
                             value={formData.price}

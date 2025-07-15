@@ -12,22 +12,25 @@
 
 .top-bar-btn {
     background-color: #fd5e19;
-    color: white;
+    color: #fff;
     font-family: "Poppins", sans-serif;
     font-size: 1.1rem;
-    font-weight: normal;
-    border-radius: 8px;
+    font-weight: 500;
+    border-radius: 0.75rem;
     border: none;
-    padding: 0.2rem 1rem;
+    padding: 0.5rem 1.25rem;
     cursor: pointer;
     height: 3rem;
     width: auto;
 
     display: flex;
     flex-direction: row;
-    gap: 0.25rem;
+    gap: 0.5rem;
     align-items: center;
     justify-content: center;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .top-bar-btn:hover {
@@ -122,14 +125,14 @@
     color: white;
 }
 
-@media (max-width: 1344px) {
+@media (max-width: 1304px) {
     .top-bar__left-buttons-container.is-admin .top-bar-btn {
         font-size: 0.8rem;
         padding: 0.1rem 0.5rem;
     }
 }
 
-@media (max-width: 1090px) {
+@media (max-width: 1000px) {
     .top-bar__left-buttons-container.is-admin {
         display: none;
     }

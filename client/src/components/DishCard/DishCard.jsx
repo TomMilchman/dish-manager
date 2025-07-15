@@ -23,6 +23,9 @@ import {
 // Components
 import DishFormModal from "../Modal/ModalForms/DishFormModal";
 
+const PLACEHOLDER_ICON =
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2IiB2aWV3Qm94PSIwIDAgMjU2IDI1NiI+PHBhdGggZmlsbD0iI2EzMmUwMyIgZD0iTTIwOCAyOEg0OGEyMCAyMCAwIDAgMC0yMCAyMHYxNjBhMjAgMjAgMCAwIDAgMjAgMjBoMTYwYTIwIDIwIDAgMCAwIDIwLTIwVjQ4YTIwIDIwIDAgMCAwLTIwLTIwbS00IDE1OUw2OSA1MmgxMzVaTTUyIDY5bDEzNSAxMzVINTJaIi8+PC9zdmc+";
+
 export default function DishCard({ dishId }) {
     // Stores & State
     const {
@@ -156,7 +159,11 @@ export default function DishCard({ dishId }) {
                                         className="ingredient-list__item"
                                     >
                                         <img
-                                            src={ingredient.imageUrl}
+                                            src={
+                                                ingredient.imageUrl.length > 0
+                                                    ? ingredient.imageUrl
+                                                    : PLACEHOLDER_ICON
+                                            }
                                             alt={ingredient.name}
                                             className="ingredient-icon"
                                         />

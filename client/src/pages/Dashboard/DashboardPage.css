@@ -2,7 +2,6 @@
 
 .dashboard__container {
     height: 100%;
-    background-image: linear-gradient(180deg, #ffba67, #ff8c42);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -14,6 +13,33 @@
     flex-direction: row;
     height: 100vh;
     overflow: hidden;
+}
+
+/* Filter Bar------------------------------------------------------------- */
+.filter-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    background-color: #ff8836;
+    color: white;
+    font-family: "Baloo2", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border: none;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-toggle-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Dish Card Panel-------------------------------------------------------- */
@@ -93,6 +119,7 @@
     width: 100%;
     height: auto;
     object-fit: contain;
+    z-index: 1;
 }
 
 @media (max-width: 1080px) {
