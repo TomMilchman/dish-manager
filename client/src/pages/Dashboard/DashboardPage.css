@@ -9,7 +9,7 @@
 }
 
 .dashboard__main-content {
-    margin-top: 2rem;
+    margin-top: 1rem;
     display: flex;
     flex-direction: row;
     height: 100vh;
@@ -93,4 +93,47 @@
     width: 100%;
     height: auto;
     object-fit: contain;
+}
+
+@media (max-width: 1080px) {
+    .dashboard__main-content {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .dashboard__summary-panel {
+        margin-left: 1rem;
+        flex: 1 1 0;
+        max-height: 400px;
+    }
+
+    .dashboard__bottom-banner img {
+        display: none;
+    }
+
+    @media (max-height: 1000px) {
+        .dashboard__main-content {
+            margin-top: 0.5rem;
+            gap: 0;
+        }
+
+        .dashboard__dish-cards-panel {
+            margin-bottom: 0;
+        }
+
+        .dashboard__summary-panel {
+            max-height: 300px;
+        }
+    }
+
+    @media (max-height: 780px) {
+        .dashboard__main-content {
+            margin-top: 0;
+        }
+
+        .dashboard__summary-panel {
+            max-height: 250px;
+        }
+    }
 }

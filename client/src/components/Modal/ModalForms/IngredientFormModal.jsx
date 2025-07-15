@@ -171,12 +171,24 @@ export default function IngredientFormModal({ isEdit }) {
                         <label htmlFor="price-input">Base price:</label>
                         <input
                             type="number"
+                            id="price-input"
                             name="price"
                             value={formData.price}
                             onChange={(e) =>
                                 handleFormChange(e, formData, setFormData)
                             }
                             min={0}
+                        />
+                    </div>
+                    <div modal__image-url-container>
+                        <label htmlFor="image-url-input">Image URL:</label>
+                        <input
+                            type="text"
+                            name="imageUrl"
+                            value={formData.imageUrl}
+                            onChange={(e) =>
+                                handleFormChange(e, formData, setFormData)
+                            }
                         />
                     </div>
                     <div className="modal__tags-container">

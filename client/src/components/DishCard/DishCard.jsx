@@ -145,18 +145,27 @@ export default function DishCard({ dishId }) {
                         </div>
                         <hr className="dish-card__divider" />
                         <ul className="dish-card__ingredient-list">
-                            {dish.ingredients?.map((ingredientObj) => (
-                                <li
-                                    key={`${dishId}-${ingredientObj.ingredient.name}`}
-                                >
-                                    {ingredientObj.ingredient.name} x{" "}
-                                    {`${ingredientObj.amount}${
-                                        unitSuffix[
-                                            ingredientObj.ingredient.unitType
-                                        ] || ""
-                                    }`}
-                                </li>
-                            ))}
+                            {dish.ingredients?.map((ingredientObj) => {
+                                const ingredient = ingredientObj.ingredient;
+                                const unit =
+                                    unitSuffix[ingredient.unitType] || "";
+
+                                return (
+                                    <li
+                                        key={`${dishId}-${ingredient.name}`}
+                                        className="ingredient-list__item"
+                                    >
+                                        <img
+                                            src={ingredient.imageUrl}
+                                            alt={ingredient.name}
+                                            className="ingredient-icon"
+                                        />
+                                        {ingredient.name} x{" "}
+                                        {ingredientObj.amount}
+                                        {unit}
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                     <div className="dish-card__owner-information">

@@ -33,7 +33,7 @@ function App() {
                     ))()}
                 />
             </Routes>
-            <ToastContainer position="top-center" />
+            <ToastContainer toastClassName={"custom-toast"} />
         </BrowserRouter>
     );
 }
