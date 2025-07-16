@@ -158,3 +158,29 @@
         display: flex;
     }
 }
+
+@media (max-width: 400px) {
+    .top-bar__container {
+        height: 6%;
+    }
+
+    .top-bar__title {
+        font-size: medium;
+    }
+
+    .top-bar__logo-image {
+        width: 20%;
+    }
+
+    .top-bar-menu-options,
+    .top-bar-btn {
+        height: 2rem;
+        width: 2rem;
+        padding: 1rem 0.6rem;
+        border-radius: 5px;
+    }
+
+    .top-bar__logo-and-left-buttons-container {
+        gap: 0.1rem;
+    }
+}

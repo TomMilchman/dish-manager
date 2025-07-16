@@ -66,3 +66,26 @@
     margin: 1rem 1rem 1rem 1rem;
     text-align: right;
 }
+
+@media (max-width: 400px) {
+    .summary-panel__container {
+        margin-right: 0.5rem;
+    }
+
+    .summary-panel__container h1 {
+        font-size: large;
+    }
+
+    .summary-panel__container h2 {
+        font-size: medium;
+    }
+
+    .summary-panel__container p {
+        font-size: small;
+    }
+
+    .summary-panel__container th,
+    td {
+        font-size: small;
+    }
+}

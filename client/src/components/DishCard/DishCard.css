@@ -147,6 +147,8 @@ li {
 }
 
 .dish-card__ingredient-list {
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     transform: translate(0, -20px);
     margin-bottom: 0;
@@ -185,7 +187,44 @@ li {
     background-color: #e06600;
 }
 
-@media (max-width: 622px) {
+@media (max-width: 574px) {
     .dish-card__container {
+        height: 150px;
+        width: 120px;
+        padding: 1.2rem 0.7rem;
+    }
+
+    .dish-card__dish-info {
+        margin-bottom: 0;
+    }
+
+    .dish-card__dish-name {
+        font-size: medium;
+    }
+
+    .dish-card__tags-container {
+        gap: 0.2rem;
+    }
+
+    .dish-card__tag {
+        font-size: x-small;
+    }
+
+    .dish-card__ingredient-list {
+        height: 70px;
+        padding-left: 0;
+    }
+
+    .ingredient-list__item {
+        font-size: x-small;
+    }
+
+    .ingredient-list__item img {
+        width: 13%;
+    }
+
+    .dish-card__owner {
+        font-size: x-small;
+        margin-bottom: 1rem;
     }
 }

@@ -111,8 +111,23 @@
 }
 
 @media (max-width: 622px) {
+    .filter-bar__container {
+        flex-direction: column;
+    }
+
     .filter-bar__container .search-bar {
-        width: 100%; /* or whatever fits best */
-        min-width: 100px; /* override default */
+        width: 100%;
+        min-width: 100px;
+    }
+}
+
+@media (max-width: 400px) {
+    .filter-bar__container .search-bar {
+        padding: 0.1rem 0.5rem;
+        font-size: small;
+    }
+
+    .filter-bar__search-tags label {
+        font-size: x-small;
     }
 }

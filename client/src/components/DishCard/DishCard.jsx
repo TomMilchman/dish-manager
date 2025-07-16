@@ -12,7 +12,6 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { FaTrash, FaPencil, FaRegStar, FaStar } from "react-icons/fa6";
-import Tilt from "react-parallax-tilt";
 
 // API
 import {
@@ -69,121 +68,114 @@ export default function DishCard({ dishId }) {
     });
 
     return (
-        <Tilt glareMaxOpacity={0} tiltMaxAngleX={3} tiltMaxAngleY={3}>
-            <div
-                className={`dish-card__container ${
-                    isSelected ? "selected" : ""
-                }`}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
+        <div
+            className={`dish-card__container ${isSelected ? "selected" : ""}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+                toggleDishSelectionById(dishId);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ")
                     toggleDishSelectionById(dishId);
-                }}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ")
-                        toggleDishSelectionById(dishId);
-                }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                style={{
-                    backgroundColor: colorMap[dish.cardColor],
-                }}
-            >
-                {isHovered && (
-                    <>
-                        <div className="dish-card__button-control-container">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setDishToEdit(dish);
-                                    openModal(<DishFormModal />);
-                                }}
-                                className={"dish-card-hover-btn"}
-                                title={"Edit Dish"}
-                            >
-                                <FaPencil />
-                            </button>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteDishMutation.mutate(dishId);
-                                }}
-                                className={"dish-card-hover-btn"}
-                                title={"Delete Dish"}
-                                disabled={deleteDishMutation.isPending}
-                            >
-                                <FaTrash />
-                            </button>
-                        </div>
-                    </>
-                )}
-                {dish.owner.username.toLowerCase() ===
-                    username.toLowerCase() && (
-                    <button
-                        className={`dish-card__favorite-btn${
-                            dish.isFavorite ? " selected" : ""
-                        }`}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavoriteMutation.mutate(dishId);
-                        }}
-                        disabled={toggleFavoriteMutation.isPending}
-                        title="Toggle Favorite"
-                    >
-                        {dish.isFavorite ? <FaStar /> : <FaRegStar />}
-                    </button>
-                )}
-                <div className="dish-card__content">
-                    <div className="dish-card__dish-info">
-                        <h3 className="dish-card__dish-name">{dish.name}</h3>
-                        <div className="dish-card__tags-container">
-                            {dish.tags?.map((tag) => (
-                                <div
-                                    className="dish-card__tag"
-                                    key={`${dish.name}-${tag}`}
-                                >
-                                    {tag}
-                                </div>
-                            ))}
-                        </div>
-                        <hr className="dish-card__divider" />
-                        <ul className="dish-card__ingredient-list">
-                            {dish.ingredients?.map((ingredientObj) => {
-                                const ingredient = ingredientObj.ingredient;
-                                const unit =
-                                    unitSuffix[ingredient.unitType] || "";
-
-                                return (
-                                    <li
-                                        key={`${dishId}-${ingredient.name}`}
-                                        className="ingredient-list__item"
-                                    >
-                                        <img
-                                            src={
-                                                ingredient.imageUrl.length > 0
-                                                    ? ingredient.imageUrl
-                                                    : PLACEHOLDER_ICON
-                                            }
-                                            alt={ingredient.name}
-                                            className="ingredient-icon"
-                                        />
-                                        {ingredient.name} x{" "}
-                                        {ingredientObj.amount}
-                                        {unit}
-                                    </li>
-                                );
-                            })}
-                        </ul>
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            style={{
+                backgroundColor: colorMap[dish.cardColor],
+            }}
+        >
+            {isHovered && (
+                <>
+                    <div className="dish-card__button-control-container">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setDishToEdit(dish);
+                                openModal(<DishFormModal />);
+                            }}
+                            className={"dish-card-hover-btn"}
+                            title={"Edit Dish"}
+                        >
+                            <FaPencil />
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                deleteDishMutation.mutate(dishId);
+                            }}
+                            className={"dish-card-hover-btn"}
+                            title={"Delete Dish"}
+                            disabled={deleteDishMutation.isPending}
+                        >
+                            <FaTrash />
+                        </button>
                     </div>
-                    <div className="dish-card__owner-information">
-                        {useAuthStore.getState().role === "admin" && (
-                            <div className="dish-card__owner">
-                                Owner: {dish.owner.username}
+                </>
+            )}
+            {dish.owner.username.toLowerCase() === username.toLowerCase() && (
+                <button
+                    className={`dish-card__favorite-btn${
+                        dish.isFavorite ? " selected" : ""
+                    }`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavoriteMutation.mutate(dishId);
+                    }}
+                    disabled={toggleFavoriteMutation.isPending}
+                    title="Toggle Favorite"
+                >
+                    {dish.isFavorite ? <FaStar /> : <FaRegStar />}
+                </button>
+            )}
+            <div className="dish-card__content">
+                <div className="dish-card__dish-info">
+                    <h3 className="dish-card__dish-name">{dish.name}</h3>
+                    <div className="dish-card__tags-container">
+                        {dish.tags?.map((tag) => (
+                            <div
+                                className="dish-card__tag"
+                                key={`${dish.name}-${tag}`}
+                            >
+                                {tag}
                             </div>
-                        )}
+                        ))}
                     </div>
+                    <hr className="dish-card__divider" />
+                    <ul className="dish-card__ingredient-list">
+                        {dish.ingredients?.map((ingredientObj) => {
+                            const ingredient = ingredientObj.ingredient;
+                            const unit = unitSuffix[ingredient.unitType] || "";
+
+                            return (
+                                <li
+                                    key={`${dishId}-${ingredient.name}`}
+                                    className="ingredient-list__item"
+                                >
+                                    <img
+                                        src={
+                                            ingredient.imageUrl.length > 0
+                                                ? ingredient.imageUrl
+                                                : PLACEHOLDER_ICON
+                                        }
+                                        alt={ingredient.name}
+                                        className="ingredient-icon"
+                                    />
+                                    {ingredient.name} x {ingredientObj.amount}
+                                    {unit}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+                <div className="dish-card__owner-information">
+                    {useAuthStore.getState().role === "admin" && (
+                        <div className="dish-card__owner">
+                            Owner: {dish.owner.username}
+                        </div>
+                    )}
                 </div>
             </div>
-        </Tilt>
+        </div>
     );
 }
