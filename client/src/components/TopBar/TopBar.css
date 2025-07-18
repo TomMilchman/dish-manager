@@ -22,6 +22,8 @@
     cursor: pointer;
     height: 3rem;
     width: auto;
+    flex-shrink: 1;
+    min-width: 0;
 
     display: flex;
     flex-direction: row;
@@ -160,10 +162,6 @@
 }
 
 @media (max-width: 400px) {
-    .top-bar__container {
-        height: 6%;
-    }
-
     .top-bar__title {
         font-size: medium;
     }
@@ -174,13 +172,19 @@
 
     .top-bar-menu-options,
     .top-bar-btn {
-        height: 2rem;
-        width: 2rem;
+        max-height: 2rem;
+        max-width: 2rem;
         padding: 1rem 0.6rem;
         border-radius: 5px;
     }
 
     .top-bar__logo-and-left-buttons-container {
         gap: 0.1rem;
+    }
+}
+
+@media (max-width: 220px) {
+    .top-bar__logo-container {
+        display: none;
     }
 }

@@ -1,4 +1,4 @@
-import "./ModalForms.css";
+import "./FormModal.css";
 
 import { useState, useEffect, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";

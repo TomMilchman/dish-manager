@@ -1,3 +1,5 @@
+import "./FormModal.css";
+
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -100,16 +102,18 @@ export default function IngredientFormModal({ isEdit }) {
                         ))}
                     </select>
                     {ingredientToEdit && (
-                        <button
-                            type="button"
-                            onClick={() =>
-                                setFormData(
-                                    loadIngredientIntoForm(ingredientToEdit)
-                                )
-                            }
-                        >
-                            Revert Changes
-                        </button>
+                        <div className="modal__row-controls">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setFormData(
+                                        loadIngredientIntoForm(ingredientToEdit)
+                                    )
+                                }
+                            >
+                                Revert Changes
+                            </button>
+                        </div>
                     )}
                     {ingredientToEdit && <hr className="modal__divider" />}
                 </>

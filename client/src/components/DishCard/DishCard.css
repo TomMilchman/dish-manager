@@ -228,3 +228,15 @@ li {
         margin-bottom: 1rem;
     }
 }
+
+@media (max-width: 373px) {
+    .dish-card__content {
+        justify-content: space-between;
+    }
+
+    .dish-card__container {
+        width: 100%;
+        max-width: 250px;
+        height: 200px;
+    }
+}

@@ -62,7 +62,7 @@ async function login(req, res) {
             user.username,
             rememberMe,
             user.role
-        ); // TODO: Add role test case to login tests
+        );
 
         res.cookie(
             "refreshToken",
@@ -144,7 +144,7 @@ async function register(req, res) {
             createdUser._id,
             createdUser.username,
             rememberMe,
-            createdUser.role // TODO: Add role test case to register tests
+            createdUser.role
         );
 
         // Set refresh token cookie
@@ -154,7 +154,6 @@ async function register(req, res) {
             authService.getRefreshCookieOptions(rememberMe)
         );
 
-        // TODO: Write a better welcome message
         // Send confirmation email
         await sendEmail({
             to: email,

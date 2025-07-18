@@ -1,7 +1,7 @@
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 
-const HOST_URL = "http://localhost:5000";
+const HOST_URL = process.env.REACT_APP_API_URL;
 
 const api = axios.create({
     baseURL: HOST_URL,
