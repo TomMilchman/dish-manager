@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const isProduction = process.env.NODE_ENV;
 
 /**
  * @typedef {Object} Tokens
@@ -56,8 +57,8 @@ const generateJWTTokens = (userId, username, rememberMe, role = "user") => {
 function getRefreshCookieOptions(rememberMe) {
     return {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000,
     };
 }
