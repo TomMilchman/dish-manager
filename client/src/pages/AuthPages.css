@@ -1,4 +1,8 @@
 .auth-page {
+    background: linear-gradient(180deg, #ffba67, #f37a2f);
+}
+
+.auth-page {
     display: flex;
     justify-content: center;
     align-items: center;

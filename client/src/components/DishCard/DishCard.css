@@ -95,8 +95,10 @@
     transition: color 0.2s ease;
 }
 
-.dish-card__container:hover {
-    transform: scale(1.1);
+@media (hover: hover) and (pointer: fine) {
+    .dish-card__container:hover {
+        transform: scale(1.1);
+    }
 }
 
 .dish-card__container::before {

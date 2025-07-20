@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPassword from "./pages/ForgotPasswordPage";
@@ -26,12 +27,7 @@ function App() {
                     path="/reset-password"
                     element={<ResetPassword />}
                 ></Route>
-                <Route
-                    path="*"
-                    element={(() => (
-                        <p>Error 404: Page Not Found</p>
-                    ))()}
-                />
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <ToastContainer toastClassName={"custom-toast"} />
         </BrowserRouter>

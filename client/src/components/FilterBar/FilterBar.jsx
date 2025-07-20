@@ -53,60 +53,68 @@ export default function FilterBar() {
                     <FaXmark />
                 </button>
             </div>
-            <div className="filter-bar__search-tags">
-                <div className="filter-bar__tag" key={"favorites"}>
-                    <input
-                        type="checkbox"
-                        className="filter-bar__checkbox"
-                        id={"filter-by-favorite-checkbox"}
-                        checked={showFavoritesOnly}
-                        onChange={(e) => setShowFavoritesOnly(e.target.checked)}
-                    />
-                    <label htmlFor="filter-by-favorite-checkbox">
-                        Favorites
-                    </label>
-                </div>
-                {role === "admin" && (
-                    <label
-                        className="filter-bar__tag"
-                        htmlFor="user-only-checkbox"
-                        key="user-only"
-                    >
+            <div className="filter-bar__tags-container">
+                <div className="filter-bar__search-tags">
+                    <div className="filter-bar__tag" key={"favorites"}>
                         <input
                             type="checkbox"
                             className="filter-bar__checkbox"
-                            id="user-only-checkbox"
-                            checked={showUserOnly}
-                            onChange={(e) => setShowUserOnly(e.target.checked)}
+                            id={"filter-by-favorite-checkbox"}
+                            checked={showFavoritesOnly}
+                            onChange={(e) =>
+                                setShowFavoritesOnly(e.target.checked)
+                            }
                         />
-                        <span>User Only</span>
-                    </label>
-                )}
+                        <label htmlFor="filter-by-favorite-checkbox">
+                            Favorites
+                        </label>
+                    </div>
+                    {role === "admin" && (
+                        <label
+                            className="filter-bar__tag"
+                            htmlFor="user-only-checkbox"
+                            key="user-only"
+                        >
+                            <input
+                                type="checkbox"
+                                className="filter-bar__checkbox"
+                                id="user-only-checkbox"
+                                checked={showUserOnly}
+                                onChange={(e) =>
+                                    setShowUserOnly(e.target.checked)
+                                }
+                            />
+                            <span>User Only</span>
+                        </label>
+                    )}
 
-                {tags?.map((tag) => (
-                    <label
-                        className="filter-bar__tag"
-                        htmlFor={`${tag}-checkbox`}
-                        key={tag}
-                    >
-                        <input
-                            type="checkbox"
-                            className="filter-bar__checkbox"
-                            id={`${tag}-checkbox`}
-                            checked={selectedTags.has(tag)}
-                            onChange={() => toggleSelectedTag(tag)}
-                        />
-                        <span>{tag}</span>
-                    </label>
-                ))}
+                    {tags?.map((tag) => (
+                        <label
+                            className="filter-bar__tag"
+                            htmlFor={`${tag}-checkbox`}
+                            key={tag}
+                        >
+                            <input
+                                type="checkbox"
+                                className="filter-bar__checkbox"
+                                id={`${tag}-checkbox`}
+                                checked={selectedTags.has(tag)}
+                                onChange={() => toggleSelectedTag(tag)}
+                            />
+                            <span>{tag}</span>
+                        </label>
+                    ))}
+                </div>
+                <button
+                    onClick={() => {
+                        clearSelectedFilters();
+                    }}
+                    className="filter-bar__btn"
+                    title="Remove Filters"
+                >
+                    <FaArrowRotateLeft />
+                </button>
             </div>
-            <button
-                onClick={() => clearSelectedFilters()}
-                className="filter-bar__btn"
-                title="Remove Filters"
-            >
-                <FaArrowRotateLeft />
-            </button>
         </div>
     );
 }

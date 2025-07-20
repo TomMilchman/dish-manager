@@ -11,6 +11,37 @@
 .filter-bar__name-search {
     display: flex;
     flex-direction: row;
+    justify-content: flex-start;
+}
+
+.filter-bar__tags-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    min-width: 10px;
+}
+
+.filter-bar__search-tags::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* Scrollbar thumb */
+.filter-bar__search-tags::-webkit-scrollbar-thumb {
+    background-color: #e65c00; /* strong orange */
+    border-radius: 6px;
+    border: 2px solid #ffe3c1; /* creates padding effect */
+}
+
+.filter-bar__search-tags::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* Scrollbar track */
+.filter-bar__search-tags::-webkit-scrollbar-track {
+    background: none; /* pastel peach */
+    border-radius: 8px;
 }
 
 .filter-bar__search-tags {
@@ -60,12 +91,6 @@
     cursor: pointer;
     text-transform: capitalize;
     font-weight: 500;
-}
-
-.filter-bar__name-search {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .search-bar {

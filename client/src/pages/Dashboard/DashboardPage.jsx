@@ -177,6 +177,11 @@ export default function DashboardPage() {
                                 src="/DishManagerTray.png"
                             ></img>
                         </div>
+                    ) : selectedTags.size === 0 &&
+                      filteredDishes.length === 0 ? (
+                        <div className="dashboard__tags-not-matching">
+                            No dishes match selected tags
+                        </div>
                     ) : (
                         <div className="dashboard__dish-card-grid">
                             {filteredDishes?.map((dish) => (

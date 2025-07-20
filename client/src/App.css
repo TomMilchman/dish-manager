@@ -21,6 +21,7 @@
 
 #root {
     height: 100%;
+    background: linear-gradient(180deg, #ffba67, #f37a2f);
 }
 
 html,
@@ -31,20 +32,17 @@ body {
     font-family: "Baloo2", sans-serif;
 }
 
-body {
-    background: linear-gradient(180deg, #ffba67, #f37a2f);
-}
-
 /* Scrollbar width */
 ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
 }
 
 /* Scrollbar track */
 ::-webkit-scrollbar-track {
-    background: none; /* pastel peach */
+    background: none;
     border-radius: 8px;
+    margin: 8px;
 }
 
 /* Scrollbar thumb */

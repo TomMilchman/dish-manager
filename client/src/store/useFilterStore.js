@@ -38,11 +38,13 @@ const useFilterStore = create(
                 clearSelectedTags,
                 clearSearchQuery,
                 setShowFavoritesOnly,
+                setShowUserOnly,
             } = get();
 
             clearSelectedTags();
             clearSearchQuery("");
             setShowFavoritesOnly(false);
+            setShowUserOnly(false);
         },
 
         clearAllFilterFields: () => {

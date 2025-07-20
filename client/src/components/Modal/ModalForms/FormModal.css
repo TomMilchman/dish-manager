@@ -24,6 +24,24 @@
     padding-top: 1rem;
 }
 
+.modal__form::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* Scrollbar track */
+.modal__form::-webkit-scrollbar-track {
+    background: none;
+    border-radius: 8px;
+}
+
+/* Scrollbar thumb */
+.modal__form::-webkit-scrollbar-thumb {
+    background-color: #ff5c5c; /* strong orange */
+    border-radius: 8px;
+    border: 2px solid #ffe3c1; /* creates padding effect */
+}
+
 .modal__name-container {
     display: flex;
     flex-direction: column;
