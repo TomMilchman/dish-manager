@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+# Dish Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack web application for managing dishes and their ingredients.  
+Users can register, log in (via email/username and password), create and edit dishes, assign ingredients with quantities and units, and view an aggregated summary of ingredients across selected dishes.
 
-## Available Scripts
+**Live demo:** [Dish Manager](https://dish-manager-liart.vercel.app) *(Note: the backend may take up to a minute to spin up after inactivity.)*
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- User authentication (email/password) with JWT-based access control.
+- Protected routes for managing dishes and ingredients.
+- CRUD operations for both dishes and ingredients.
+- Dynamic aggregation of selected dishes’ ingredients and total costs.
+- Responsive React frontend with modals for adding, editing, and deleting dishes.
+- Admin-only actions.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Getting Started (Local Setup)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- Node.js
+- MongoDB (local or remote instance)
+- npm
 
-### `npm run build`
+### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/TomMilchman/dish-manager.git
+   cd dish-manager
+   ```
+2. **Install dependencies for both server and client:**
+   ```bash
+   cd server && npm install
+   cd ../client && npm install
+   ```
+3. **Set up .env files for client and server (an .env.example is provided for both)**
+4. **Run the project:**
+   Server:
+  ```bash
+  cd server && npm run dev
+  ```
+  Client:
+  ```bash
+  cd client && npm start
+  ```
+5. **The app should now be available at `http://localhost:3000`**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Running With Docker (optional):
+Dockerfiles and a docker-compose.yml are provided.
+To spin up both services, run:
+```bash
+docker compose up
+```
+Make sure your .env files are configured first.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Project Structure
+```
+dish-manager/
+├── server/
+│   ├── src/
+|   |   ├── config/          # Server setup (DB and SMTP)
+|   |   ├── constants/       # Contains the definitions of ingredient tags and color maps for dish cards on the frontend
+│   │   ├── controllers/     # Route logic (auth, dishes, ingredients)
+│   │   ├── models/          # Mongoose models (User, Dish, Ingredient)
+│   │   ├── routes/          # Express routes
+│   │   ├── middleware/      # JWT auth, error handling
+│   │   ├── schemas/         # Joi input validation schemas
+│   │   └── services/        # Mail and authentication services
+│   │   └── utils/           # Misc helpers
+│   ├── server.js            # App entry point
+|   ├── package-lock.json
+│   └── package.json
+│
+├── client/
+│   ├── src/
+│   │   ├── api/             # Server communication endpoints
+│   │   ├── components/      # UI components (Dish cards, Modals, etc.)
+│   │   ├── pages/           # Dashboard, Auth pages
+│   │   ├── store/           # Zustand state management
+│   │   ├── hooks/           # React Query hooks
+│   │   └── utils/           # Misc helpers
+│   ├── public/
+|   ├── package-lock.json
+│   └── package.json
+│
+└── README.md
 
-### `npm run eject`
+```
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Assumptions and Decisions:
+1. **Authentication:**
+   - JWTs used for access control (stored in memory or HTTP-only cookie).
+   - Passwords hashed with bcrypt.
+2. **Frontend State Management:**
+   - Zustand for local UI state (selected dishes, modals).
+   - React Query for server state (fetching and caching data).
+3. **Database:**
+   - MongoDB via Mongoose.
+4. **Styling:**
+   - Plain CSS (no frameworks).
+   - Optimized for responsive design.
+5. **Ingredient Aggregation:**
+   - Aggregated costs and totals calculated on the frontend for simplicity.
+6. **Admin Actions:**
+   - Frontend: admins can view/edit/delete all user dishes and manage ingredients.
+   - Backend: admin-only routes enforced via middleware.
