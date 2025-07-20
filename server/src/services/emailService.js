@@ -21,8 +21,8 @@ async function sendEmail({ to, subject, text }) {
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
-        logger.logInfo("send email", `Email sent to ${to}: ${info.messageId}`);
+        await transporter.sendMail(mailOptions);
+        logger.logInfo("send email", `Email sent to ${to}`);
     } catch (error) {
         logger.logError("send email", `Error sending email to ${to}: ${err}`);
         throw error;

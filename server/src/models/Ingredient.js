@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { TagDefinitions } = require("../constants/tagDefinitions");
+const Dish = require("./Dish");
 
 const ingredientSchema = new mongoose.Schema({
     name: {
@@ -43,6 +44,21 @@ const ingredientSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+});
+
+// Remove deleted ingredient from all dishes it's in
+ingredientSchema.post("findOneAndDelete", async function (doc) {
+    if (doc) {
+        try {
+            await Dish.updateMany(
+                {},
+                { $pull: { ingredients: { ingredient: doc._id } } }
+            );
+            console.info(`Removed ${doc.name} from all dishes it was in`);
+        } catch (err) {
+            console.error(`Failed to remove ${doc.name} from all dishes:`, err);
+        }
+    }
 });
 
 const Ingredient = mongoose.model("Ingredient", ingredientSchema);
