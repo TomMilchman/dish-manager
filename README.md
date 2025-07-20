@@ -38,14 +38,14 @@ Users can register, log in (via email/username and password), create and edit di
    ```
 3. **Set up .env files for client and server (an .env.example is provided for both)**
 4. **Run the project:**
-   Server:
-  ```bash
-  cd server && npm run dev
-  ```
-  Client:
-  ```bash
-  cd client && npm start
-  ```
+  - Server:
+     ```bash
+     cd server && npm run dev
+     ```
+  - Client:
+     ```bash
+     cd client && npm start
+     ```
 5. **The app should now be available at `http://localhost:3000`**
 
 ### Running With Docker (optional):
