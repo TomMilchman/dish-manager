@@ -1,6 +1,6 @@
 const Ingredient = require("../models/Ingredient");
+const { getPriceField } = require("../utils/ingredientUtils");
 const { logInfo, logError, logWarning } = require("../utils/logger");
-const { TagDefinitions } = require("../constants/tagDefinitions");
 
 /**
  * Creates a new ingredient and saves it to the database.
@@ -34,18 +34,7 @@ async function createIngredient(req, res) {
         });
     }
 
-    let priceField;
-
-    switch (unitType) {
-        case "unit":
-            priceField = { pricePerUnit: price };
-            break;
-        case "gram":
-            priceField = { pricePer100g: price };
-            break;
-        case "liter":
-            priceField = { pricePerLiter: price };
-    }
+    const priceField = getPriceField(unitType, price);
 
     try {
         const newIngredient = await Ingredient.create({
@@ -138,9 +127,12 @@ async function updateIngredient(req, res) {
         const { ingredientId } = req.params;
         const updates = req.body;
 
+        const priceField = getPriceField(updates.unitType, updates.price);
+        const { price, ...rest } = updates;
+
         const ingredient = await Ingredient.findByIdAndUpdate(
             ingredientId,
-            updates,
+            { ...rest, ...priceField },
             {
                 new: true,
                 runValidators: true,

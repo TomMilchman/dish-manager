@@ -22,8 +22,8 @@ export default function IngredientInputRow({
         });
     };
 
-    const getIngredientUnitType = (ingredientId) =>
-        allIngredients[ingredientId]?.unitType || "";
+    const getIngredientUnitType = () =>
+        allIngredients[currentIngredient.ingredientId]?.unitType || "";
 
     return (
         <div className="ingredient-input-row__container">
@@ -69,17 +69,14 @@ export default function IngredientInputRow({
                         type="number"
                         required
                         min={0}
+                        step={getIngredientUnitType() === "liter" ? 0.01 : 1}
                         value={currentIngredient.amount || ""}
                         onChange={(e) =>
                             handleFieldChange("amount", e.target.value)
                         }
                     />
 
-                    <label>
-                        {`${getIngredientUnitType(
-                            currentIngredient.ingredientId
-                        )}(s)`}
-                    </label>
+                    <label>{`${getIngredientUnitType()}(s)`}</label>
                 </div>
             </div>
             {currentIngredient.ingredientId && (

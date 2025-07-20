@@ -185,7 +185,7 @@ export default function IngredientFormModal({ isEdit }) {
                             min={0}
                         />
                     </div>
-                    <div modal__image-url-container>
+                    <div className="modal__image-url-container">
                         <label htmlFor="image-url-input">Image URL:</label>
                         <input
                             type="text"

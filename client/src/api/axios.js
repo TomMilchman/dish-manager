@@ -39,7 +39,7 @@ api.interceptors.response.use(
         const originalRequest = error.config;
         const status = error.response?.status;
 
-        if ((status === 401 || status === 403) && !originalRequest._retry) {
+        if (status === 403 && !originalRequest._retry) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
