@@ -18,6 +18,7 @@
 }
 
 .dish-card__dish-info {
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
@@ -178,10 +179,11 @@ li {
     font-size: 0.9em;
 }
 
-.dish-card__ingredient-list::-webkit-scrollbar-thumb {
-    background-color: #a32e03; /* strong orange */
+.dish-card__ingredient-list::-webkit-scrollbar-thumb,
+.dish-card__dish-name::-webkit-scrollbar-thumb {
+    background-color: #a32e03;
     border-radius: 8px;
-    border: 2px solid #ffe3c1; /* creates padding effect */
+    border: 2px solid #ffe3c1;
 }
 
 /* Hover effect */
@@ -201,7 +203,8 @@ li {
     }
 
     .dish-card__dish-name {
-        font-size: medium;
+        font-size: small;
+        margin-bottom: 0.2rem;
     }
 
     .dish-card__tags-container {
@@ -236,9 +239,14 @@ li {
         justify-content: space-between;
     }
 
+    .dish-card__dish-name {
+        font-size: medium;
+        margin-bottom: 0;
+    }
+
     .dish-card__container {
         width: 100%;
         max-width: 250px;
-        height: 200px;
+        height: 190px;
     }
 }

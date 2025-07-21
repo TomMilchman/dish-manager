@@ -8,7 +8,7 @@ const useFilterStore = create(
         selectedTags: new Set(),
         searchQuery: "",
         showFavoritesOnly: false,
-        showUserOnly: false,
+        showUserOnly: true,
 
         setSearchQuery: (query) => set({ searchQuery: query }),
 
