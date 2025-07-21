@@ -419,28 +419,7 @@ async function updateDish(req, res) {
  *
  * Response on success (200 OK):
  * {
- *   dish: {
- *     _id: string,
- *     name: string,
- *     isFavorite: boolean,
- *     cardColor: string,
- *     ingredients: [
- *       {
- *         _id: string,
- *           name: string,
- *           unitType: "unit" | "gram" | "liter",
- *           pricePerUnit?: number,    // present if unitType is "unit"
- *           pricePer100g?: number,    // present if unitType is "gram"
- *           pricePerLiter?: number,   // present if unitType is "liter"
- *           imageUrl?: string,
- *           tags?: string[],
- *         },
- *         amount: number
- *       }
- *     ],
- *     owner: string (user ObjectId),
- *     __v: number
- *   }
+ *   isFavorite: boolean
  * }
  *
  * @param {import("express").Request} req - Express request object. Expects `dishId` in params.
@@ -456,9 +435,7 @@ async function toggleIsFavorite(req, res) {
             { _id: dishId, owner: userId },
             [{ $set: { isFavorite: { $not: "$isFavorite" } } }],
             { new: true }
-        )
-            .populate("ingredients.ingredient")
-            .populate("owner", "username");
+        );
 
         if (!updatedDish) {
             // Dish not found or not owned by user
@@ -473,7 +450,7 @@ async function toggleIsFavorite(req, res) {
             `Dish ${updatedDish.name} (ID ${dishId}) favorite toggled to ${updatedDish.isFavorite} by user ID ${userId}`
         );
 
-        res.status(200).json({ dish: updatedDish });
+        res.status(200).json({ isFavorite: updatedDish.isFavorite });
     } catch (err) {
         logError(
             "TOGGLE FAVORITE",

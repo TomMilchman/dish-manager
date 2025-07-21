@@ -57,9 +57,10 @@ export default function DishCard({ dishId }) {
     const toggleFavoriteMutation = useMutation({
         mutationFn: toggleIsFavoriteInServer,
         onSuccess: (data) => {
-            useDishStore.getState().updateDish(data.dish);
+            const isFavorite = data.isFavorite;
+            dish.isFavorite = isFavorite;
 
-            const message = data.dish.isFavorite
+            const message = isFavorite
                 ? `Added ${dish.name} to favorites.`
                 : `Removed ${dish.name} from favorites.`;
             toast.success(message);
