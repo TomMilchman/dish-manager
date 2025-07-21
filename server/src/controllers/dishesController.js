@@ -91,7 +91,7 @@ async function createUserDish(req, res) {
         const finalColor = dishUtils.validateCardColor(cardColor);
 
         // Create dish
-        const createdDish = await Dish.create({
+        const newDish = await Dish({
             name,
             ingredients,
             owner: userId,
@@ -100,9 +100,12 @@ async function createUserDish(req, res) {
             tags: resolvedTags,
         });
 
-        const newDish = await Dish.findById(createdDish._id)
-            .populate("ingredients.ingredient")
-            .populate("owner", "username");
+        // Save the document to the database
+        await newDish.save();
+
+        // Populate the needed references on the same instance
+        await newDish.populate("ingredients.ingredient");
+        await newDish.populate("owner", "username");
 
         logInfo(
             "create user dish",
@@ -370,8 +373,11 @@ async function updateDish(req, res) {
             dish.cardColor
         );
 
-        await Dish.updateOne(
-            { _id: dishId },
+        const filter = { _id: dishId };
+        if (role !== "admin") filter.owner = userId;
+
+        const updatedDish = await Dish.findOneAndUpdate(
+            filter,
             {
                 $set: {
                     name,
@@ -379,12 +385,19 @@ async function updateDish(req, res) {
                     tags: resolvedTags,
                     cardColor: finalColor,
                 },
-            }
-        );
-
-        const updatedDish = await Dish.findById(dishId)
+            },
+            { new: true }
+        )
             .populate("ingredients.ingredient")
             .populate("owner", "username");
+
+        if (!updatedDish) {
+            // Not found or access denied
+            const exists = await Dish.exists({ _id: dishId });
+            return res.status(exists ? 403 : 404).json({
+                message: exists ? "Access denied." : "Dish not found.",
+            });
+        }
 
         logInfo(
             "UPDATE DISH",
@@ -439,34 +452,25 @@ async function toggleIsFavorite(req, res) {
     const userId = req.user.userId;
 
     try {
-        const dish = await Dish.findById(dishId);
-
-        if (!dish) {
-            logWarning(
-                "TOGGLE FAVORITE",
-                `User ID ${userId} tried to toggle favorite for non-existing dish ID ${dishId}`
-            );
-            return res.status(404).json({ message: "Dish not found." });
-        }
-
-        if (dish.owner.toString() !== userId) {
-            logWarning(
-                "TOGGLE FAVORITE",
-                `User ID ${userId} tried to toggle favorite on a dish not owned by them: ${dishId}`
-            );
-            return res.status(403).json({ message: "Access denied." });
-        }
-
-        dish.isFavorite = !dish.isFavorite;
-        await dish.save();
-
-        const updatedDish = await Dish.findById(dishId)
+        const updatedDish = await Dish.findOneAndUpdate(
+            { _id: dishId, owner: userId },
+            [{ $set: { isFavorite: { $not: "$isFavorite" } } }],
+            { new: true }
+        )
             .populate("ingredients.ingredient")
             .populate("owner", "username");
 
+        if (!updatedDish) {
+            // Dish not found or not owned by user
+            const exists = await Dish.exists({ _id: dishId });
+            return res.status(exists ? 403 : 404).json({
+                message: exists ? "Access denied." : "Dish not found.",
+            });
+        }
+
         logInfo(
             "TOGGLE FAVORITE",
-            `Dish ${dish.name} (ID ${dishId}) favorite toggled to ${dish.isFavorite} by user ID ${userId}`
+            `Dish ${updatedDish.name} (ID ${dishId}) favorite toggled to ${updatedDish.isFavorite} by user ID ${userId}`
         );
 
         res.status(200).json({ dish: updatedDish });
@@ -499,29 +503,32 @@ async function deleteDish(req, res) {
     const role = req.user.role;
 
     try {
-        const dish = await Dish.findById(dishId);
+        // Build query conditions based on role
+        const query = { _id: dishId };
 
-        if (!dish) {
-            logInfo(
-                "DELETE DISH",
-                `Dish ID ${dishId} not found for user ID ${userId}`
-            );
-
-            return res.status(404).json({ message: "Dish not found." });
+        if (role !== "admin") {
+            query.owner = userId; // Non-admins can only delete their own dishes
         }
 
-        if (dish.owner.toString() !== userId && role !== "admin") {
-            return res.status(403).json({ message: "Access denied." });
-        }
+        const deletedDish = await Dish.findOneAndDelete(query).select(
+            "name owner"
+        );
 
-        await dish.deleteOne();
+        if (!deletedDish) {
+            // Determine if dish exists but is unauthorized
+            const exists = await Dish.exists({ _id: dishId });
+
+            return res.status(exists ? 403 : 404).json({
+                message: exists ? "Access denied." : "Dish not found.",
+            });
+        }
 
         logInfo(
             "DELETE DISH",
-            `Dish ${dish.name} (ID ${dishId}) deleted by user ID ${userId} (${role})`
+            `Dish ${deletedDish.name} (ID ${dishId}) deleted by user ID ${userId} (${role})`
         );
 
-        res.status(200).json({ id: dishId, name: dish.name });
+        res.status(200).json({ id: dishId, name: deletedDish.name });
     } catch (err) {
         logError("DELETE DISH", `Error deleting dish ID ${dishId}: ${err}`);
         res.status(500).json({ message: "Internal server error." });
