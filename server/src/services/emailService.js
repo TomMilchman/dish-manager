@@ -13,6 +13,15 @@ const logger = require("../utils/logger");
  * @returns {Promise<void>} Resolves when the email is sent successfully.
  */
 async function sendEmail({ to, subject, text }) {
+    if (process.env.NODE_ENV !== "production") {
+        logger.logInfo(
+            "send email (dev)",
+            `Pretending to send email to ${to} - Subject: ${subject}`
+        );
+        logger.logInfo("send email (dev)", `Body: ${text}`);
+        return;
+    }
+
     const mailOptions = {
         from: `"Dish Manager" <${process.env.SMTP_USER}>`,
         to,
