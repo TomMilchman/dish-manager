@@ -61,7 +61,6 @@ router
 
 router
     .route("/dishes/:dishId")
-    .get(validateDishId, dishesController.getUserDishById)
     .patch(validateDishId, validateUpdateDish, dishesController.updateDish)
     .delete(validateDishId, dishesController.deleteDish);
 
@@ -76,12 +75,6 @@ router.patch(
 // Accessible by all authenticated users
 router.get("/ingredients", ingredientsController.getAllIngredients);
 
-router.get(
-    "/ingredients/:ingredientId",
-    validateIngredientId,
-    ingredientsController.getIngredientById
-);
-
 // Admin-only routes
 router.post(
     "/ingredients",
@@ -90,23 +83,17 @@ router.post(
     ingredientsController.createIngredient
 );
 
-router
-    .route("/ingredients/:ingredientId")
-    .patch(
-        authorizeAdminMiddleware,
-        validateIngredientId,
-        validateUpdateIngredient,
-        ingredientsController.updateIngredient
-    )
-    .delete(
-        authorizeAdminMiddleware,
-        validateIngredientId,
-        ingredientsController.deleteIngredient
-    );
-
-module.exports = router;
+router.patch(
+    "/ingredients/:ingredientId",
+    authorizeAdminMiddleware,
+    validateIngredientId,
+    validateUpdateIngredient,
+    ingredientsController.updateIngredient
+);
 
 //------------------------- GENERAL ROUTES --------------------------
 
 router.get("/tags", metaController.getAllTags);
 router.get("/colors", metaController.getColorMap);
+
+module.exports = router;

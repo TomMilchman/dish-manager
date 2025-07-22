@@ -197,80 +197,6 @@ async function getDishes(req, res) {
 }
 
 /**
- * Retrieves a single dish by ID for the authenticated user.
- * Admins can access any dish, normal users can only access their own.
- *
- * Response on success (200 OK):
- * {
- *   dish: {
- *     _id: string,
- *     name: string,
- *     ingredients: [
- *       {
- *         _id: string,
- *           name: string,
- *           unitType: "unit" | "gram" | "liter",
- *           pricePerUnit?: number,    // present if unitType is "unit"
- *           pricePer100g?: number,    // present if unitType is "gram"
- *           pricePerLiter?: number,   // present if unitType is "liter"
- *           imageUrl?: string,
- *           tags?: string[],
- *         },
- *         amount: number
- *       }
- *     ],
- *     owner: string (user ObjectId),
- *     isFavorite: boolean,
- *     cardColor: string,
- *     __v: number
- *   }
- * }
- *
- * @param {import("express").Request} req - Express request object. Assumes `req.user.userId` and `req.user.role` are set.
- * @param {import("express").Response} res - Express response object.
- * @returns {Promise<void>}
- */
-async function getUserDishById(req, res) {
-    const dishId = req.params.id;
-    const userId = req.user.userId;
-
-    try {
-        let dish;
-
-        if (req.user.role === "admin") {
-            dish = await Dish.findById(dishId).populate(
-                "ingredients.ingredient"
-            );
-        } else {
-            dish = await Dish.findById(dishId)
-                .where("owner")
-                .equals(userId)
-                .populate("ingredients.ingredient");
-        }
-
-        if (!dish) {
-            logInfo(
-                "GET USER DISH BY ID",
-                `No dish found with ID ${dishId} for user ID ${userId}`
-            );
-            return res.status(404).json({ message: "Dish not found" });
-        }
-
-        logInfo(
-            "GET USER DISH BY ID",
-            `Retrieved dish ID ${dishId} for user ID ${userId}`
-        );
-        res.status(200).json({ dish });
-    } catch (err) {
-        logError(
-            "GET USER DISH BY ID",
-            `Error retrieving dish ID ${dishId}: ${err}`
-        );
-        res.status(500).json({ message: "Internal server error." });
-    }
-}
-
-/**
  * Updates a dish by ID if it belongs to the authenticated user,
  * or allows update if the user is an admin.
  *
@@ -515,7 +441,6 @@ async function deleteDish(req, res) {
 module.exports = {
     createUserDish,
     getDishes,
-    getUserDishById,
     updateDish,
     toggleIsFavorite,
     deleteDish,

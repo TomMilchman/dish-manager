@@ -20,7 +20,8 @@
         "start": "node ./src/server.js",
         "dev": "nodemon --legacy-watch ./src/server.js",
         "test": "jest",
-        "test:coverage": "jest --coverage"
+        "test:coverage": "jest --coverage",
+        "cleanup": "node ./scripts/cleanup.js"
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",

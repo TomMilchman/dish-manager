@@ -84,38 +84,6 @@ async function getAllIngredients(req, res) {
 }
 
 /**
- * Retrieves a single ingredient by its ID.
- *
- * @param {import("express").Request} req - Express request object. Expects `id` in `req.params`.
- * @param {import("express").Response} res - Express response object.
- * @returns {Promise<void>}
- */
-async function getIngredientById(req, res) {
-    const { userId } = req.user;
-    const { ingredientId } = req.params;
-
-    try {
-        const ingredient = await Ingredient.findById(ingredientId);
-
-        if (!ingredient) {
-            return res.status(404).json({ message: "Ingredient not found." });
-        }
-
-        logInfo(
-            "get ingredient by id",
-            `Retrieved ingredient ${ingredient.name} (ID ${ingredientId}) for user ID ${userId}`
-        );
-        res.status(200).json({ ingredient });
-    } catch (err) {
-        logError(
-            "get ingredient by id",
-            `Error retrieving ingredient ID ${ingredientId} for user ID ${userId}: ${err}`
-        );
-        res.status(500).json({ message: "Internal server error." });
-    }
-}
-
-/**
  * Updates an existing ingredient by ID with provided fields. Returns the updated ingredient.
  *
  * @param {import("express").Request} req - Express request object. Expects `ingredientId` in `req.params` and updated fields (object) in `req.body`.
@@ -154,42 +122,8 @@ async function updateIngredient(req, res) {
     }
 }
 
-/**
- * Deletes an ingredient by its ID.
- *
- * @param {import("express").Request} req - Express request object. Expects `ingredientId` in `req.params`.
- * @param {import("express").Response} res - Express response object.
- * @returns {Promise<void>}
- */
-async function deleteIngredient(req, res) {
-    const { ingredientId } = req.params;
-
-    try {
-        const ingredient = await Ingredient.findByIdAndDelete(ingredientId);
-
-        if (!ingredient) {
-            return res.status(404).json({ message: "Ingredient not found." });
-        }
-
-        logInfo(
-            "delete ingredient",
-            `Ingredient deleted: ${ingredient.name} (ID: ${ingredient._id})`
-        );
-
-        res.status(200).json({ message: "Ingredient successfully deleted." });
-    } catch (err) {
-        logError(
-            "delete ingredient",
-            `Error deleting ingredient ID ${ingredientId}: ${err}`
-        );
-        res.status(500).json({ message: "Internal server error." });
-    }
-}
-
 module.exports = {
     createIngredient,
     getAllIngredients,
-    getIngredientById,
     updateIngredient,
-    deleteIngredient,
 };
