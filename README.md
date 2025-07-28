@@ -9,12 +9,12 @@ Users can register, log in (via email/username and password), create and edit di
 
 ## Features
 
--User authentication (email/password) with JWT-based access control.
--Protected routes for managing dishes and ingredients.
--CRUD operations for both dishes and ingredients.
--Dynamic aggregation of selected dishes’ ingredients and total costs.
--Responsive React frontend with modals for adding, editing, and deleting dishes.
--Admin-only actions.
+- User authentication (email/password) with JWT-based access control.
+- Protected routes for managing dishes and ingredients.
+- CRUD operations for both dishes and ingredients.
+- Dynamic aggregation of selected dishes’ ingredients and total costs.
+- Responsive React frontend with modals for adding, editing, and deleting dishes.
+- Admin-only actions.
 
 ---
 
@@ -22,9 +22,9 @@ Users can register, log in (via email/username and password), create and edit di
 
 ### Prerequisites
 
--Node.js
--MongoDB (local or remote instance)
--npm
+- Node.js
+- MongoDB (local or remote instance)
+- npm
 
 ### Installation
 
@@ -46,13 +46,13 @@ Users can register, log in (via email/username and password), create and edit di
 
 4. **Run the project:**
 
-    -Server:
+    - Server:
 
     ```bash
     cd server && npm run dev
     ```
 
-    -Client:
+    - Client:
 
     ```bash
     cd client && npm start
@@ -79,52 +79,52 @@ Set up two `.env` files — one for the **client** (React) and one for the **ser
 
 #### Client (`client/.env`)
 
--**REACT_APP_API_URL** (default: `http://localhost:5000`)  
+- **REACT_APP_API_URL** (default: `http://localhost:5000`)  
  The base URL for API requests from the React app.  
  Must start with `REACT_APP_` for Create React App to expose it.
 
 #### Server (`server/.env`)
 
--**NODE_ENV** (`development` | `production`)  
+- **NODE_ENV** (`development` | `production`)  
  Specifies the environment.
 
--**MONGO_URI** _(required)_  
+- **MONGO_URI** _(required)_  
  Connection string for your MongoDB instance.
 
--**JWT_SECRET** _(required)_  
+- **JWT_SECRET** _(required)_  
  Secret key used for signing/verifying access tokens. Should be a long, random string.
 
--**REFRESH_SECRET** _(required)_  
+- **REFRESH_SECRET** _(required)_  
 Secret key for refresh tokens. Should be different from `JWT_SECRET`.
 
--**HOST** (default: `http://localhost`)  
+- **HOST** (default: `http://localhost`)  
 Base host URL where the server runs.
 
--**PORT** (default: `5000`)  
+- **PORT** (default: `5000`)  
 Port the server listens on.
 
--**CLIENT_URL** (default: `http://localhost:3000`)  
+- **CLIENT_URL** (default: `http://localhost:3000`)  
 The frontend URL allowed by CORS.
 
--**ENABLE_FILE_LOGGING** (`true` | `false`)  
+- **ENABLE_FILE_LOGGING** (`true` | `false`)  
  Whether to log to files in addition to console.
 
--**LOG_DIR**  
+- **LOG_DIR**  
  Directory to store logs (only used if file logging is enabled).
 
--**SMTP_HOST** (default: `smtp.gmail.com`)  
+- **SMTP_HOST** (default: `smtp.gmail.com`)  
 Host for the SMTP server (for email).
 
--**SMTP_PORT** (default: `465`)  
+- **SMTP_PORT** (default: `465`)  
 Port for the SMTP server.
 
--**SMTP_SECURE** (`true` | `false`)  
+- **SMTP_SECURE** (`true` | `false`)  
 Use TLS/SSL for SMTP. Typically `true` for port `465`, `false` for `587`.
 
--**SMTP_USER** _(required)_  
+- **SMTP_USER** _(required)_  
 Email address used to send emails.
 
--**SMTP_PASS** _(required)_  
+- **SMTP_PASS** _(required)_  
 App password for SMTP authentication.
 
 ---
@@ -168,18 +168,23 @@ dish-manager/
 ## Assumptions and Decisions
 
 1. **Authentication:**
-   -JWTs used for access control (stored in memory or HTTP-only cookie).
-   -Passwords hashed with bcrypt.
+   - JWTs used for access control (stored in memory or HTTP-only cookie).
+   - Passwords hashed with bcrypt.
+    
 2. **Frontend State Management:**
-   -Zustand for local UI state (selected dishes, modals).
-   -React Query for server state (fetching and caching data).
+   - Zustand for local UI state (selected dishes, modals).
+   - React Query for server state (fetching and caching data).
+     
 3. **Database:**
-   -MongoDB via Mongoose.
+   - MongoDB via Mongoose.
+     
 4. **Styling:**
-   -Plain CSS (no frameworks).
-   -Optimized for responsive design.
+   - Plain CSS (no frameworks).
+   - Optimized for responsive design.
+     
 5. **Ingredient Aggregation:**
-   -Aggregated costs and totals calculated on the frontend for simplicity.
+   - Aggregated costs and totals calculated on the frontend for simplicity.
+     
 6. **Admin Actions:**
-   -Frontend: admins can view/edit/delete all user dishes and manage ingredients.
-   -Backend: admin-only routes enforced via middleware.
+   - Frontend: admins can view/edit/delete all user dishes and manage ingredients.
+   - Backend: admin-only routes enforced via middleware.
